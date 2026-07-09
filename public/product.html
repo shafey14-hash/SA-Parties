@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details - SA Parties</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Premium enhancement layer (visual only, does not touch page logic) -->
+    <link href="premium-enhance.css" rel="stylesheet" />
+
+    <style>
+      :root {
+        --pink-primary: #e0218a;
+        --pink-dark: #ad0a69;
+        --pink-light: #fff1f8;
+        --pink-soft: #fbdcee;
+        --yellow-accent: #ffd93d;
+        --blue-accent: #4fc3f7;
+        --ink: #2a1b2e;
+        --ink-soft: #8c7a92;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --shadow-soft: 0 10px 30px -14px rgba(173, 10, 105, 0.28);
+        --shadow-hover: 0 18px 38px -12px rgba(173, 10, 105, 0.35);
+      }
+
+      * {
+        scroll-behavior: smooth;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        color: var(--ink);
+        background-color: var(--pink-light);
+        background-image:
+          radial-gradient(rgba(224, 33, 138, 0.07) 1.5px, transparent 1.5px),
+          radial-gradient(rgba(79, 195, 247, 0.06) 1.5px, transparent 1.5px);
+        background-size:
+          42px 42px,
+          64px 64px;
+        background-position:
+          0 0,
+          22px 28px;
+        min-height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      .brand-text {
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* ── Navbar ── */
+      .navbar-shop {
+        background: #fff;
+        padding: 0.75rem 0;
+        box-shadow: 0 4px 24px -10px rgba(173, 10, 105, 0.18);
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+      }
+      .brand-text {
+        font-weight: 800;
+        font-size: 1.7rem;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+        color: var(--ink);
+      }
+      .brand-text .accent {
+        color: var(--pink-primary);
+      }
+      .brand-tagline {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .brand-link {
+        transition: transform 0.3s ease;
+        animation: gentleFloat 4s ease-in-out infinite;
+      }
+      @keyframes gentleFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
+      }
+      .brand-logo-img {
+        height: 56px;
+        width: 56px;
+        object-fit: cover;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(224, 33, 138, 0.35);
+      }
+      .btn-admin {
+        border: 1.5px solid var(--pink-primary);
+        color: var(--pink-primary);
+        background: transparent;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.5rem 1.15rem;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-admin:hover {
+        background: var(--pink-primary);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+      }
+
+      /* ── Breadcrumb ── */
+      .breadcrumb-wrap {
+        background: #fff;
+        border-bottom: 1px solid var(--pink-soft);
+        padding: 0.7rem 0;
+      }
+      .breadcrumb-item a {
+        color: var(--pink-primary);
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+      .breadcrumb-item.active {
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+      }
+      .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--pink-soft);
+      }
+
+      /* ── Product image card ── */
+      .product-img-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+        position: sticky;
+        top: 90px;
+      }
+      .product-img-card .main-img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+        display: block;
+        background: var(--pink-soft);
+      }
+      .img-placeholder {
+        width: 100%;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--pink-soft), #fdeef6);
+        font-size: 5rem;
+        color: var(--pink-primary);
+      }
+      .product-img-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: var(--yellow-accent);
+        color: var(--ink);
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 0.3rem 0.85rem;
+        border-radius: 50px;
+      }
+
+      /* ── Info panel ── */
+      .info-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: 2rem;
+      }
+      .product-title {
+        font-weight: 800;
+        font-size: 1.85rem;
+        line-height: 1.2;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+      }
+      .price-big {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--pink-primary);
+        font-family: "Poppins", sans-serif;
+      }
+      .price-big small {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        vertical-align: middle;
+      }
+      .stock-badge {
+        font-weight: 600;
+        font-size: 0.78rem;
+        border-radius: 50px;
+        padding: 0.4rem 1rem;
+        background: var(--pink-light);
+        color: var(--pink-dark);
+        border: 1px solid var(--pink-soft);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .stock-badge.low {
+        background: #fff8e1;
+        color: #946d00;
+        border-color: #ffe8a8;
+      }
+      .stock-badge.out {
+        background: #fbe7ea;
+        color: #b3261e;
+        border-color: #f6c9cf;
+      }
+
+      .divider {
+        border: none;
+        border-top: 2px dashed var(--pink-soft);
+        margin: 1.25rem 0;
+      }
+
+      .desc-box {
+        background: var(--pink-light);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.25rem;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        border-left: 4px solid var(--pink-primary);
+      }
+
+      .btn-buy-lg {
+        background: linear-gradient(
+          135deg,
+          var(--pink-primary),
+          var(--pink-dark)
+        );
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: 0.85rem 1.5rem;
+        font-size: 1rem;
+        width: 100%;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .btn-buy-lg:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+        color: #fff;
+      }
+      .btn-buy-lg:disabled {
+        background: #e9dfe6;
+        color: #ad9ca8;
+        cursor: not-allowed;
+      }
+
+      .btn-back {
+        background: var(--pink-light);
+        border: 1.5px solid var(--pink-soft);
+        color: var(--pink-primary);
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        width: 100%;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      .btn-back:hover {
+        background: var(--pink-soft);
+        color: var(--pink-dark);
+      }
+
+      /* ── Cart Panel ── */
+      .cart-panel {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+        position: sticky;
+        top: 90px;
+      }
+      .cart-header {
+        background: linear-gradient(
+          135deg,
+          var(--pink-primary),
+          var(--pink-dark)
+        );
+        color: #fff;
+        padding: 1.1rem 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .cart-header h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .cart-body {
+        padding: 1.1rem 1.4rem;
+      }
+      .cart-empty {
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+        text-align: center;
+        padding: 1rem 0;
+      }
+      .cart-item-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px dashed var(--pink-soft);
+        font-size: 0.88rem;
+      }
+      .cart-item-row:last-child {
+        border-bottom: none;
+      }
+      .cart-item-name {
+        flex: 1;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .cart-item-price {
+        color: var(--pink-primary);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .cart-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 0 0;
+        margin-top: 0.5rem;
+        border-top: 2px dashed var(--pink-soft);
+        font-weight: 800;
+        font-size: 1rem;
+      }
+      .cart-total-row .total-price {
+        color: var(--pink-primary);
+        font-size: 1.1rem;
+      }
+      .ticket-perf {
+        position: relative;
+        border-top: 2px dashed var(--pink-soft);
+        margin: 0 1.4rem;
+      }
+      .ticket-perf::before,
+      .ticket-perf::after {
+        content: "";
+        position: absolute;
+        top: -13px;
+        width: 26px;
+        height: 26px;
+        background: var(--pink-light);
+        border-radius: 50%;
+      }
+      .ticket-perf::before {
+        left: -1.4rem;
+        margin-left: -13px;
+      }
+      .ticket-perf::after {
+        right: -1.4rem;
+        margin-right: -13px;
+      }
+
+      /* ── Feature pills ── */
+      .feature-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--pink-light);
+        border: 1px solid var(--pink-soft);
+        border-radius: 50px;
+        padding: 0.4rem 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+      .feature-pill i {
+        color: var(--pink-primary);
+      }
+
+      /* ── Toasts ── */
+      .toast-stack {
+        position: fixed;
+        top: 88px;
+        right: 1rem;
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .toast-card {
+        background: #fff;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-hover);
+        padding: 0.9rem 1.1rem;
+        min-width: 270px;
+        max-width: 320px;
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+        border-left: 5px solid var(--pink-primary);
+        transform: translateX(130%);
+        opacity: 0;
+        transition:
+          transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.3s ease;
+      }
+      .toast-card.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast-card.error {
+        border-left-color: #b3261e;
+      }
+      .toast-card .toast-icon {
+        font-size: 1.35rem;
+        line-height: 1;
+        margin-top: 0.1rem;
+      }
+      .toast-card.error .toast-icon {
+        color: #b3261e;
+      }
+      .toast-card:not(.error) .toast-icon {
+        color: var(--pink-primary);
+      }
+      .toast-card .toast-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.1rem;
+      }
+      .toast-card .toast-msg {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        line-height: 1.35;
+      }
+
+      /* ── Skeleton ── */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--pink-soft) 25%,
+          #fdeef6 37%,
+          var(--pink-soft) 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.4s ease infinite;
+        border-radius: 10px;
+      }
+      .skeleton-img {
+        height: 380px;
+        border-radius: var(--radius-lg);
+      }
+      .skeleton-line {
+        height: 14px;
+        margin-bottom: 0.75rem;
+      }
+      .w-70 {
+        width: 70%;
+      }
+      .w-40 {
+        width: 40%;
+      }
+      .w-90 {
+        width: 90%;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+
+      /* ── Footer ── */
+      .footer-shop {
+        margin-top: 3rem;
+        padding: 1.75rem 0 2.25rem;
+        text-align: center;
+        border-top: 1px dashed var(--pink-soft);
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+      }
+      .footer-shop strong {
+        color: var(--ink);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-in {
+        animation: fadeInUp 0.5s ease forwards;
+      }
+    </style>
+
+    <!-- ============================================================
+         RESPONSIVE ENHANCEMENTS (added) — mobile/tablet/laptop/desktop
+         No existing selectors removed; only new/overriding rules.
+         ============================================================ -->
+    <style>
+      /* ── FIX: sticky image/cart panels only make sense in the
+           side-by-side (lg+) layout. Once Bootstrap stacks the
+           columns below 992px, "sticky" causes the image/cart box
+           to pin awkwardly over the info column while scrolling.
+           Disable sticky positioning when stacked. ── */
+      @media (max-width: 991.98px) {
+        .product-img-card,
+        .cart-panel {
+          position: static;
+          top: auto;
+        }
+      }
+
+      /* ── Navbar: keep brand + Admin button from overlapping/overflowing ── */
+      @media (max-width: 575.98px) {
+        .navbar-shop .container {
+          flex-wrap: wrap;
+          row-gap: 0.4rem;
+        }
+        .brand-logo-img {
+          height: 42px;
+          width: 42px;
+        }
+        .brand-text {
+          font-size: 1.25rem;
+        }
+        .btn-admin {
+          font-size: 0.78rem;
+          padding: 0.45rem 0.9rem;
+        }
+      }
+
+      /* ── Product image gallery: touch-friendly nav on mobile/tablet ── */
+      @media (max-width: 767.98px) {
+        #gallery-prev,
+        #gallery-next {
+          width: 44px !important;
+          height: 44px !important;
+        }
+      }
+
+      /* ── Quantity selector + gallery controls: 44px min touch target ── */
+      @media (max-width: 767.98px) {
+        #qty-section button {
+          width: 44px !important;
+          height: 44px !important;
+        }
+      }
+
+      /* ── Buttons: comfortable tap size on mobile/tablet ── */
+      @media (max-width: 767.98px) {
+        .btn-buy-lg,
+        .btn-back,
+        .btn-admin {
+          min-height: 44px;
+        }
+      }
+
+      /* ── Cart item rows: never overflow horizontally ── */
+      @media (max-width: 575.98px) {
+        .cart-item-row {
+          flex-wrap: wrap;
+        }
+      }
+
+      /* ── Toast: never overflow tiny screens ── */
+      @media (max-width: 360px) {
+        .toast-stack {
+          left: 0.75rem;
+          right: 0.75rem;
+        }
+        .toast-card {
+          min-width: 0;
+          max-width: 100%;
+        }
+      }
+
+      /* ── Info card padding tightened on small screens ── */
+      @media (max-width: 575.98px) {
+        .info-card {
+          padding: 1.25rem;
+        }
+        .product-title {
+          font-size: 1.4rem;
+        }
+        .price-big {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ── Prevent any accidental horizontal scroll ── */
+      html,
+      body {
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar-shop">
+      <div class="container d-flex align-items-center gap-3">
+        <a
+          href="index.html"
+          class="d-flex align-items-center gap-2 text-decoration-none brand-link"
+          style="flex-shrink: 0"
+        >
+          <img
+            src="assets/logo.jpg"
+            alt="SA Parties Logo"
+            class="brand-logo-img"
+            onerror="this.style.display = 'none'"
+          />
+          <div>
+            <div class="brand-text">SA <span class="accent">Parties</span></div>
+            <div class="brand-tagline">Online Shop</div>
+          </div>
+        </a>
+        <div style="flex: 1"></div>
+        <a class="btn-admin" href="admin.html"
+          ><i class="bi bi-gear-fill me-1"></i> Admin</a
+        >
+      </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-wrap">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+              <a href="index.html"><i class="bi bi-house-fill me-1"></i>Home</a>
+            </li>
+            <li class="breadcrumb-item active" id="breadcrumb-name">
+              Product Details
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+      <div class="row g-4">
+        <!-- LEFT: Product Image -->
+        <div class="col-lg-5">
+          <div class="product-img-card" style="position: relative">
+            <span
+              class="product-img-badge"
+              id="product-badge"
+              style="display: none"
+              >🎉 Party Essential</span
+            >
+
+            <!-- Skeleton -->
+            <div class="skeleton skeleton-img" id="img-skeleton"></div>
+
+            <!-- Gallery -->
+            <div id="gallery-wrap" style="display: none; position: relative">
+              <div
+                id="gallery-main"
+                style="
+                  position: relative;
+                  width: 100%;
+                  aspect-ratio: 1/1;
+                  overflow: hidden;
+                  background: #f9f4fb;
+                  border-radius: 16px;
+                "
+              >
+                <img
+                  id="p-image"
+                  src=""
+                  alt="Product"
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    position: absolute;
+                    inset: 0;
+                    transition:
+                      opacity 0.3s ease,
+                      transform 0.3s ease;
+                  "
+                />
+              </div>
+              <button
+                id="gallery-prev"
+                onclick="galleryNav(-1)"
+                style="
+                  position: absolute;
+                  left: 10px;
+                  top: 42%;
+                  transform: translateY(-50%);
+                  background: rgba(255, 255, 255, 0.92);
+                  border: none;
+                  border-radius: 50%;
+                  width: 38px;
+                  height: 38px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  cursor: pointer;
+                  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+                  font-size: 1rem;
+                  color: var(--pink-primary);
+                  z-index: 5;
+                  transition: all 0.2s;
+                "
+              >
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button
+                id="gallery-next"
+                onclick="galleryNav(1)"
+                style="
+                  position: absolute;
+                  right: 10px;
+                  top: 42%;
+                  transform: translateY(-50%);
+                  background: rgba(255, 255, 255, 0.92);
+                  border: none;
+                  border-radius: 50%;
+                  width: 38px;
+                  height: 38px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  cursor: pointer;
+                  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+                  font-size: 1rem;
+                  color: var(--pink-primary);
+                  z-index: 5;
+                  transition: all 0.2s;
+                "
+              >
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              <div
+                id="gallery-counter"
+                style="
+                  position: absolute;
+                  bottom: 10px;
+                  right: 12px;
+                  background: rgba(42, 27, 46, 0.6);
+                  color: #fff;
+                  border-radius: 50px;
+                  padding: 2px 10px;
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  z-index: 5;
+                  letter-spacing: 0.05em;
+                "
+              ></div>
+            </div>
+
+            <!-- Thumbnails -->
+            <div
+              id="gallery-thumbs"
+              style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap"
+            ></div>
+
+            <!-- Placeholder -->
+            <div
+              id="img-placeholder"
+              class="img-placeholder"
+              style="display: none"
+            >
+              <i class="bi bi-image"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIDDLE: Product Info -->
+        <div class="col-lg-4">
+          <!-- Skeleton state -->
+          <div id="info-skeleton" class="info-card">
+            <div class="skeleton skeleton-line w-70"></div>
+            <div
+              class="skeleton skeleton-line w-40"
+              style="height: 28px; margin-bottom: 1rem"
+            ></div>
+            <div class="skeleton skeleton-line w-90"></div>
+            <div class="skeleton skeleton-line w-90"></div>
+            <div class="skeleton skeleton-line w-70"></div>
+          </div>
+
+          <!-- Actual info -->
+          <div
+            class="info-card fade-in"
+            id="product-info"
+            style="display: none"
+          >
+            <h1 class="product-title" id="p-name">—</h1>
+
+            <div class="d-flex align-items-center gap-3 mt-2 mb-3">
+              <span class="price-big">Rs. <span id="p-price">—</span></span>
+              <span class="stock-badge" id="p-stock-badge"
+                ><i class="bi bi-box-seam"></i>
+                <span id="p-stock-label">—</span></span
+              >
+            </div>
+
+            <hr class="divider" />
+
+            <!-- Color Variants Section -->
+            <div
+              id="color-variants-section"
+              style="display: none; margin-bottom: 1.1rem"
+            >
+              <div
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--ink-soft);
+                  margin-bottom: 0.6rem;
+                "
+              >
+                <i
+                  class="bi bi-palette me-1"
+                  style="color: var(--pink-primary)"
+                ></i>
+                Select Color
+              </div>
+              <div
+                id="color-swatches"
+                style="display: flex; flex-wrap: wrap; gap: 0.5rem"
+              ></div>
+              <div
+                id="selected-color-label"
+                style="
+                  margin-top: 0.5rem;
+                  font-size: 0.82rem;
+                  font-weight: 600;
+                  color: var(--pink-primary);
+                  min-height: 1.2em;
+                "
+              ></div>
+            </div>
+
+            <!-- Quantity Selector -->
+            <div style="margin-bottom: 1.1rem" id="qty-section">
+              <div
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--ink-soft);
+                  margin-bottom: 0.6rem;
+                "
+              >
+                <i
+                  class="bi bi-hash me-1"
+                  style="color: var(--pink-primary)"
+                ></i>
+                Quantity
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.6rem">
+                <button
+                  type="button"
+                  onclick="changeQty(-1)"
+                  style="
+                    width: 36px;
+                    height: 36px;
+                    border: 2px solid var(--pink-soft);
+                    border-radius: 10px;
+                    background: var(--pink-light);
+                    color: var(--pink-primary);
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  −
+                </button>
+                <span
+                  id="qty-display"
+                  style="
+                    min-width: 36px;
+                    text-align: center;
+                    font-weight: 800;
+                    font-size: 1.1rem;
+                    color: var(--ink);
+                  "
+                  >1</span
+                >
+                <button
+                  type="button"
+                  onclick="changeQty(1)"
+                  style="
+                    width: 36px;
+                    height: 36px;
+                    border: 2px solid var(--pink-soft);
+                    border-radius: 10px;
+                    background: var(--pink-light);
+                    color: var(--pink-primary);
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  +
+                </button>
+                <span
+                  id="qty-stock-hint"
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--ink-soft);
+                    font-weight: 500;
+                  "
+                ></span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                  color: var(--ink-soft);
+                  margin-bottom: 0.5rem;
+                "
+              >
+                <i class="bi bi-info-circle me-1"></i> Description
+              </div>
+              <div class="desc-box" id="p-desc">—</div>
+            </div>
+
+            <!-- Feature pills -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <span class="feature-pill"
+                ><i class="bi bi-truck"></i> Cash on Delivery</span
+              >
+              <span class="feature-pill"
+                ><i class="bi bi-shield-check"></i> Secure Order</span
+              >
+              <span class="feature-pill"
+                ><i class="bi bi-arrow-counterclockwise"></i> Easy Returns</span
+              >
+            </div>
+
+            <button class="btn-buy-lg mb-3" id="add-to-cart-btn" disabled>
+              <i class="bi bi-cart3"></i> Add to Cart
+            </button>
+            <a href="index.html" class="btn-back">
+              <i class="bi bi-arrow-left"></i> Continue Shopping
+            </a>
+          </div>
+        </div>
+
+        <!-- RIGHT: Cart Panel -->
+        <div class="col-lg-3">
+          <div class="cart-panel">
+            <div class="cart-header">
+              <i class="bi bi-ticket-perforated-fill fs-5"></i>
+              <h5>Your Cart</h5>
+              <span
+                id="cart-count-badge"
+                class="ms-auto badge"
+                style="
+                  background: var(--yellow-accent);
+                  color: var(--ink);
+                  font-size: 0.78rem;
+                "
+                >0</span
+              >
+            </div>
+            <div class="cart-body">
+              <div id="cart-items-box">
+                <div class="cart-empty">
+                  <i
+                    class="bi bi-cart3"
+                    style="
+                      font-size: 1.8rem;
+                      color: var(--pink-soft);
+                      display: block;
+                      margin-bottom: 0.5rem;
+                    "
+                  ></i>
+                  Cart is empty
+                </div>
+              </div>
+              <div
+                class="cart-total-row"
+                id="cart-total-row"
+                style="display: none"
+              >
+                <span>Total</span>
+                <span class="total-price"
+                  >Rs. <span id="cart-total-amount">0</span></span
+                >
+              </div>
+            </div>
+            <div class="ticket-perf"></div>
+            <div style="padding: 1rem 1.4rem 1.4rem">
+              <div
+                style="
+                  font-size: 0.76rem;
+                  color: var(--ink-soft);
+                  display: flex;
+                  align-items: center;
+                  gap: 0.4rem;
+                  margin-bottom: 0.75rem;
+                "
+              >
+                <i
+                  class="bi bi-shield-check"
+                  style="color: var(--pink-primary)"
+                ></i>
+                Pay in cash when order arrives
+              </div>
+              <a
+                href="index.html#checkout"
+                class="btn-buy-lg"
+                style="text-decoration: none"
+                id="checkout-link"
+              >
+                <i class="bi bi-bag-check-fill"></i> Go to Checkout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-shop">
+      <div class="container">
+        🎈 <strong>SA Parties</strong> — making every celebration a little more
+        colourful.
+      </div>
+    </footer>
+
+    <!-- Toast Stack -->
+    <div id="toast-stack" class="toast-stack"></div>
+
+    <script>
+      // ── Cart: localStorage ──
+      function loadCart() {
+        try {
+          return JSON.parse(localStorage.getItem("sa-cart") || "[]");
+        } catch {
+          return [];
+        }
+      }
+      function saveCart(c) {
+        localStorage.setItem("sa-cart", JSON.stringify(c));
+      }
+
+      let cart = loadCart();
+      let currentProduct = null;
+      let selectedColor = null;
+      let quantity = 1;
+
+      // ── Gallery state ──
+      let galleryImages = []; // All images for current view
+      let galleryIndex = 0;
+
+      function formatPrice(v) {
+        return (Number(v) || 0).toLocaleString("en-PK");
+      }
+      function escapeHtml(str) {
+        return String(str ?? "").replace(
+          /[&<>'"]/g,
+          (ch) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[ch],
+        );
+      }
+
+      function showToast(type, title, message) {
+        const stack = document.getElementById("toast-stack");
+        const toast = document.createElement("div");
+        toast.className = `toast-card${type === "error" ? " error" : ""}`;
+        const icon =
+          type === "error"
+            ? "bi-exclamation-circle-fill"
+            : "bi-check-circle-fill";
+        toast.innerHTML = `<i class="bi ${icon} toast-icon"></i><div><div class="toast-title">${escapeHtml(title)}</div><div class="toast-msg">${escapeHtml(message)}</div></div>`;
+        stack.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add("show"));
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => toast.remove(), 400);
+        }, 4000);
+      }
+
+      // ── Gallery Functions ──
+      function setGalleryImages(images) {
+        galleryImages = images || [];
+        galleryIndex = 0;
+        renderGallery();
+      }
+
+      function renderGallery() {
+        const wrap = document.getElementById("gallery-wrap");
+        const imgEl = document.getElementById("p-image");
+        const thumbs = document.getElementById("gallery-thumbs");
+        const counter = document.getElementById("gallery-counter");
+        const prevBtn = document.getElementById("gallery-prev");
+        const nextBtn = document.getElementById("gallery-next");
+
+        if (!galleryImages.length) {
+          if (wrap) wrap.style.display = "none";
+          document.getElementById("img-placeholder").style.display = "flex";
+          return;
+        }
+
+        if (wrap) wrap.style.display = "block";
+        document.getElementById("img-placeholder").style.display = "none";
+
+        // Set main image with fade animation
+        if (imgEl) {
+          imgEl.style.opacity = "0";
+          imgEl.style.transform = "scale(0.97)";
+          setTimeout(() => {
+            imgEl.src = galleryImages[galleryIndex];
+            imgEl.style.opacity = "1";
+            imgEl.style.transform = "scale(1)";
+          }, 120);
+        }
+
+        // Counter
+        if (counter) {
+          counter.textContent =
+            galleryImages.length > 1
+              ? `${galleryIndex + 1} / ${galleryImages.length}`
+              : "";
+          counter.style.display = galleryImages.length > 1 ? "block" : "none";
+        }
+
+        // Arrow visibility
+        if (prevBtn)
+          prevBtn.style.display = galleryImages.length > 1 ? "flex" : "none";
+        if (nextBtn)
+          nextBtn.style.display = galleryImages.length > 1 ? "flex" : "none";
+
+        // Thumbnails
+        if (thumbs) {
+          thumbs.innerHTML = "";
+          if (galleryImages.length > 1) {
+            galleryImages.forEach((src, i) => {
+              const thumb = document.createElement("div");
+              thumb.style.cssText = `width:60px;height:60px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${i === galleryIndex ? "var(--pink-primary)" : "transparent"};box-shadow:0 2px 6px rgba(0,0,0,0.1);flex-shrink:0;transition:border 0.2s;`;
+              const img = document.createElement("img");
+              img.src = src;
+              img.style.cssText = "width:100%;height:100%;object-fit:cover;";
+              thumb.appendChild(img);
+              thumb.onclick = () => {
+                galleryIndex = i;
+                renderGallery();
+              };
+              thumbs.appendChild(thumb);
+            });
+          }
+        }
+      }
+
+      function galleryNav(dir) {
+        if (!galleryImages.length) return;
+        galleryIndex =
+          (galleryIndex + dir + galleryImages.length) % galleryImages.length;
+        renderGallery();
+      }
+
+      // Swipe support for mobile
+      let touchStartX = 0;
+      document.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
+      document.addEventListener("touchend", (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) galleryNav(diff > 0 ? 1 : -1);
+      });
+
+      // ── Quantity ──
+      function changeQty(delta) {
+        const maxStock = selectedColor
+          ? selectedColor.stock
+          : currentProduct?.stock || 99;
+        quantity = Math.max(1, Math.min(quantity + delta, maxStock));
+        document.getElementById("qty-display").textContent = quantity;
+      }
+
+      // ── Color swatch selection ──
+      function selectColorVariant(colorObj) {
+        selectedColor = colorObj;
+        quantity = 1;
+        document.getElementById("qty-display").textContent = "1";
+
+        // Update swatch outlines
+        document.querySelectorAll(".color-swatch").forEach((sw) => {
+          const active = sw.dataset.colorId === String(colorObj.id);
+          sw.style.outline = active
+            ? "3px solid var(--pink-primary)"
+            : "2px solid transparent";
+          sw.style.outlineOffset = active ? "3px" : "0";
+          sw.style.transform = active ? "scale(1.18)" : "scale(1)";
+        });
+
+        // Label + stock
+        document.getElementById("selected-color-label").innerHTML =
+          `<i class="bi bi-check-circle-fill me-1" style="color:var(--pink-primary);"></i>
+         <strong>${escapeHtml(colorObj.color_name)}</strong>
+         <span style="color:var(--ink-soft);font-weight:400;"> — </span>
+         ${
+           colorObj.stock > 0
+             ? `<span style="color:#388e3c;font-weight:600;">${colorObj.stock} in stock</span>`
+             : '<span style="color:#b3261e;font-weight:600;">Out of stock</span>'
+         }`;
+
+        document.getElementById("qty-stock-hint").textContent =
+          `max ${colorObj.stock}`;
+
+        // Swap gallery to this color's images if available
+        if (colorObj.images && colorObj.images.length > 0) {
+          setGalleryImages(colorObj.images);
+        } else if (currentProduct?.images?.length > 0) {
+          setGalleryImages(currentProduct.images);
+        }
+
+        // Button
+        const btn = document.getElementById("add-to-cart-btn");
+        if (colorObj.stock > 0) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-cart3"></i> Add to Cart';
+        } else {
+          btn.disabled = true;
+          btn.innerHTML = '<i class="bi bi-x-circle"></i> Out of Stock';
+        }
+      }
+
+      // ── Cart render ──
+      function renderCart() {
+        cart = loadCart();
+        const box = document.getElementById("cart-items-box");
+        const total = document.getElementById("cart-total-row");
+        const amt = document.getElementById("cart-total-amount");
+        const badge = document.getElementById("cart-count-badge");
+        const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
+        if (badge) badge.textContent = totalQty;
+
+        if (cart.length === 0) {
+          box.innerHTML = `<div class="cart-empty"><i class="bi bi-cart3" style="font-size:1.8rem;color:var(--pink-soft);display:block;margin-bottom:0.5rem;"></i>Cart is empty</div>`;
+          if (total) total.style.display = "none";
+          return;
+        }
+
+        box.innerHTML = cart
+          .map(
+            (item, i) => `
+        <div class="cart-item-row" style="flex-wrap:wrap;gap:0.4rem;">
+          <div class="cart-item-name" style="flex:1;min-width:80px;">
+            ${escapeHtml(item.name)}
+            ${item.color_name ? `<div style="font-size:0.72rem;color:var(--pink-primary);font-weight:600;">${escapeHtml(item.color_name)}</div>` : ""}
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem;">
+            <button onclick="cartDec(${i})" style="width:24px;height:24px;padding:0;border:1.5px solid var(--pink-soft);border-radius:6px;font-size:0.9rem;background:var(--pink-light);color:var(--pink-primary);cursor:pointer;line-height:1;">−</button>
+            <span style="min-width:28px;text-align:center;font-weight:700;font-size:0.85rem;color:var(--pink-primary);">x${item.quantity}</span>
+            <button onclick="cartInc(${i})" style="width:24px;height:24px;padding:0;border:1.5px solid var(--pink-soft);border-radius:6px;font-size:0.9rem;background:var(--pink-light);color:var(--pink-primary);cursor:pointer;line-height:1;">+</button>
+            <div class="cart-item-price">Rs.${formatPrice(Number(item.price) * item.quantity)}</div>
+            <button onclick="cartRemove(${i})" style="background:none;border:none;color:#b3261e;cursor:pointer;padding:0;font-size:0.95rem;"><i class="bi bi-x-circle-fill"></i></button>
+          </div>
+        </div>`,
+          )
+          .join("");
+
+        const sum = cart.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
+        if (amt) amt.textContent = formatPrice(sum);
+        if (total) total.style.display = "flex";
+      }
+
+      function cartDec(i) {
+        cart = loadCart();
+        if (!cart[i]) return;
+        cart[i].quantity -= 1;
+        if (cart[i].quantity <= 0) cart.splice(i, 1);
+        saveCart(cart);
+        renderCart();
+      }
+      function cartInc(i) {
+        cart = loadCart();
+        if (!cart[i]) return;
+        cart[i].quantity += 1;
+        saveCart(cart);
+        renderCart();
+      }
+      function cartRemove(i) {
+        cart = loadCart();
+        cart.splice(i, 1);
+        saveCart(cart);
+        renderCart();
+      }
+
+      // ── Add to cart ──
+      function addToCart() {
+        if (!currentProduct) return;
+        const hasColors =
+          currentProduct.colors && currentProduct.colors.length > 0;
+        if (hasColors && !selectedColor) {
+          showToast(
+            "error",
+            "Select a Color",
+            "Please choose a color variant first.",
+          );
+          return;
+        }
+        const cartKey = hasColors
+          ? `${currentProduct.id}_${selectedColor.id}`
+          : String(currentProduct.id);
+        cart = loadCart();
+        const existing = cart.find((it) => it.cart_key === cartKey);
+        if (existing) {
+          existing.quantity += quantity;
+          showToast(
+            "success",
+            "Quantity Updated",
+            `${currentProduct.name}${selectedColor ? ` (${selectedColor.color_name})` : ""} x${existing.quantity}`,
+          );
+        } else {
+          cart.push({
+            cart_key: cartKey,
+            product_id: currentProduct.id,
+            name: currentProduct.name,
+            price: Number(currentProduct.price),
+            quantity,
+            color_id: selectedColor?.id || null,
+            color_name: selectedColor?.color_name || null,
+            color_code: selectedColor?.color_code || null,
+          });
+          showToast(
+            "success",
+            "Added to Cart! 🎉",
+            `${currentProduct.name}${selectedColor ? ` (${selectedColor.color_name})` : ""} added.`,
+          );
+        }
+        saveCart(cart);
+        renderCart();
+        quantity = 1;
+        document.getElementById("qty-display").textContent = "1";
+      }
+
+      function getStockInfo(stock) {
+        const qty = Number(stock) || 0;
+        if (qty <= 0)
+          return { label: "Out of Stock", cls: "out", available: false };
+        if (qty <= 5)
+          return { label: `Only ${qty} left`, cls: "low", available: true };
+        return { label: `In Stock (${qty})`, cls: "", available: true };
+      }
+
+      // ── Fetch product ──
+      async function fetchProductDetails(id) {
+        try {
+          const [prodRes, allRes] = await Promise.all([
+            fetch(`/api/products/product/${id}`),
+            fetch(`/api/products`),
+          ]);
+          const p = await prodRes.json();
+          const all = await allRes.json();
+          const full = all.find((pr) => String(pr.id) === String(id)) || p;
+
+          p.colors = full.colors || [];
+          p.images = full.images || (p.image_url ? [p.image_url] : []);
+
+          // Fetch color-specific images if any
+          // (stored as colorImages in admin — for now use product images per color)
+          currentProduct = p;
+
+          document.getElementById("img-skeleton").style.display = "none";
+          document.getElementById("info-skeleton").style.display = "none";
+
+          // Init gallery with product images
+          setGalleryImages(p.images);
+
+          // Fill text
+          document.getElementById("p-name").textContent = p.name || "—";
+          document.getElementById("p-price").textContent = formatPrice(p.price);
+          document.getElementById("p-desc").textContent =
+            p.description || "No description available.";
+          document.getElementById("breadcrumb-name").textContent =
+            p.name || "Product";
+          document.title = `${p.name} - SA Parties`;
+
+          const stock = getStockInfo(p.stock);
+          document.getElementById("p-stock-label").textContent = stock.label;
+          if (stock.cls)
+            document.getElementById("p-stock-badge").classList.add(stock.cls);
+          document.getElementById("product-badge").style.display =
+            "inline-flex";
+
+          // ── Color variants ──
+          const btn = document.getElementById("add-to-cart-btn");
+          if (p.colors && p.colors.length > 0) {
+            document.getElementById("color-variants-section").style.display =
+              "block";
+            const swatchContainer = document.getElementById("color-swatches");
+            swatchContainer.innerHTML = "";
+            p.colors.forEach((color) => {
+              const wrap = document.createElement("div");
+              wrap.style.cssText =
+                "display:flex;flex-direction:column;align-items:center;gap:3px;";
+              const swatch = document.createElement("button");
+              swatch.type = "button";
+              swatch.className = "color-swatch";
+              swatch.dataset.colorId = color.id;
+              swatch.title = `${color.color_name} (${color.stock} in stock)`;
+              swatch.style.cssText = `width:36px;height:36px;border-radius:50%;background:${escapeHtml(color.color_code)};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;transition:all 0.2s;outline:2px solid transparent;outline-offset:3px;`;
+              if (color.stock <= 0) {
+                swatch.style.opacity = "0.4";
+                swatch.style.cursor = "not-allowed";
+              }
+              swatch.addEventListener("click", () => {
+                if (color.stock > 0) selectColorVariant(color);
+              });
+              const label = document.createElement("span");
+              label.textContent = color.color_name;
+              label.style.cssText =
+                "font-size:0.65rem;font-weight:600;color:var(--ink-soft);max-width:44px;text-align:center;line-height:1.2;";
+              wrap.appendChild(swatch);
+              wrap.appendChild(label);
+              swatchContainer.appendChild(wrap);
+            });
+            btn.disabled = true;
+            btn.innerHTML =
+              '<i class="bi bi-palette me-1"></i> Select a Color First';
+            btn.onclick = addToCart;
+          } else {
+            document.getElementById("color-variants-section").style.display =
+              "none";
+            if (stock.available) {
+              btn.disabled = false;
+              btn.innerHTML = '<i class="bi bi-cart3"></i> Add to Cart';
+              btn.onclick = addToCart;
+            } else {
+              btn.disabled = true;
+              btn.innerHTML = '<i class="bi bi-x-circle"></i> Out of Stock';
+            }
+          }
+
+          if (!p.colors || p.colors.length === 0) {
+            document.getElementById("qty-stock-hint").textContent =
+              `max ${p.stock}`;
+          }
+
+          document.getElementById("product-info").style.display = "block";
+        } catch (err) {
+          console.error(err);
+          document.getElementById("img-skeleton").style.display = "none";
+          document.getElementById("info-skeleton").innerHTML = `
+          <div class="text-center py-4">
+            <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:var(--pink-soft);"></i>
+            <h5 class="mt-3">Product Not Found</h5>
+            <a href="index.html" class="btn-back mt-2" style="display:inline-flex;">← Back</a>
+          </div>`;
+        }
+      }
+
+      renderCart();
+      const urlParams = new URLSearchParams(window.location.search);
+      const pId = urlParams.get("id");
+      if (pId) fetchProductDetails(pId);
+    </script>
+
+    <!-- Premium enhancement layer (visual only, does not touch page logic) -->
+    <script src="premium-enhance.js"></script>
+  </body>
+</html>

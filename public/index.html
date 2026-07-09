@@ -1,0 +1,4555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SA Parties - Premium Party Supplies & Decorations</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Premium enhancement layer (visual only, does not touch app.js logic) -->
+    <link href="premium-enhance.css" rel="stylesheet" />
+
+    <style>
+
+      :root {
+        --pink-50: #fff1f8;
+        --pink-100: #fbdcee;
+        --pink-200: #f5b8dd;
+        --pink-300: #ee8cc8;
+        --pink-400: #e65aae;
+        --pink-500: #e0218a;
+        --pink-700: #ad0a69;
+        --yellow: #ffd93d;
+        --green: #4caf50;
+        --blue: #4fc3f7;
+        --ink: #1a0d1e;
+        --ink-light: #2a1b2e;
+        --ink-soft: #8c7a92;
+        --radius-md: 14px;
+        --radius-lg: 20px;
+        --radius-xl: 28px;
+        --shadow-sm: 0 2px 8px rgba(173, 10, 105, 0.08);
+        --shadow-md: 0 6px 20px -8px rgba(173, 10, 105, 0.18);
+        --shadow-lg: 0 14px 40px -12px rgba(173, 10, 105, 0.25);
+        --gradient-primary: linear-gradient(
+          135deg,
+          var(--pink-500) 0%,
+          var(--pink-700) 100%
+        );
+        --gradient-hero: linear-gradient(
+          135deg,
+          var(--pink-500) 0%,
+          #c81d80 50%,
+          var(--pink-700) 100%
+        );
+        --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        --font-display: "Poppins", sans-serif;
+        --font-body: "Inter", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-body);
+        color: var(--ink-light);
+        background:
+          radial-gradient(
+            1200px 700px at 20% -10%,
+            rgba(224, 33, 138, 0.1),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 500px at 90% 0%,
+            rgba(79, 195, 247, 0.08),
+            transparent 55%
+          ),
+          var(--pink-50);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: var(--font-display);
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      .navbar-sa {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(224, 33, 138, 0.08);
+        transition: box-shadow var(--transition);
+      }
+      .navbar-sa.scrolled {
+        box-shadow: 0 8px 30px rgba(173, 10, 105, 0.15);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .brand-logo-img {
+        height: 44px;
+        width: 44px;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 6px 20px rgba(224, 33, 138, 0.25);
+        cursor: pointer;
+        transition:
+          transform 0.4s ease,
+          box-shadow 0.4s ease;
+      }
+      .brand-logo-img:hover {
+        transform: translateY(-2px) rotate(-3deg) scale(1.05);
+        box-shadow: 0 10px 26px rgba(224, 33, 138, 0.35);
+      }
+      .brand-text {
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        font-size: 1.25rem;
+        line-height: 1.1;
+      }
+      .brand-text .sa {
+        color: #e6b800;
+        font-size: 1.4rem;
+        font-weight: 1000;
+      }
+      .brand-text .accent {
+        color: var(--pink-500);
+        -webkit-text-fill-color: var(--pink-500);
+      }
+      .brand-tagline {
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--green);
+      }
+
+      .nav-links a {
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 0.55rem 0.85rem;
+        border-radius: 12px;
+        color: var(--ink-light);
+        transition:
+          background var(--transition),
+          color var(--transition),
+          transform var(--transition);
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--pink-50);
+        color: var(--pink-500);
+        transform: translateY(-1px);
+      }
+
+      /* ── Navbar Search ── */
+      .navbar-search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 200px;
+        max-width: 260px;
+        flex: 1;
+      }
+      .navbar-search-icon {
+        position: absolute;
+        left: 11px;
+        color: var(--pink-500);
+        font-size: 0.88rem;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .navbar-search-input {
+        width: 100%;
+        padding: 0.48rem 2rem 0.48rem 2rem;
+        border: 1.5px solid var(--pink-100);
+        border-radius: 50px;
+        font-size: 0.84rem;
+        font-family: inherit;
+        background: var(--pink-50);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .navbar-search-input:focus {
+        border-color: var(--pink-500);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(224,33,138,0.1);
+      }
+      .navbar-search-clear {
+        position: absolute;
+        right: 8px;
+        background: none;
+        border: none;
+        color: var(--ink-soft);
+        cursor: pointer;
+        padding: 0;
+        font-size: 1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+      }
+      @media (max-width: 991px) {
+        .navbar-search-wrap { display: none; }
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .cart-icon-btn {
+        position: relative;
+        background: var(--pink-50);
+        border: 1.5px solid var(--pink-100);
+        color: var(--pink-500);
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition:
+          transform var(--transition),
+          box-shadow var(--transition),
+          background var(--transition),
+          color var(--transition);
+      }
+      .cart-icon-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        background: var(--pink-500);
+        color: #fff;
+      }
+      .cart-badge {
+        position: absolute;
+        top: -7px;
+        right: -7px;
+        background: var(--pink-500);
+        color: #fff;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        font-weight: 900;
+        box-shadow: 0 8px 18px rgba(224, 33, 138, 0.25);
+        transition: transform 0.2s ease;
+      }
+
+      .btn-auth-nav {
+        border: 1.5px solid var(--pink-200);
+        background: transparent;
+        color: var(--pink-500);
+        border-radius: 999px;
+        padding: 0.55rem 1.05rem;
+        font-weight: 900;
+        font-size: 0.88rem;
+        transition: all var(--transition);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        white-space: nowrap;
+      }
+      .btn-auth-nav:hover {
+        background: var(--pink-500);
+        color: #fff;
+        border-color: var(--pink-500);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+      .btn-auth-nav.logged-in {
+        background: var(--pink-50);
+        border-color: var(--pink-100);
+      }
+
+      .hero-sa {
+        position: relative;
+        overflow: hidden;
+        padding: 4.4rem 0 3.6rem;
+        background: var(--gradient-hero);
+        background-size: 220% 220%;
+        animation: heroGradientShift 16s ease-in-out infinite;
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        margin-bottom: 1.9rem;
+        isolation: isolate;
+      }
+      @keyframes heroGradientShift {
+        0%,
+        100% {
+          background-position: 0% 40%;
+        }
+        50% {
+          background-position: 100% 60%;
+        }
+      }
+      .hero-sa::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 700px 450px at 18% 80%,
+            rgba(255, 217, 61, 0.16),
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse 520px 420px at 80% 22%,
+            rgba(79, 195, 247, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 420px 260px at 60% 70%,
+            rgba(255, 255, 255, 0.12),
+            transparent 60%
+          );
+        pointer-events: none;
+      }
+
+      /* ── Ambient background layer: blurred blobs + drifting dots ── */
+      .hero-ambient {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .hero-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(46px);
+        opacity: 0.35;
+        will-change: transform;
+        animation: blobDrift 24s ease-in-out infinite;
+      }
+      .hero-blob.b1 {
+        width: 320px;
+        height: 320px;
+        left: -6%;
+        top: -8%;
+        background: radial-gradient(circle at 30% 30%, #ffd93d, transparent 70%);
+      }
+      .hero-blob.b2 {
+        width: 260px;
+        height: 260px;
+        right: -4%;
+        top: 10%;
+        background: radial-gradient(circle at 60% 40%, #4fc3f7, transparent 70%);
+        animation-duration: 28s;
+        animation-delay: -6s;
+      }
+      .hero-blob.b3 {
+        width: 300px;
+        height: 300px;
+        left: 30%;
+        bottom: -14%;
+        background: radial-gradient(circle at 50% 50%, #ffffff, transparent 70%);
+        opacity: 0.18;
+        animation-duration: 26s;
+        animation-delay: -12s;
+      }
+      @keyframes blobDrift {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        33% {
+          transform: translate3d(18px, -14px, 0) scale(1.06);
+        }
+        66% {
+          transform: translate3d(-14px, 12px, 0) scale(0.96);
+        }
+      }
+
+      .hero-dot {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        will-change: transform, opacity;
+        animation: dotFloat linear infinite;
+      }
+      @keyframes dotFloat {
+        0% {
+          transform: translateY(10px) scale(0.9);
+          opacity: 0;
+        }
+        12% {
+          opacity: 0.7;
+        }
+        88% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-140px) scale(1.1);
+          opacity: 0;
+        }
+      }
+
+      .hero-sa > .container {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ── Hero copy: fade/reveal on load ── */
+      .hero-eyebrow,
+      .hero-title,
+      .hero-subtitle,
+      .hero-cta-group {
+        opacity: 0;
+        transform: translateY(16px);
+        animation: heroReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .hero-eyebrow { animation-delay: 0.05s; }
+      .hero-title { animation-delay: 0.15s; }
+      .hero-subtitle { animation-delay: 0.28s; }
+      .hero-cta-group { animation-delay: 0.4s; }
+
+      @keyframes heroReveal {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Hero illustration stage ── */
+      .hero-illustration {
+        position: relative;
+        border-radius: var(--radius-xl);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        min-height: 360px;
+        perspective: 900px;
+        animation: cardGlow 5s ease-in-out infinite;
+      }
+      @keyframes cardGlow {
+        0%,
+        100% {
+          box-shadow:
+            0 18px 50px rgba(0, 0, 0, 0.12),
+            0 0 0 0 rgba(255, 255, 255, 0.08);
+        }
+        50% {
+          box-shadow:
+            0 18px 50px rgba(0, 0, 0, 0.12),
+            0 0 34px 6px rgba(255, 255, 255, 0.14);
+        }
+      }
+      .hero-illustration::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 320px 220px at 50% 45%,
+          rgba(255, 255, 255, 0.1),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* bunting garland across the top of the illustration */
+      .hero-bunting {
+        position: absolute;
+        top: -6px;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+        pointer-events: none;
+        transform-origin: 50% 0%;
+        animation: buntingSway 5.5s ease-in-out infinite;
+        filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+      }
+      @keyframes buntingSway {
+        0%,
+        100% {
+          transform: rotate(-0.6deg);
+        }
+        50% {
+          transform: rotate(0.6deg);
+        }
+      }
+
+      .hero-stage {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+      }
+
+      .hero-illustration .float-elem {
+        position: absolute;
+        animation: floaty 9s ease-in-out infinite;
+        pointer-events: auto;
+        cursor: pointer;
+        opacity: 0.96;
+        scale: 0.5;
+        filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.16));
+        transition:
+          scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.55s ease,
+          rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        will-change: transform, scale;
+      }
+      .hero-illustration .float-elem.in {
+        scale: 1;
+      }
+      .hero-illustration .float-elem:hover {
+        scale: 1.1;
+      }
+      .hero-illustration .gift:hover {
+        scale: 1.08;
+        rotate: 8deg;
+      }
+      .hero-illustration .float-elem.pop {
+        animation: floaty 9s ease-in-out infinite, popKick 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+      }
+      @keyframes popKick {
+        0% {
+          scale: 1;
+        }
+        35% {
+          scale: 0.78;
+        }
+        65% {
+          scale: 1.18;
+        }
+        100% {
+          scale: 1;
+        }
+      }
+
+      @keyframes floaty {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+        50% {
+          transform: translateY(-16px) rotate(2.5deg);
+        }
+      }
+
+      /* balloons */
+      .balloon {
+        top: 8%;
+        left: 6%;
+        width: 88px;
+        animation-name: floaty;
+      }
+      .balloon.b2 {
+        top: 14%;
+        right: 8%;
+        left: auto;
+        width: 66px;
+        animation-duration: 8s;
+        animation-delay: -3s;
+      }
+      .balloon.b3 {
+        bottom: 30%;
+        left: 4%;
+        width: 50px;
+        animation-duration: 11s;
+        animation-delay: -6s;
+        opacity: 0.85;
+      }
+      .balloon.b4 {
+        top: 4%;
+        left: 46%;
+        width: 40px;
+        animation-duration: 7.5s;
+        animation-delay: -1.5s;
+        opacity: 0.85;
+      }
+      .balloon.b5 {
+        bottom: 8%;
+        right: 22%;
+        width: 58px;
+        animation-duration: 10s;
+        animation-delay: -4.5s;
+      }
+
+      /* gift boxes */
+      .gift {
+        animation-name: giftFloat;
+        transform-origin: center 60%;
+      }
+      .gift.g1 {
+        bottom: 10%;
+        right: 12%;
+        width: 74px;
+        animation-duration: 12s;
+      }
+      .gift.g2 {
+        top: 46%;
+        left: 40%;
+        width: 46px;
+        animation-duration: 14s;
+        animation-delay: -5s;
+        opacity: 0.85;
+      }
+      @keyframes giftFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-4deg);
+        }
+        50% {
+          transform: translateY(-10px) rotate(4deg);
+        }
+      }
+
+      /* cake */
+      .cake {
+        bottom: 6%;
+        left: 30%;
+        width: 96px;
+        animation-name: cakeFloat;
+        animation-duration: 8.5s;
+      }
+      @keyframes cakeFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-9px);
+        }
+      }
+      .cake-candle-glow {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 217, 61, 0.9), transparent 70%);
+        filter: blur(3px);
+        animation: candleGlow 2s ease-in-out infinite;
+      }
+      @keyframes candleGlow {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: scale(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.15);
+        }
+      }
+
+      /* ribbons */
+      .ribbon {
+        position: absolute;
+        opacity: 0.5;
+        pointer-events: none;
+        scale: 0.4;
+        transition: scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: ribbonSway 7s ease-in-out infinite;
+        filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.12));
+      }
+      .ribbon.in {
+        scale: 1;
+      }
+      .ribbon.r1 {
+        top: 6%;
+        right: 30%;
+        width: 34px;
+        animation-delay: -2s;
+      }
+      .ribbon.r2 {
+        bottom: 20%;
+        left: 20%;
+        width: 26px;
+        animation-duration: 9s;
+        animation-delay: -4s;
+      }
+      @keyframes ribbonSway {
+        0%,
+        100% {
+          transform: rotate(-6deg) translateY(0);
+        }
+        50% {
+          transform: rotate(6deg) translateY(-6px);
+        }
+      }
+
+      /* sparkles */
+      .sparkle {
+        position: absolute;
+        color: #fff;
+        opacity: 0;
+        pointer-events: none;
+        animation: sparkleTwinkle 3s ease-in-out infinite;
+      }
+      .sparkle svg { display: block; }
+      .sparkle.s1 { top: 14%; left: 30%; width: 16px; animation-delay: 0s; }
+      .sparkle.s2 { top: 60%; left: 14%; width: 12px; animation-delay: -1s; color: var(--yellow); }
+      .sparkle.s3 { top: 34%; right: 18%; width: 14px; animation-delay: -2s; }
+      .sparkle.s4 { bottom: 14%; right: 36%; width: 10px; animation-delay: -0.5s; color: var(--blue); }
+      .sparkle.s5 { top: 8%; right: 44%; width: 11px; animation-delay: -1.7s; }
+      @keyframes sparkleTwinkle {
+        0%,
+        100% {
+          opacity: 0;
+          transform: scale(0.5) rotate(0deg);
+        }
+        50% {
+          opacity: 0.95;
+          transform: scale(1.1) rotate(20deg);
+        }
+      }
+
+      /* confetti — subtle continuous drift */
+      .hero-confetti {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .hero-confetti i {
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 2px;
+        background: var(--yellow);
+        opacity: 0.55;
+        animation: confettiFall 11s linear infinite;
+        will-change: transform, opacity;
+      }
+      .hero-confetti i:nth-child(1) { left: 10%; top: -10px; width: 5px; height: 5px; animation-delay: 0s; }
+      .hero-confetti i:nth-child(2) { left: 25%; top: -10px; width: 8px; height: 8px; border-radius: 50%; background: #fff; animation-delay: -2.4s; }
+      .hero-confetti i:nth-child(3) { left: 45%; top: -10px; width: 6px; height: 6px; background: var(--blue); animation-delay: -4.8s; }
+      .hero-confetti i:nth-child(4) { left: 65%; top: -10px; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); animation-delay: -7.2s; }
+      .hero-confetti i:nth-child(5) { left: 85%; top: -10px; width: 5px; height: 5px; background: #fff; animation-delay: -9.6s; }
+      .hero-confetti i:nth-child(6) { left: 15%; top: -10px; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.7); animation-delay: -1.2s; }
+      .hero-confetti i:nth-child(7) { left: 55%; top: -10px; width: 8px; height: 8px; border-radius: 2px; background: var(--yellow); animation-delay: -3.6s; }
+      .hero-confetti i:nth-child(8) { left: 75%; top: -10px; width: 5px; height: 5px; background: #fff; border-radius: 50%; animation-delay: -6s; }
+      .hero-confetti i:nth-child(9) { left: 35%; top: -10px; width: 6px; height: 6px; background: var(--blue); animation-delay: -8.4s; }
+      .hero-confetti i:nth-child(10) { left: 92%; top: -10px; width: 5px; height: 5px; background: var(--yellow); animation-delay: -10.8s; }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(620px) rotate(540deg);
+          opacity: 0;
+        }
+      }
+
+      /* ── Click-triggered mini confetti burst (balloons / gifts / cake) ── */
+      .burst-particle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 2px;
+        pointer-events: none;
+        will-change: transform, opacity;
+        animation: burstFly 0.75s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+      }
+      @keyframes burstFly {
+        0% {
+          transform: translate(0, 0) rotate(0deg) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--bx), var(--by)) rotate(var(--br)) scale(0.4);
+          opacity: 0;
+        }
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        padding: 0.42rem 1rem;
+        border-radius: 999px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        font-size: 0.78rem;
+        backdrop-filter: blur(8px);
+      }
+      .hero-eyebrow i {
+        display: inline-block;
+        animation: eyebrowWiggle 2.6s ease-in-out infinite;
+        animation-delay: 1s;
+        transform-origin: 50% 80%;
+      }
+      @keyframes eyebrowWiggle {
+        0%,
+        75%,
+        100% {
+          transform: rotate(0deg) scale(1);
+        }
+        80% {
+          transform: rotate(-14deg) scale(1.05);
+        }
+        87% {
+          transform: rotate(12deg) scale(1.05);
+        }
+        93% {
+          transform: rotate(-6deg) scale(1.02);
+        }
+      }
+
+      .hero-title {
+        font-weight: 1000;
+        color: #fff;
+        letter-spacing: -0.03em;
+        font-size: clamp(2.1rem, 4.8vw, 3.3rem);
+        line-height: 1.08;
+      }
+      .hero-title .highlight {
+        color: var(--yellow);
+        position: relative;
+        display: inline-block;
+      }
+      .hero-title .highlight::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 3px;
+        height: 7px;
+        background: rgba(255, 217, 61, 0.3);
+        border-radius: 6px;
+        z-index: -1;
+        animation: underlineGlow 2.8s ease-in-out infinite;
+        animation-delay: 1.1s;
+      }
+      @keyframes underlineGlow {
+        0%,
+        100% {
+          opacity: 0.7;
+          transform: scaleX(0.94);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleX(1.04);
+          background: rgba(255, 217, 61, 0.5);
+        }
+      }
+
+      .hero-subtitle {
+        color: rgba(255, 255, 255, 0.88);
+        max-width: 560px;
+        line-height: 1.65;
+        font-size: 1.06rem;
+      }
+
+      .hero-cta-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin-top: 1.6rem;
+      }
+
+      .btn-hero-primary {
+        position: relative;
+        background: #fff;
+        color: var(--pink-500);
+        font-weight: 1000;
+        border: none;
+        border-radius: 999px;
+        padding: 0.92rem 1.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        transition:
+          transform var(--transition),
+          box-shadow var(--transition);
+        animation: ctaPulse 3.2s ease-in-out infinite;
+      }
+      .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow:
+          0 22px 60px rgba(0, 0, 0, 0.2),
+          0 0 0 8px rgba(255, 255, 255, 0.14);
+        animation-play-state: paused;
+      }
+      @keyframes ctaPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 16px 40px rgba(0, 0, 0, 0.15),
+            0 0 0 0 rgba(255, 255, 255, 0.28);
+        }
+        50% {
+          box-shadow:
+            0 16px 40px rgba(0, 0, 0, 0.15),
+            0 0 0 9px rgba(255, 255, 255, 0);
+        }
+      }
+
+      .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.42);
+        color: #fff;
+        font-weight: 900;
+        border-radius: 999px;
+        padding: 0.88rem 1.55rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        transition:
+          transform var(--transition),
+          background var(--transition),
+          border-color var(--transition);
+      }
+      .btn-hero-secondary:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.65);
+      }
+
+      .trust-bar {
+        margin-top: -1.2rem;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(224, 33, 138, 0.1);
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-lg);
+        position: relative;
+        z-index: 2;
+        padding: 1.1rem 1.2rem;
+      }
+      .trust-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.35rem 0;
+        border-radius: 12px;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .trust-item:hover {
+        transform: translateY(-3px);
+      }
+      .trust-item i {
+        color: var(--pink-500);
+        font-size: 1.35rem;
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .trust-item:hover i {
+        transform: scale(1.15) rotate(-6deg);
+      }
+      .trust-item strong {
+        font-family: var(--font-display);
+        font-weight: 1000;
+        font-size: 0.92rem;
+      }
+      .trust-item span {
+        color: var(--ink-soft);
+        font-size: 0.84rem;
+        font-weight: 600;
+      }
+
+      .section-title {
+        font-weight: 1000;
+        font-size: 1.55rem;
+        margin-bottom: 0.6rem;
+        position: relative;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        height: 4px;
+        width: 62px;
+        border-radius: 999px;
+        background: var(--gradient-primary);
+      }
+      .section-subtitle {
+        color: var(--ink-soft);
+        font-weight: 650;
+      }
+
+      .product-card-modern {
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(224, 33, 138, 0.08);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition:
+          transform var(--transition),
+          box-shadow var(--transition),
+          border-color var(--transition);
+        position: relative;
+      }
+      .product-card-modern:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(224, 33, 138, 0.16);
+      }
+
+      .product-card-modern .img-wrap {
+        background: var(--pink-50);
+        overflow: hidden;
+      }
+      .product-card-modern img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.7s var(--transition);
+      }
+      .product-card-modern:hover img {
+        transform: scale(1.08);
+      }
+
+      .product-card-modern .card-body {
+        padding: 1rem 1.1rem 1.05rem;
+      }
+      .product-card-modern .product-name {
+        font-weight: 1000;
+        font-size: 0.98rem;
+        min-height: 2.6em;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .product-card-modern .price-modern {
+        font-weight: 1000;
+        font-size: 1.15rem;
+        color: var(--pink-500);
+      }
+      .stock-modern {
+        font-size: 0.68rem;
+        font-weight: 900;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(224, 33, 138, 0.12);
+        background: var(--pink-50);
+        color: var(--pink-700);
+      }
+      .stock-modern.low {
+        background: #fff8e1;
+        border-color: #ffe8a8;
+        color: #946d00;
+      }
+      .stock-modern.out {
+        background: #fbe7ea;
+        border-color: #f6c9cf;
+        color: #b3261e;
+      }
+
+      .btn-add {
+        background: var(--gradient-primary);
+        border: none;
+        color: #fff;
+        font-weight: 1000;
+        border-radius: 12px;
+        padding: 0.63rem 0.45rem;
+        transition:
+          transform var(--transition),
+          box-shadow var(--transition);
+      }
+      .btn-add:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+      .btn-add:disabled {
+        background: #e9dfe6;
+        color: #ad9ca8;
+        cursor: not-allowed;
+      }
+
+      .btn-view {
+        width: 44px;
+        border: 1px solid rgba(224, 33, 138, 0.18);
+        background: var(--pink-50);
+        color: var(--pink-500);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform var(--transition),
+          background var(--transition),
+          color var(--transition);
+      }
+      .btn-view:hover {
+        transform: translateY(-2px);
+        background: var(--pink-500);
+        color: #fff;
+        border-color: var(--pink-500);
+      }
+
+      .product-card-modern .btn-actions {
+        display: flex;
+        gap: 0.45rem;
+      }
+      .product-card-modern .btn-actions .btn-add {
+        flex: 1;
+        font-size: 0.82rem;
+        padding: 0.6rem 0.4rem;
+      }
+
+      /* Toast notifications */
+      .toast-stack {
+        position: fixed;
+        top: 88px;
+        right: 1rem;
+        z-index: 5000;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        pointer-events: none;
+      }
+      .toast-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        padding: 0.9rem 1.1rem;
+        min-width: 270px;
+        max-width: 320px;
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+        border-left: 5px solid var(--pink-500);
+        transform: translateX(130%);
+        opacity: 0;
+        transition:
+          transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.3s ease;
+        pointer-events: auto;
+      }
+      .toast-card.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast-card.error {
+        border-left-color: #b3261e;
+      }
+      .toast-card .toast-icon {
+        font-size: 1.35rem;
+        line-height: 1;
+        margin-top: 0.1rem;
+      }
+      .toast-card.error .toast-icon {
+        color: #b3261e;
+      }
+      .toast-card:not(.error) .toast-icon {
+        color: var(--pink-500);
+      }
+      .toast-card .toast-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 0.1rem;
+      }
+      .toast-card .toast-msg {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        line-height: 1.35;
+      }
+
+      /* Cart drawer (right side) */
+      .cart-drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 27, 46, 0.45);
+        z-index: 1060;
+        backdrop-filter: blur(3px);
+      }
+      .cart-drawer-overlay.open {
+        display: block;
+      }
+      .cart-drawer {
+        position: fixed;
+        top: 0;
+        right: -360px;
+        width: 340px;
+        max-width: 92vw;
+        height: 100%;
+        background: #fff;
+        z-index: 1070;
+        box-shadow: -8px 0 32px rgba(173, 10, 105, 0.18);
+        transition: right 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+      }
+      .cart-drawer.open {
+        right: 0;
+      }
+      .cart-drawer-header {
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 1.2rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cart-drawer-header h5 {
+        margin: 0;
+        font-weight: 800;
+        font-size: 1rem;
+      }
+      .cart-drawer-close {
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cart-drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.25rem;
+      }
+      .cart-drawer-empty {
+        text-align: center;
+        color: var(--ink-soft);
+        padding: 2rem 0;
+        font-weight: 600;
+      }
+      .cart-drawer-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px dashed var(--pink-100);
+        font-size: 0.88rem;
+      }
+      .cart-drawer-item-name {
+        flex: 1;
+        font-weight: 600;
+      }
+      .cart-drawer-footer {
+        padding: 1rem 1.25rem 1.25rem;
+        border-top: 2px dashed var(--pink-100);
+      }
+      .cart-drawer-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+        margin-bottom: 0.85rem;
+        color: var(--pink-500);
+      }
+      .btn-checkout-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: var(--gradient-primary);
+        color: #fff;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .btn-checkout-link:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .social-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .social-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+      }
+      .social-btn.facebook {
+        background: #f0f4ff;
+        color: #1877f2;
+      }
+      .social-btn.instagram {
+        background: #fff0f8;
+        color: #e1306c;
+      }
+
+      /* Category sidebar drawer */
+      .btn-outline-pink {
+        border-color: rgba(224, 33, 138, 0.6) !important;
+        color: var(--pink-500);
+        border-width: 1.6px !important;
+      }
+      .btn-outline-pink:hover {
+        background: var(--pink-500) !important;
+        color: #fff !important;
+      }
+
+      .checkout-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(224, 33, 138, 0.1);
+        overflow: hidden;
+      }
+      .checkout-card.is-sticky {
+        position: sticky;
+        top: 92px;
+      }
+      .checkout-header {
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 1000;
+      }
+      .checkout-body {
+        padding: 1.1rem 1.2rem 1.2rem;
+      }
+      .btn-confirm {
+        background: var(--gradient-primary);
+        color: #fff;
+        border: none;
+        font-weight: 1000;
+        border-radius: 12px;
+        padding: 0.85rem;
+      }
+      .btn-confirm:disabled {
+        background: #e9dfe6;
+        color: #ad9ca8;
+        cursor: not-allowed;
+      }
+      .feature-pill {
+        background: var(--pink-50);
+        border: 1px solid rgba(224, 33, 138, 0.1);
+        border-radius: 999px;
+        padding: 0.45rem 0.8rem;
+        font-weight: 900;
+        color: var(--ink-soft);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .review-card,
+      .faq-item {
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(224, 33, 138, 0.08);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition:
+          transform var(--transition),
+          box-shadow var(--transition),
+          border-color var(--transition);
+      }
+      .review-card:hover,
+      .faq-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(224, 33, 138, 0.16);
+      }
+      .review-card {
+        padding: 1.4rem;
+      }
+      .faq-item {
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+      }
+
+      .faq-q {
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: transparent;
+        padding: 1rem 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 1000;
+        color: var(--ink-light);
+      }
+      .faq-a {
+        padding: 0 1.1rem 1rem;
+        color: var(--ink-soft);
+        font-weight: 650;
+        line-height: 1.7;
+        display: none;
+      }
+
+      .footer-sa {
+        background: #fff;
+        border-top: 1px solid rgba(224, 33, 138, 0.12);
+        padding: 2.5rem 0 1.5rem;
+        margin-top: 3.5rem;
+        text-align: center;
+      }
+
+      /* quick view modal */
+      .modal-card {
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(224, 33, 138, 0.1);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+      }
+
+      /* Reveal on scroll */
+      .reveal {
+        opacity: 0;
+        transform: translateY(22px) scale(0.98);
+        transition:
+          opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      /* Confetti on logo click */
+      .logo-confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 3000;
+      }
+
+      /* Category sidebar drawer */
+      .sidebar-cat-btn {
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-radius: 12px;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink-light);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+      }
+      .sidebar-cat-btn:hover {
+        background: var(--pink-50);
+        color: var(--pink-500);
+      }
+      .sidebar-cat-btn.active {
+        background: var(--pink-50);
+        color: var(--pink-500);
+        border-left: 3px solid var(--pink-500);
+      }
+      .sidebar-subcat-btn {
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-radius: 10px;
+        padding: 0.45rem 0.75rem 0.45rem 2rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+      }
+      .sidebar-subcat-btn:hover {
+        background: var(--pink-50);
+        color: var(--pink-500);
+      }
+      .sidebar-subcat-btn.active {
+        background: var(--pink-50);
+        color: var(--pink-500);
+      }
+
+      /* ── Online Shop / Product Grid ── */
+      #shop-products-container {
+        --cols: 4;
+      }
+      @media (min-width: 1440px) { #shop-products-container { --cols: 5; } }
+      @media (max-width: 1023px) { #shop-products-container { --cols: 3; } }
+      @media (max-width: 767px)  { #shop-products-container { --cols: 2; } }
+      @media (max-width: 379px)  { #shop-products-container { --cols: 1; } }
+
+      #shop-products-container {
+        display: grid;
+        grid-template-columns: repeat(var(--cols), 1fr);
+        gap: 1.25rem;
+      }
+
+      /* Make product cards full-height inside grid */
+      #shop-products-container .product-card-modern {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      #shop-products-container .product-card-modern .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Override the smaller styles set earlier — shop grid images taller */
+      #shop-products-container .product-card-modern img {
+        height: 200px !important;
+      }
+      #shop-products-container .product-card-modern .product-name {
+        font-size: 0.9rem !important;
+        min-height: 2.4em !important;
+      }
+      #shop-products-container .product-card-modern .price-modern {
+        font-size: 1.06rem !important;
+      }
+
+      /* Faded placeholder / ghost style for skeleton cards */
+      #shop-products-container .skeleton-card {
+        opacity: 0.55;
+        filter: saturate(0.4) brightness(1.05);
+        pointer-events: none;
+      }
+
+      /* Shop section title bigger */
+      #shop .section-title {
+        font-size: 1.9rem;
+      }
+
+      /* Subtle shop wrapper bg */
+      #products-wrap {
+        background: rgba(255,241,248,0.55);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem 1.25rem;
+        border: 1px solid rgba(224,33,138,0.07);
+      }
+      
+      /* Payment method card hover effects */
+      .payment-method-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      }
+      
+      .payment-method-card {
+        cursor: pointer;
+      }
+      
+      /* Screenshot upload area hover */
+      #screenshot-upload-area:hover {
+        border-color: var(--pink-500);
+        background: #fdeef6;
+      }
+      .logo-confetti span {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        opacity: 0;
+        animation: burst 650ms ease-out forwards;
+      }
+      @keyframes burst {
+        0% {
+          transform: translate(0, 0) scale(1) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--dx), var(--dy)) scale(0.7) rotate(120deg);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .nav-links {
+          display: none !important;
+        }
+        .checkout-card.is-sticky {
+          position: static;
+          top: auto;
+        }
+      }
+
+      /* ── Tablet: trim a couple of the smaller decorative elements ── */
+      @media (max-width: 991.98px) and (min-width: 768px) {
+        .balloon.b4,
+        .ribbon.r2,
+        .sparkle.s5,
+        .hero-dot:nth-of-type(n + 5) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .brand-logo-img {
+          height: 40px;
+          width: 40px;
+        }
+        .hero-sa {
+          padding: 3.1rem 0 2.8rem;
+        }
+        .hero-illustration {
+          min-height: 290px;
+        }
+        /* Mobile: keep only the essential decorative objects, ease off the motion */
+        .balloon.b4,
+        .balloon.b5,
+        .gift.g2,
+        .ribbon,
+        .sparkle.s4,
+        .sparkle.s5,
+        .hero-blob.b3,
+        .hero-dot:nth-of-type(n + 4) {
+          display: none;
+        }
+        .hero-illustration .float-elem,
+        .cake,
+        .gift {
+          animation-duration: 12s !important;
+        }
+        .hero-blob {
+          animation-duration: 30s !important;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+
+      /* ============================================================
+         AUTH MODAL
+         ============================================================ */
+      .auth-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(42,27,46,0.55);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      .auth-modal-overlay.active { display: flex; }
+      .auth-modal-box {
+        background: #fff;
+        border-radius: 24px;
+        width: 100%;
+        max-width: 420px;
+        margin: 1rem;
+        box-shadow: 0 24px 60px -10px rgba(173,10,105,0.35);
+        overflow: hidden;
+        animation: fadeInUp 0.35s ease;
+      }
+      .auth-modal-header {
+        background: var(--gradient-primary);
+        color: #fff;
+        padding: 1.5rem 1.75rem 1.25rem;
+      }
+      .auth-modal-header h4 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.25rem;
+      }
+      .auth-modal-header p {
+        margin: 0.25rem 0 0;
+        font-size: 0.85rem;
+        opacity: 0.85;
+      }
+      .auth-modal-body {
+        padding: 1.5rem 1.75rem 1.75rem;
+      }
+      .auth-tab-btns {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        background: var(--pink-50);
+        border-radius: 12px;
+        padding: 0.3rem;
+      }
+      .auth-tab-btn {
+        flex: 1;
+        padding: 0.55rem;
+        border: none;
+        background: transparent;
+        border-radius: 9px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: var(--font-body);
+      }
+      .auth-tab-btn.active {
+        background: #fff;
+        color: var(--pink-500);
+        box-shadow: 0 2px 8px rgba(173,10,105,0.15);
+      }
+      .auth-form-group { margin-bottom: 1rem; }
+      .auth-form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        margin-bottom: 0.35rem;
+      }
+      .auth-form-group input {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 1.5px solid var(--pink-100);
+        border-radius: 12px;
+        font-size: 0.88rem;
+        color: var(--ink-light);
+        outline: none;
+        transition: border-color 0.2s ease;
+        font-family: var(--font-body);
+      }
+      .auth-form-group input:focus {
+        border-color: var(--pink-500);
+        box-shadow: 0 0 0 3px rgba(224,33,138,0.1);
+      }
+      .auth-submit-btn {
+        width: 100%;
+        padding: 0.85rem;
+        background: var(--gradient-primary);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: var(--font-display);
+      }
+      .auth-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+      .auth-divider {
+        text-align: center;
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        margin: 1rem 0;
+        position: relative;
+      }
+      .auth-divider::before,
+      .auth-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 38%;
+        height: 1px;
+        background: var(--pink-100);
+      }
+      .auth-divider::before { left: 0; }
+      .auth-divider::after { right: 0; }
+      .guest-btn {
+        width: 100%;
+        padding: 0.78rem;
+        background: var(--pink-50);
+        color: var(--pink-500);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: var(--font-display);
+      }
+      .guest-btn:hover {
+        background: var(--pink-100);
+        border-color: var(--pink-500);
+      }
+      .auth-error-msg {
+        display: none;
+        background: #ffebee;
+        color: #b3261e;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        border-left: 3px solid #b3261e;
+      }
+      .auth-success-msg {
+        display: none;
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        border-left: 3px solid #2e7d32;
+      }
+      .verify-section {
+        display: none;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+
+    <!-- ============================================================
+         RESPONSIVE ENHANCEMENTS (added) — mobile/tablet/laptop/desktop
+         No existing selectors removed; only new/overriding rules.
+         ============================================================ -->
+    <style>
+      /* ── Hamburger button (mobile/tablet nav toggle) ── */
+      .hamburger-btn {
+        display: none;
+        background: var(--pink-50);
+        border: 1.5px solid var(--pink-100);
+        color: var(--pink-500);
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 14px;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        cursor: pointer;
+        transition: background var(--transition), color var(--transition), transform var(--transition);
+      }
+      .hamburger-btn:hover {
+        background: var(--pink-500);
+        color: #fff;
+      }
+      @media (max-width: 991.98px) {
+        .hamburger-btn { display: flex; }
+      }
+
+      /* ── Mobile nav dropdown panel (opens when .mobile-open is toggled by JS) ── */
+      @media (max-width: 991.98px) {
+        .nav-links.mobile-open {
+          display: flex !important;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          background: #fff;
+          padding: 0.6rem 1rem 1rem;
+          gap: 0.25rem !important;
+          box-shadow: 0 14px 30px rgba(173, 10, 105, 0.16);
+          border-bottom: 1px solid rgba(224, 33, 138, 0.08);
+          z-index: 1029;
+          border-radius: 0 0 16px 16px;
+        }
+        .nav-links.mobile-open a {
+          width: 100%;
+          padding: 0.85rem 1rem;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          border-radius: 10px;
+        }
+      }
+
+      /* ── Search bar: keep it VISIBLE on mobile/tablet too (just
+           resized onto its own full-width row instead of being
+           hidden). We use flex `order` so DOM/onclick handlers for
+           every element stay exactly the same — only visual order
+           changes. ── */
+      @media (max-width: 991.98px) {
+        .navbar-search-wrap {
+          display: flex !important;
+          order: 2;
+          flex: 1 0 100%;
+          max-width: 100%;
+          min-width: 0;
+          margin-top: 0.1rem;
+        }
+        header.navbar-sa .container > .brand { order: 1; }
+        .hamburger-btn { order: 3; }
+        #main-nav-links { order: 4; }
+        .btn-auth-nav.d-lg-none { order: 5; }
+        #cart-icon { order: 6; }
+        #order-history-btn { order: 7; }
+        #navbar-auth-btn { order: 8; }
+      }
+
+      /* ── Navbar: prevent overlap/overflow on small screens ──
+           (brand + hamburger + cart + auth buttons are direct flex
+           children of the same container, so we let that container
+           wrap onto extra rows instead of squeezing/overlapping) */
+      @media (max-width: 991.98px) {
+        header.navbar-sa .container {
+          flex-wrap: wrap;
+          row-gap: 0.5rem;
+          column-gap: 0.4rem;
+        }
+        header.navbar-sa .container > .brand {
+          flex: 1 0 auto;
+          min-width: 0 !important;
+          margin-bottom: 0.15rem;
+        }
+      }
+      @media (max-width: 575.98px) {
+        header.navbar-sa .container > .brand {
+          flex: 1 0 100%;
+        }
+        .brand-logo-img {
+          height: 38px;
+          width: 38px;
+        }
+        .brand-text {
+          font-size: 1.05rem;
+        }
+        .brand-tagline {
+          font-size: 0.58rem;
+        }
+        .btn-auth-nav {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.78rem;
+        }
+        .btn-order-history {
+          padding: 0.4rem 0.7rem;
+          font-size: 0.72rem;
+        }
+      }
+
+      /* ── Sidebar category drawer: stay within very narrow viewports ── */
+      @media (max-width: 340px) {
+        #sidebar-drawer { width: 85vw !important; }
+      }
+
+      /* ── Toast: never overflow tiny screens ── */
+      @media (max-width: 360px) {
+        .toast-stack { left: 0.75rem; right: 0.75rem; }
+        .toast-card { min-width: 0; max-width: 100%; }
+      }
+
+      /* ── Prevent iOS auto-zoom on form focus + comfortable tap size ── */
+      @media (max-width: 767.98px) {
+        .auth-form-group input,
+        .navbar-search-input {
+          font-size: 16px;
+        }
+        .auth-form-group input {
+          min-height: 44px;
+        }
+        /* Touch-friendly minimum tap targets */
+        .btn-add,
+        .btn-view,
+        .btn-checkout-link,
+        .auth-submit-btn,
+        .guest-btn,
+        .btn-order-history,
+        .oh-close-btn,
+        .cart-drawer-close,
+        .auth-tab-btn,
+        .btn-hero-primary,
+        .btn-hero-secondary {
+          min-height: 44px;
+        }
+      }
+
+      /* ── Hero: extra breathing room + no overflow on very small screens ── */
+      @media (max-width: 380px) {
+        .hero-title { font-size: 1.9rem; }
+        .hero-cta-group { flex-direction: column; align-items: stretch; }
+        .hero-cta-group a { justify-content: center; }
+      }
+
+      /* ── Best sellers / stats / FAQ cards: tighten spacing on mobile ── */
+      @media (max-width: 575.98px) {
+        #products-wrap { padding: 1.1rem 0.85rem; }
+        .section-title { font-size: 1.3rem; }
+        #shop .section-title { font-size: 1.5rem; }
+      }
+
+      /* ── Prevent any accidental horizontal scroll ── */
+      html, body { max-width: 100%; overflow-x: hidden; }
+    </style>
+  </head>
+  <body>
+    <!-- HERO -->
+    <header class="navbar-sa" id="top-nav">
+      <div
+        class="container py-2 d-flex align-items-center justify-content-between"
+      >
+        <a
+          class="brand"
+          href="#"
+          style="min-width: 240px"
+          aria-label="SA Parties Home"
+        >
+          <img
+            src="assets/logo.jpg"
+            alt="SA Parties Logo"
+            class="brand-logo-img"
+            id="brand-logo"
+            onerror="this.style.display = 'none'"
+          />
+          <div>
+            <div class="brand-text"><span class="sa">SA</span> <span class="accent">Parties</span></div>
+            <div class="brand-tagline">Online Shop</div>
+          </div>
+        </a>
+
+        <button
+          type="button"
+          class="hamburger-btn d-lg-none"
+          id="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="main-nav-links"
+          onclick="toggleMobileNav()"
+        >
+          <i class="bi bi-list"></i>
+        </button>
+
+        <nav class="nav-links d-flex gap-2" id="main-nav-links">
+          <a href="#top" class="active" onclick="closeMobileNav()">Home</a>
+          <a href="#shop" onclick="closeMobileNav()">Shop</a>
+          <a href="#" onclick="closeMobileNav(); openSidebar(); return false;">Categories</a>
+          <a href="#best-sellers" onclick="closeMobileNav()">Best Sellers</a>
+          <a href="#contact" onclick="closeMobileNav()">Contact Us</a>
+        </nav>
+
+        <!-- Navbar Search Bar -->
+        <div class="navbar-search-wrap">
+          <i class="bi bi-search navbar-search-icon"></i>
+          <input
+            type="text"
+            id="navbar-search-input"
+            class="navbar-search-input"
+            placeholder="Search products…"
+            oninput="handleNavbarSearch(this.value)"
+            autocomplete="off"
+          />
+          <button class="navbar-search-clear" id="navbar-search-clear" onclick="clearNavbarSearch()" style="display:none;">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+          <button
+            type="button"
+            class="btn-auth-nav d-lg-none"
+            onclick="openSidebar()"
+            aria-label="Browse categories"
+            style="padding: 0.45rem 0.65rem"
+          >
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+          </button>
+          <div
+            class="cart-icon-btn"
+            id="cart-icon"
+            role="button"
+            aria-label="Cart"
+            onclick="toggleCart()"
+          >
+            <i class="bi bi-cart3"></i>
+            <span id="cart-count-badge" class="cart-badge">0</span>
+          </div>
+
+          <button
+            class="btn-auth-nav"
+            id="navbar-auth-btn"
+            onclick="openAuthModal()"
+          >
+            <i class="bi bi-person-circle me-1"></i>
+            <span id="navbar-auth-label">Login / Signup</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile hamburger nav toggle (UI-only, no business logic) -->
+    <script>
+      function toggleMobileNav() {
+        const nav = document.getElementById("main-nav-links");
+        const btn = document.getElementById("mobile-nav-toggle");
+        if (!nav || !btn) return;
+        const isOpen = nav.classList.toggle("mobile-open");
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        btn.innerHTML = isOpen
+          ? '<i class="bi bi-x-lg"></i>'
+          : '<i class="bi bi-list"></i>';
+      }
+      function closeMobileNav() {
+        const nav = document.getElementById("main-nav-links");
+        const btn = document.getElementById("mobile-nav-toggle");
+        if (!nav || !btn) return;
+        nav.classList.remove("mobile-open");
+        btn.setAttribute("aria-expanded", "false");
+        btn.innerHTML = '<i class="bi bi-list"></i>';
+      }
+      document.addEventListener("click", function (e) {
+        const nav = document.getElementById("main-nav-links");
+        const btn = document.getElementById("mobile-nav-toggle");
+        if (!nav || !btn) return;
+        if (
+          nav.classList.contains("mobile-open") &&
+          !nav.contains(e.target) &&
+          !btn.contains(e.target)
+        ) {
+          closeMobileNav();
+        }
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth >= 992) closeMobileNav();
+      });
+    </script>
+
+    <section class="hero-sa" id="top">
+      <div class="hero-ambient" aria-hidden="true">
+        <span class="hero-blob b1"></span>
+        <span class="hero-blob b2"></span>
+        <span class="hero-blob b3"></span>
+        <span class="hero-dot" style="left: 8%; bottom: -10px; width: 5px; height: 5px; animation-duration: 9s; animation-delay: -1s;"></span>
+        <span class="hero-dot" style="left: 22%; bottom: -10px; width: 4px; height: 4px; animation-duration: 11s; animation-delay: -4s;"></span>
+        <span class="hero-dot" style="left: 40%; bottom: -10px; width: 6px; height: 6px; animation-duration: 8s; animation-delay: -2.5s;"></span>
+        <span class="hero-dot" style="left: 58%; bottom: -10px; width: 4px; height: 4px; animation-duration: 12s; animation-delay: -6s;"></span>
+        <span class="hero-dot" style="left: 74%; bottom: -10px; width: 5px; height: 5px; animation-duration: 10s; animation-delay: -3s;"></span>
+        <span class="hero-dot" style="left: 90%; bottom: -10px; width: 4px; height: 4px; animation-duration: 9.5s; animation-delay: -5s;"></span>
+      </div>
+
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-6">
+            <div class="hero-eyebrow">
+              <i
+                class="bi bi-balloon-heart-fill"
+                style="color: var(--yellow)"
+              ></i>
+              Party supplies that feel premium
+            </div>
+            <h1 class="hero-title">
+              Celebrate brighter with <span class="highlight">SA Parties</span>
+            </h1>
+            <p class="hero-subtitle mb-0">
+              Birthday decorations, balloons, gifts & essentials—picked to help
+              you create unforgettable moments.
+            </p>
+
+            <div class="hero-cta-group">
+              <a
+                class="btn-hero-primary"
+                href="#shop"
+                onclick="
+                  document
+                    .getElementById('shop')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                "
+              >
+                <i class="bi bi-bag-check-fill"></i> Shop Now
+              </a>
+              <a class="btn-hero-secondary" href="#" onclick="openSidebar(); return false;">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Browse Categories
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="hero-illustration" id="heroIllustration">
+              <svg class="hero-bunting" viewBox="0 0 400 46" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M6,8 Q200,34 394,8" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+                <path d="M36,10 L52,10 L44,30 Z" fill="#FFD93D"/>
+                <path d="M92,16 L108,16 L100,36 Z" fill="#ffffff"/>
+                <path d="M148,20 L164,20 L156,40 Z" fill="#4FC3F7"/>
+                <path d="M204,22 L220,22 L212,42 Z" fill="#E0218A"/>
+                <path d="M260,20 L276,20 L268,40 Z" fill="#FFD93D"/>
+                <path d="M316,16 L332,16 L324,36 Z" fill="#ffffff"/>
+                <path d="M362,10 L378,10 L370,30 Z" fill="#4FC3F7"/>
+              </svg>
+              <div class="hero-stage" id="heroStage">
+                <div class="hero-confetti" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                  ><i></i>
+                </div>
+
+                <img
+                  class="float-elem balloon"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23FFD93D'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23FFD93D'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b2"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23E0218A'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23E0218A'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b3"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%234FC3F7'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%234FC3F7'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b4"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23fff'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23F5B8DD'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23fff'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b5"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23F5B8DD'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23F5B8DD'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+
+                <img
+                  class="float-elem gift g1"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20x='15'%20y='42'%20width='70'%20height='46'%20rx='6'%20fill='%23FFD93D'/%3E%3Crect%20x='15'%20y='42'%20width='70'%20height='13'%20fill='%23E0218A'/%3E%3Crect%20x='44'%20y='42'%20width='12'%20height='46'%20fill='%23E0218A'/%3E%3Cpath%20d='M50%2042c-10-18%208-28%2014-14-4-2-10%204-14%2014z'%20fill='%23E0218A'/%3E%3Cpath%20d='M50%2042c10-18-8-28-14-14%204-2%2010%204%2014%2014z'%20fill='%23E0218A'/%3E%3C/svg%3E"
+                  alt="Gift box"
+                />
+                <img
+                  class="float-elem gift g2"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20x='15'%20y='42'%20width='70'%20height='46'%20rx='6'%20fill='%234FC3F7'/%3E%3Crect%20x='15'%20y='42'%20width='70'%20height='13'%20fill='%23fff'/%3E%3Crect%20x='44'%20y='42'%20width='12'%20height='46'%20fill='%23fff'/%3E%3Cpath%20d='M50%2042c-10-18%208-28%2014-14-4-2-10%204-14%2014z'%20fill='%23fff'/%3E%3Cpath%20d='M50%2042c10-18-8-28-14-14%204-2%2010%204%2014%2014z'%20fill='%23fff'/%3E%3C/svg%3E"
+                  alt="Gift box"
+                />
+
+                <img
+                  class="float-elem cake"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20x='18'%20y='56'%20width='64'%20height='30'%20rx='7'%20fill='%23F5B8DD'/%3E%3Crect%20x='30'%20y='36'%20width='40'%20height='24'%20rx='7'%20fill='%23fff'/%3E%3Crect%20x='18'%20y='70'%20width='64'%20height='6'%20fill='%23E0218A'%20opacity='0.45'/%3E%3Crect%20x='45'%20y='18'%20width='4'%20height='18'%20fill='%23FFD93D'/%3E%3Crect%20x='58'%20y='22'%20width='4'%20height='14'%20fill='%234FC3F7'/%3E%3Ccircle%20cx='47'%20cy='15'%20r='4'%20fill='%23FF8A3D'/%3E%3Ccircle%20cx='60'%20cy='19'%20r='3.5'%20fill='%23FF8A3D'/%3E%3C/svg%3E"
+                  alt="Birthday cake"
+                />
+                <span class="cake-candle-glow" style="width: 14px; height: 14px; left: 43%; top: 8%;"></span>
+                <span class="cake-candle-glow" style="width: 11px; height: 11px; left: 58%; top: 12%; animation-delay: -1s;"></span>
+
+                <img
+                  class="ribbon r1"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2060'%3E%3Cpath%20d='M30%2030c-8-14-28-10-24%204%203%2010%2016%2010%2024-4zM30%2030c8-14%2028-10%2024%204-3%2010-16%2010-24-4z'%20fill='%23fff'%20opacity='0.85'/%3E%3Ccircle%20cx='30'%20cy='30'%20r='5'%20fill='%23FFD93D'/%3E%3C/svg%3E"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  class="ribbon r2"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2060'%3E%3Cpath%20d='M30%2030c-8-14-28-10-24%204%203%2010%2016%2010%2024-4zM30%2030c8-14%2028-10%2024%204-3%2010-16%2010-24-4z'%20fill='%23fff'%20opacity='0.85'/%3E%3Ccircle%20cx='30'%20cy='30'%20r='5'%20fill='%23E0218A'/%3E%3C/svg%3E"
+                  alt=""
+                  aria-hidden="true"
+                />
+
+                <span class="sparkle s1"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c1 6 5 10 11 12-6 1-10 5-11 11-1-6-5-10-11-11 6-2 10-6 11-12z"/></svg></span>
+                <span class="sparkle s2"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c1 6 5 10 11 12-6 1-10 5-11 11-1-6-5-10-11-11 6-2 10-6 11-12z"/></svg></span>
+                <span class="sparkle s3"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c1 6 5 10 11 12-6 1-10 5-11 11-1-6-5-10-11-11 6-2 10-6 11-12z"/></svg></span>
+                <span class="sparkle s4"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c1 6 5 10 11 12-6 1-10 5-11 11-1-6-5-10-11-11 6-2 10-6 11-12z"/></svg></span>
+                <span class="sparkle s5"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c1 6 5 10 11 12-6 1-10 5-11 11-1-6-5-10-11-11 6-2 10-6 11-12z"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var stage = document.getElementById("heroStage");
+        var wrap = document.getElementById("heroIllustration");
+        if (!stage || !wrap) return;
+
+        var reduceMotion =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var isTouch =
+          window.matchMedia && window.matchMedia("(hover: none)").matches;
+
+        /* ── Gentle cursor parallax (desktop only, GPU-friendly transforms) ── */
+        if (!reduceMotion && !isTouch && window.innerWidth >= 992) {
+          var rafId = null;
+          var targetX = 0,
+            targetY = 0,
+            curX = 0,
+            curY = 0;
+          var maxOffset = 14;
+
+          var onMove = function (e) {
+            var rect = wrap.getBoundingClientRect();
+            var relX = (e.clientX - rect.left) / rect.width - 0.5;
+            var relY = (e.clientY - rect.top) / rect.height - 0.5;
+            targetX = relX * maxOffset * 2;
+            targetY = relY * maxOffset * 2;
+            if (!rafId) rafId = requestAnimationFrame(tick);
+          };
+
+          function tick() {
+            curX += (targetX - curX) * 0.08;
+            curY += (targetY - curY) * 0.08;
+            stage.style.transform =
+              "translate3d(" + curX.toFixed(2) + "px," + curY.toFixed(2) + "px,0)";
+            if (Math.abs(targetX - curX) > 0.05 || Math.abs(targetY - curY) > 0.05) {
+              rafId = requestAnimationFrame(tick);
+            } else {
+              rafId = null;
+            }
+          }
+
+          var onLeave = function () {
+            targetX = 0;
+            targetY = 0;
+            if (!rafId) rafId = requestAnimationFrame(tick);
+          };
+
+          wrap.addEventListener("mousemove", onMove);
+          wrap.addEventListener("mouseleave", onLeave);
+        }
+
+        /* ── Staggered entrance: illustration pieces pop in one by one ── */
+        var pieces = stage.querySelectorAll(".float-elem, .ribbon");
+        pieces.forEach(function (el, i) {
+          setTimeout(function () {
+            el.classList.add("in");
+          }, 120 + i * 90);
+        });
+
+        /* ── Mini confetti burst helper (used on click + welcome moment) ── */
+        var palette = ["#FFD93D", "#E0218A", "#4FC3F7", "#ffffff", "#F5B8DD"];
+        function burst(x, y, count) {
+          if (reduceMotion) return;
+          count = count || 14;
+          for (var i = 0; i < count; i++) {
+            var p = document.createElement("span");
+            p.className = "burst-particle";
+            var size = 4 + Math.random() * 5;
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 40 + Math.random() * 70;
+            var bx = Math.cos(angle) * dist;
+            var by = Math.sin(angle) * dist - 20;
+            var rot = Math.random() * 360 - 180;
+            var round = Math.random() > 0.5;
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.left = x + "px";
+            p.style.top = y + "px";
+            p.style.background = palette[i % palette.length];
+            if (round) p.style.borderRadius = "50%";
+            p.style.setProperty("--bx", bx.toFixed(1) + "px");
+            p.style.setProperty("--by", by.toFixed(1) + "px");
+            p.style.setProperty("--br", rot.toFixed(0) + "deg");
+            p.style.animationDelay = Math.random() * 0.08 + "s";
+            stage.appendChild(p);
+            (function (node) {
+              node.addEventListener("animationend", function () {
+                node.remove();
+              });
+              setTimeout(function () {
+                if (node.parentNode) node.remove();
+              }, 1200);
+            })(p);
+          }
+        }
+
+        /* ── Click a balloon, gift, or cake for a playful pop + confetti burst ── */
+        function elementCenter(el) {
+          var stageRect = stage.getBoundingClientRect();
+          var elRect = el.getBoundingClientRect();
+          return {
+            x: elRect.left - stageRect.left + elRect.width / 2,
+            y: elRect.top - stageRect.top + elRect.height / 2,
+          };
+        }
+
+        stage.addEventListener("click", function (e) {
+          var target = e.target.closest(".balloon, .gift, .cake");
+          if (!target) return;
+          target.classList.remove("pop");
+          // eslint-disable-next-line no-unused-expressions
+          void target.offsetWidth; // restart animation
+          target.classList.add("pop");
+          setTimeout(function () {
+            target.classList.remove("pop");
+          }, 600);
+          var c = elementCenter(target);
+          burst(c.x, c.y, target.classList.contains("cake") ? 18 : 10);
+        });
+
+        /* ── Welcome confetti burst once the hero has settled in ── */
+        if (!reduceMotion) {
+          setTimeout(function () {
+            var rect = stage.getBoundingClientRect();
+            burst(rect.width * 0.5, rect.height * 0.38, 20);
+          }, 700);
+        }
+      })();
+    </script>
+
+    <div class="container -mt-2">
+      <div class="trust-bar reveal" id="trust-bar">
+        <div class="row g-3 text-center text-md-start">
+          <div class="col-md-3">
+            <div
+              class="trust-item justify-content-center justify-content-md-start"
+            >
+              <i class="bi bi-cash-stack"></i>
+              <div>
+                <strong>Cash on Delivery</strong>
+                <div><span>Available</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="trust-item justify-content-center justify-content-md-start"
+            >
+              <i class="bi bi-truck"></i>
+              <div>
+                <strong>Fast Delivery</strong>
+                <div><span>On-time dispatch</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="trust-item justify-content-center justify-content-md-start"
+            >
+              <i class="bi bi-shield-check"></i>
+              <div>
+                <strong>Secure Payments</strong>
+                <div><span>Trusted checkout</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div
+              class="trust-item justify-content-center justify-content-md-start"
+            >
+              <i class="bi bi-emoji-smile"></i>
+              <div>
+                <strong>Customer Love</strong>
+                <div><span>Guaranteed satisfaction</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container py-4">
+      <!-- Featured Products / Best Sellers / Collections (static banners; products grid is dynamic) -->
+      <section class="reveal" id="shop" aria-label="Featured Products">
+        <div
+          class="d-flex align-items-end justify-content-between gap-3 flex-wrap mb-1"
+        >
+          <div>
+            <div class="section-title" style="font-size:1.9rem;">🛍️ Online Shop</div>
+            <div class="section-subtitle mt-2">Browse our full collection — fresh arrivals every week</div>
+          </div>
+          <a
+            class="btn btn-outline-pink fw-bold"
+            href="#shop"
+            onclick="event.preventDefault(); document.getElementById('shop').scrollIntoView({behavior:'smooth'})"
+            style="border-radius: 999px"
+            >See all products <i class="bi bi-arrow-down"></i
+          ></a>
+        </div>
+        <div
+          id="active-category-label"
+          class="mt-3 mb-1"
+          style="display: none"
+        >
+          <span class="text-muted fw-bold">Showing: </span>
+          <span
+            id="active-category-name"
+            class="fw-bold"
+            style="color: var(--pink-500)"
+          ></span>
+          <button
+            type="button"
+            class="btn btn-sm btn-link fw-bold"
+            style="color: var(--pink-500); text-decoration: none"
+            onclick="filterByCategory(null)"
+          >
+            View all
+          </button>
+        </div>
+        <div class="mt-4" id="products-wrap">
+          <div id="shop-products-container">
+            <!-- app.js will render products here -->
+            <div class="product-card-modern skeleton-card">
+              <div class="img-wrap">
+                <div style="height:200px;background:linear-gradient(90deg,var(--pink-100),#fdeef6,var(--pink-100));background-size:400% 100%;animation:shimmer 1.2s infinite;"></div>
+              </div>
+              <div class="card-body">
+                <div style="height:14px;width:65%;background:#f0d7e4;border-radius:8px;opacity:.75;"></div>
+                <div style="height:12px;width:40%;margin-top:10px;background:#f0d7e4;border-radius:8px;opacity:.6;"></div>
+              </div>
+            </div>
+            <div class="product-card-modern skeleton-card">
+              <div class="img-wrap">
+                <div style="height:200px;background:linear-gradient(90deg,var(--pink-100),#fdeef6,var(--pink-100));background-size:400% 100%;animation:shimmer 1.2s infinite;"></div>
+              </div>
+              <div class="card-body">
+                <div style="height:14px;width:55%;background:#f0d7e4;border-radius:8px;opacity:.75;"></div>
+                <div style="height:12px;width:35%;margin-top:10px;background:#f0d7e4;border-radius:8px;opacity:.6;"></div>
+              </div>
+            </div>
+            <div class="product-card-modern skeleton-card">
+              <div class="img-wrap">
+                <div style="height:200px;background:linear-gradient(90deg,var(--pink-100),#fdeef6,var(--pink-100));background-size:400% 100%;animation:shimmer 1.2s infinite;"></div>
+              </div>
+              <div class="card-body">
+                <div style="height:14px;width:70%;background:#f0d7e4;border-radius:8px;opacity:.75;"></div>
+                <div style="height:12px;width:42%;margin-top:10px;background:#f0d7e4;border-radius:8px;opacity:.6;"></div>
+              </div>
+            </div>
+            <div class="product-card-modern skeleton-card">
+              <div class="img-wrap">
+                <div style="height:200px;background:linear-gradient(90deg,var(--pink-100),#fdeef6,var(--pink-100));background-size:400% 100%;animation:shimmer 1.2s infinite;"></div>
+              </div>
+              <div class="card-body">
+                <div style="height:14px;width:60%;background:#f0d7e4;border-radius:8px;opacity:.75;"></div>
+                <div style="height:12px;width:38%;margin-top:10px;background:#f0d7e4;border-radius:8px;opacity:.6;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHECKOUT -->
+      <section class="reveal mt-5" id="checkout" aria-label="Checkout">
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <h2 class="fw-bold mb-2">Checkout</h2>
+              <p class="text-muted mb-3" style="font-weight: 700">
+                Enter your details and confirm your order.
+              </p>
+
+              <div class="mb-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="fw-bold">Items in Cart</div>
+                  <div class="text-muted" style="font-weight: 800">
+                    Updated live
+                  </div>
+                </div>
+                <div
+                  id="cart-item-name"
+                  class="mt-2"
+                  style="font-weight: 800; color: var(--ink-soft)"
+                ></div>
+                <div class="d-flex justify-content-between mt-2">
+                  <div class="text-muted fw-bold">Subtotal</div>
+                  <div class="fw-bold" style="color: var(--pink-500)">
+                    Rs. <span id="cart-item-price">0</span>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                  <div class="text-muted fw-bold">Delivery</div>
+                  <div class="fw-bold" style="color: var(--pink-500)">
+                    Rs. <span id="shipping-display">0</span>
+                  </div>
+                </div>
+                <div
+                  class="d-flex justify-content-between mt-3 pt-2 border-top"
+                >
+                  <div class="fw-bold">Total</div>
+                  <div class="fw-bold" style="color: var(--pink-500)">
+                    Rs. <span id="cart-grand-total">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="checkout-card is-sticky">
+              <div class="checkout-header">
+                <i class="bi bi-ticket-perforated-fill fs-5"></i>
+                <h4 class="m-0">Complete Your Order</h4>
+              </div>
+              <div class="checkout-body">
+                <form id="customer-checkout-form" class="checkout-form">
+                  <div class="form-floating mb-3">
+                    <input
+                      type="text"
+                      id="cust-name"
+                      class="form-control"
+                      placeholder="Your Name"
+                      required
+                    />
+                    <label for="cust-name"
+                      ><i class="bi bi-person me-1"></i>Your Name</label
+                    >
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input
+                      type="tel"
+                      id="cust-phone"
+                      class="form-control"
+                      placeholder="Phone Number"
+                      required
+                    />
+                    <label for="cust-phone"
+                      ><i class="bi bi-telephone me-1"></i>Phone Number</label
+                    >
+                  </div>
+                  <div class="form-floating mb-3">
+                    <textarea
+                      id="cust-address"
+                      class="form-control"
+                      placeholder="Full Shipping Address"
+                      required
+                    ></textarea>
+                    <label for="cust-address"
+                      ><i class="bi bi-geo-alt me-1"></i>Full Shipping
+                      Address</label
+                    >
+                  </div>
+
+                  <div class="mb-3">
+                    <div
+                      style="
+                        font-size: 0.75rem;
+                        font-weight: 800;
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                        color: var(--ink-soft);
+                        margin-bottom: 0.6rem;
+                      "
+                    >
+                      <i class="bi bi-credit-card me-1"></i> Payment Method
+                    </div>
+                    
+                    <!-- Payment Method Selection Cards -->
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem">
+                      <!-- Cash on Delivery -->
+                      <label
+                        id="pay-cod-label"
+                        style="cursor: pointer; display: block"
+                      >
+                        <input
+                          type="radio"
+                          name="payment-method"
+                          id="pay-cod"
+                          value="cod"
+                          checked
+                          style="display: none"
+                          onchange="updatePaymentUI()"
+                        />
+                        <div
+                          class="payment-method-card"
+                          style="
+                            border: 2px solid var(--pink-500);
+                            border-radius: 16px;
+                            padding: 1rem;
+                            background: linear-gradient(135deg, var(--pink-50) 0%, rgba(255,255,255,0.9) 100%);
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            box-shadow: 0 4px 12px rgba(224, 33, 138, 0.15);
+                          "
+                        >
+                          <div class="d-flex align-items-center gap-3">
+                            <div
+                              style="
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 12px;
+                                background: linear-gradient(135deg, var(--pink-500), var(--pink-700));
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                              <i
+                                class="bi bi-cash-coin text-white"
+                                style="font-size: 1.4rem"
+                              ></i>
+                            </div>
+                            <div style="flex: 1">
+                              <div
+                                style="
+                                  font-weight: 800;
+                                  font-size: 0.95rem;
+                                  color: var(--ink-light);
+                                  margin-bottom: 0.2rem;
+                                "
+                              >
+                                Cash on Delivery
+                              </div>
+                              <div
+                                style="
+                                  font-size: 0.78rem;
+                                  color: var(--ink-soft);
+                                  font-weight: 600;
+                                "
+                              >
+                                Pay when your order arrives
+                              </div>
+                            </div>
+                            <div
+                              class="payment-check-icon"
+                              style="
+                                width: 24px;
+                                height: 24px;
+                                border-radius: 50%;
+                                background: var(--pink-500);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                              <i class="bi bi-check-lg text-white" style="font-size: 0.8rem"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+
+                      <!-- Easypaisa -->
+                      <label id="pay-easypaisa-label" style="cursor: pointer; display: block">
+                        <input
+                          type="radio"
+                          name="payment-method"
+                          id="pay-easypaisa"
+                          value="easypaisa"
+                          style="display: none"
+                          onchange="updatePaymentUI()"
+                        />
+                        <div
+                          class="payment-method-card"
+                          style="
+                            border: 2px solid #ddd;
+                            border-radius: 16px;
+                            padding: 1rem;
+                            background: #f9f9f9;
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                          "
+                        >
+                          <div class="d-flex align-items-center gap-3">
+                            <div
+                              style="
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 12px;
+                                background: linear-gradient(135deg, #00a651, #008f47);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                              <i class="bi bi-phone-fill text-white" style="font-size: 1.4rem"></i>
+                            </div>
+                            <div style="flex: 1">
+                              <div
+                                style="
+                                  font-weight: 800;
+                                  font-size: 0.95rem;
+                                  color: var(--ink-light);
+                                  margin-bottom: 0.2rem;
+                                "
+                              >
+                                Easypaisa Online
+                              </div>
+                              <div
+                                style="
+                                  font-size: 0.78rem;
+                                  color: var(--ink-soft);
+                                  font-weight: 600;
+                                "
+                              >
+                                Secure online payment
+                              </div>
+                            </div>
+                            <div
+                              class="payment-check-icon"
+                              style="
+                                width: 24px;
+                                height: 24px;
+                                border-radius: 50%;
+                                border: 2px solid #ddd;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+
+                      <!-- JazzCash -->
+                      <label id="pay-jazzcash-label" style="cursor: pointer; display: block">
+                        <input
+                          type="radio"
+                          name="payment-method"
+                          id="pay-jazzcash"
+                          value="jazzcash"
+                          style="display: none"
+                          onchange="updatePaymentUI()"
+                        />
+                        <div
+                          class="payment-method-card"
+                          style="
+                            border: 2px solid #ddd;
+                            border-radius: 16px;
+                            padding: 1rem;
+                            background: #f9f9f9;
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                          "
+                        >
+                          <div class="d-flex align-items-center gap-3">
+                            <div
+                              style="
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 12px;
+                                background: linear-gradient(135deg, #c41e3a, #a01830);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                              <i class="bi bi-wallet2 text-white" style="font-size: 1.4rem"></i>
+                            </div>
+                            <div style="flex: 1">
+                              <div
+                                style="
+                                  font-weight: 800;
+                                  font-size: 0.95rem;
+                                  color: var(--ink-light);
+                                  margin-bottom: 0.2rem;
+                                "
+                              >
+                                JazzCash Online
+                              </div>
+                              <div
+                                style="
+                                  font-size: 0.78rem;
+                                  color: var(--ink-soft);
+                                  font-weight: 600;
+                                "
+                              >
+                                Quick mobile payment
+                              </div>
+                            </div>
+                            <div
+                              class="payment-check-icon"
+                              style="
+                                width: 24px;
+                                height: 24px;
+                                border-radius: 50%;
+                                border: 2px solid #ddd;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-shrink: 0;
+                              "
+                            >
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Easypaisa Payment Card -->
+                    <div
+                      id="easypaisa-payment-card"
+                      style="display: none; margin-top: 1rem"
+                    >
+                      <div
+                        style="
+                          background: linear-gradient(135deg, #00a651 0%, #008f47 100%);
+                          border-radius: 16px;
+                          padding: 1.25rem;
+                          color: white;
+                          box-shadow: 0 8px 24px rgba(0, 166, 81, 0.25);
+                          position: relative;
+                          overflow: hidden;
+                        "
+                      >
+                        <div
+                          style="
+                            position: absolute;
+                            top: -20px;
+                            right: -20px;
+                            width: 80px;
+                            height: 80px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 50%;
+                          "
+                        ></div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                          <i class="bi bi-phone-fill" style="font-size: 1.5rem"></i>
+                          <span style="font-weight: 800; font-size: 1.1rem">Easypaisa</span>
+                        </div>
+                        <div style="margin-bottom: 0.8rem">
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            Amount to Pay
+                          </div>
+                          <div
+                            id="easypaisa-amount"
+                            style="font-size: 1.8rem; font-weight: 900"
+                          >
+                            Rs. 0
+                          </div>
+                        </div>
+                        <div style="margin-bottom: 0.8rem">
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            Easypaisa Number
+                          </div>
+                          <div class="d-flex align-items-center gap-2">
+                            <span
+                              id="easypaisa-number"
+                              style="font-size: 1.3rem; font-weight: 700; letter-spacing: 1px"
+                            >
+                              03XX-XXXXXXX
+                            </span>
+                            <button
+                              type="button"
+                              onclick="copyToClipboard('easypaisa-number')"
+                              style="
+                                background: rgba(255, 255, 255, 0.2);
+                                border: none;
+                                border-radius: 8px;
+                                padding: 0.4rem 0.6rem;
+                                color: white;
+                                font-size: 0.8rem;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                              "
+                              onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                              onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                            >
+                              <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            Account Name
+                          </div>
+                          <div style="font-size: 1.1rem; font-weight: 700">
+                            SA Parties Store
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- JazzCash Payment Card -->
+                    <div
+                      id="jazzcash-payment-card"
+                      style="display: none; margin-top: 1rem"
+                    >
+                      <div
+                        style="
+                          background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+                          border-radius: 16px;
+                          padding: 1.25rem;
+                          color: white;
+                          box-shadow: 0 8px 24px rgba(196, 30, 58, 0.25);
+                          position: relative;
+                          overflow: hidden;
+                        "
+                      >
+                        <div
+                          style="
+                            position: absolute;
+                            top: -20px;
+                            right: -20px;
+                            width: 80px;
+                            height: 80px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 50%;
+                          "
+                        ></div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                          <i class="bi bi-wallet2" style="font-size: 1.5rem"></i>
+                          <span style="font-weight: 800; font-size: 1.1rem">JazzCash</span>
+                        </div>
+                        <div style="margin-bottom: 0.8rem">
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            Amount to Pay
+                          </div>
+                          <div
+                            id="jazzcash-amount"
+                            style="font-size: 1.8rem; font-weight: 900"
+                          >
+                            Rs. 0
+                          </div>
+                        </div>
+                        <div style="margin-bottom: 0.8rem">
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            JazzCash Number
+                          </div>
+                          <div class="d-flex align-items-center gap-2">
+                            <span
+                              id="jazzcash-number"
+                              style="font-size: 1.3rem; font-weight: 700; letter-spacing: 1px"
+                            >
+                              03XX-XXXXXXX
+                            </span>
+                            <button
+                              type="button"
+                              onclick="copyToClipboard('jazzcash-number')"
+                              style="
+                                background: rgba(255, 255, 255, 0.2);
+                                border: none;
+                                border-radius: 8px;
+                                padding: 0.4rem 0.6rem;
+                                color: white;
+                                font-size: 0.8rem;
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                              "
+                              onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                              onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                            >
+                              <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <div style="font-size: 0.75rem; opacity: 0.9; font-weight: 600">
+                            Account Name
+                          </div>
+                          <div style="font-size: 1.1rem; font-weight: 700">
+                            SA Parties Store
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Payment Details Form (for online payments) -->
+                    <div
+                      id="payment-details-form"
+                      style="display: none; margin-top: 1rem"
+                    >
+                      <div
+                        style="
+                          background: #fff8e1;
+                          border: 1.5px solid #ffe082;
+                          border-radius: 12px;
+                          padding: 0.8rem 1rem;
+                          margin-bottom: 1rem;
+                          font-size: 0.82rem;
+                          color: #946d00;
+                          font-weight: 600;
+                        "
+                      >
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Send payment first, then submit payment details below.
+                      </div>
+
+                      <div class="form-floating mb-3">
+                        <input
+                          type="text"
+                          id="payment-transaction-id"
+                          class="form-control"
+                          placeholder="Transaction ID"
+                          style="font-size: 0.9rem; border-radius: 12px"
+                        />
+                        <label for="payment-transaction-id" style="font-size: 0.85rem"
+                          ><i class="bi bi-receipt me-1"></i>Transaction ID</label
+                        >
+                      </div>
+
+                      <div class="form-floating mb-3">
+                        <input
+                          type="tel"
+                          id="payment-sender-number"
+                          class="form-control"
+                          placeholder="Sender Mobile Number"
+                          style="font-size: 0.9rem; border-radius: 12px"
+                        />
+                        <label for="payment-sender-number" style="font-size: 0.85rem"
+                          ><i class="bi bi-telephone me-1"></i>Sender Mobile Number</label
+                        >
+                      </div>
+
+                      <div class="mb-3">
+                        <label
+                          style="
+                            font-size: 0.75rem;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            letter-spacing: 0.08em;
+                            color: var(--ink-soft);
+                            margin-bottom: 0.5rem;
+                            display: block;
+                          "
+                        >
+                          <i class="bi bi-image me-1"></i> Payment Screenshot
+                        </label>
+                        <div
+                          id="screenshot-upload-area"
+                          style="
+                            border: 2px dashed var(--pink-200);
+                            border-radius: 12px;
+                            padding: 1.5rem;
+                            text-align: center;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                            background: var(--pink-50);
+                          "
+                          onclick="document.getElementById('payment-screenshot').click()"
+                        >
+                          <input
+                            type="file"
+                            id="payment-screenshot"
+                            accept="image/*"
+                            style="display: none"
+                            onchange="handleScreenshotUpload(this)"
+                          />
+                          <i
+                            class="bi bi-cloud-upload"
+                            style="font-size: 2rem; color: var(--pink-500); display: block; margin-bottom: 0.5rem"
+                          ></i>
+                          <div
+                            id="screenshot-filename"
+                            style="font-size: 0.85rem; font-weight: 600; color: var(--ink-soft)"
+                          >
+                            Click to upload payment screenshot
+                          </div>
+                          <div style="font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.3rem">
+                            JPEG, PNG, GIF (Max 5MB)
+                          </div>
+                        </div>
+                        <div
+                          id="screenshot-preview"
+                          style="display: none; margin-top: 0.8rem"
+                        >
+                          <img
+                            id="screenshot-preview-img"
+                            src=""
+                            alt="Payment Screenshot"
+                            style="
+                              max-width: 100%;
+                              max-height: 150px;
+                              border-radius: 12px;
+                              border: 2px solid var(--pink-200);
+                            "
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    id="order-btn"
+                    class="btn btn-confirm w-100 text-white"
+                    disabled
+                  >
+                    <i class="bi bi-bag-check-fill me-2"></i
+                    ><span id="order-btn-text">Confirm Order (COD)</span>
+                  </button>
+
+                  <div id="payment-note" style="margin-top: 0.8rem">
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.82rem;
+                        font-weight: 600;
+                        color: var(--ink-soft);
+                      "
+                    >
+                      <i class="bi bi-shield-check" style="color: var(--pink-500)"></i>
+                      Pay easily in cash when your order arrives at your door.
+                    </div>
+                  </div>
+
+                  <div
+                    class="mt-3 text-muted"
+                    style="
+                      font-weight: 800;
+                      font-size: 0.8rem;
+                      line-height: 1.4;
+                    "
+                  >
+                    <div class="d-flex align-items-center gap-2">
+                      <i
+                        class="bi bi-shield-check"
+                        style="color: var(--pink-500)"
+                      ></i>
+                      Secure & trusted checkout
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                      <i class="bi bi-wallet2" style="color: #00a651"></i> COD +
+                      Online options
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal mt-5" id="best-sellers">
+        <div class="section-title">Best Sellers</div>
+        <div class="section-subtitle mb-3">Top-rated party essentials</div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white shadow-sm rounded-4 border"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="feature-pill">
+                <i class="bi bi-stars"></i> Trending
+              </div>
+              <h3 class="mt-3 fw-bold">Balloons & Themes</h3>
+              <p class="text-muted mb-0">Make every corner photo-ready.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white shadow-sm rounded-4 border"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="feature-pill">
+                <i class="bi bi-gift-fill"></i> Gifts
+              </div>
+              <h3 class="mt-3 fw-bold">Premium Gift Packs</h3>
+              <p class="text-muted mb-0">
+                Thoughtful, beautiful, ready to gift.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white shadow-sm rounded-4 border"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="feature-pill">
+                <i class="bi bi-cake2-fill"></i> Decorations
+              </div>
+              <h3 class="mt-3 fw-bold">Birthday Essentials</h3>
+              <p class="text-muted mb-0">Cakes, kits & finishing touches.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal mt-5" id="collections">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <h3 class="fw-bold">Birthday Decorations</h3>
+              <p class="text-muted mb-0">
+                Create a wow entrance with premium themes.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <h3 class="fw-bold">Balloons Collection</h3>
+              <p class="text-muted mb-0">
+                Balloons that stay vibrant and photogenic.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <h3 class="fw-bold">New Arrivals</h3>
+              <p class="text-muted mb-0">Fresh drops for every celebration.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal mt-5" id="faq">
+        <div class="section-title">FAQ</div>
+        <div class="section-subtitle mb-3">
+          Quick answers for smooth shopping
+        </div>
+        <div class="col-md-10">
+          <div class="faq-item">
+            <button class="faq-q" type="button" data-faq="0">
+              Is Cash on Delivery available?<i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+              Yes. Choose COD during checkout—pay when your order arrives.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button" data-faq="1">
+              How fast is delivery?<i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+              We process quickly and dispatch on-time based on your location.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button" data-faq="2">
+              Do you offer secure payments?<i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="faq-a">
+              Yes. You can also choose Easypaisa for secure online payment.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" type="button" data-faq="3">
+              Can I contact you before ordering?<i
+                class="bi bi-chevron-down"
+              ></i>
+            </button>
+            <div class="faq-a">
+              Absolutely. Use the Contact section and we’ll assist you.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHECKOUT -->
+
+      <!-- Contact -->
+      <section class="reveal mt-5" id="contact">
+        <div class="section-title">Contact Us</div>
+        <div class="section-subtitle mb-3">
+          We’re here to help with your celebration
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6 col-lg-3">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm h-100"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="fw-bold mb-2">
+                <i
+                  class="bi bi-envelope-fill"
+                  style="color: var(--pink-500)"
+                ></i>
+                Email
+              </div>
+              <div class="text-muted fw-bold">support@sa-parties.com</div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm h-100"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="fw-bold mb-2">
+                <i
+                  class="bi bi-telephone-fill"
+                  style="color: var(--pink-500)"
+                ></i>
+                Phone / WhatsApp
+              </div>
+              <div class="text-muted fw-bold">+92 300 1234567</div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm h-100"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="fw-bold mb-2">
+                <i class="bi bi-facebook" style="color: #1877f2"></i>
+                Facebook
+              </div>
+              <a
+                href="https://www.facebook.com/p/SA-Parties-100067230754004/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-btn facebook"
+                id="contact-facebook"
+              >
+                <i class="bi bi-facebook"></i> Visit Page
+              </a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div
+              class="p-4 bg-white rounded-4 border shadow-sm h-100"
+              style="border-color: rgba(224, 33, 138, 0.1)"
+            >
+              <div class="fw-bold mb-2">
+                <i class="bi bi-instagram" style="color: #e1306c"></i>
+                Instagram
+              </div>
+              <a
+                href="https://www.instagram.com/sapartiesofficial/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-btn instagram"
+                id="contact-instagram"
+              >
+                <i class="bi bi-instagram"></i> Follow Us
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer (preserve footer class like your snippet) -->
+    <footer class="footer-sa">
+      <div class="container">
+        🎈 <strong>SA Parties</strong> — making every celebration a little more
+        colourful.
+      </div>
+    </footer>
+
+    <!-- Cart drawer -->
+    <div
+      id="cart-drawer-overlay"
+      class="cart-drawer-overlay"
+      onclick="closeCart()"
+    ></div>
+    <div id="cart-drawer" class="cart-drawer" aria-label="Shopping cart">
+      <div class="cart-drawer-header">
+        <h5><i class="bi bi-cart3 me-2"></i>Your Cart</h5>
+        <button
+          type="button"
+          class="cart-drawer-close"
+          onclick="closeCart()"
+          aria-label="Close cart"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="cart-drawer-body" id="cart-drawer-items">
+        <div class="cart-drawer-empty">Your cart is empty</div>
+      </div>
+      <div class="cart-drawer-footer">
+        <div class="cart-drawer-total">
+          <span>Total</span>
+          <span>Rs. <span id="cart-drawer-total">0</span></span>
+        </div>
+        <a
+          href="#checkout"
+          class="btn-checkout-link"
+          onclick="closeCart()"
+        >
+          <i class="bi bi-bag-check-fill me-1"></i> Go to Checkout
+        </a>
+      </div>
+    </div>
+
+    <!-- Category sidebar drawer -->
+    <div
+      id="sidebar-overlay"
+      onclick="closeSidebar()"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(42, 27, 46, 0.45);
+        z-index: 1040;
+        backdrop-filter: blur(3px);
+      "
+    ></div>
+
+    <div
+      id="sidebar-drawer"
+      style="
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 280px;
+        height: 100%;
+        background: #fff;
+        z-index: 1050;
+        box-shadow: 8px 0 32px rgba(173, 10, 105, 0.18);
+        transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      "
+    >
+      <div
+        style="
+          background: var(--gradient-primary);
+          padding: 1.3rem 1.25rem 1.1rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <div style="display: flex; align-items: center; gap: 0.6rem">
+          <div
+            style="
+              width: 36px;
+              height: 36px;
+              background: rgba(255, 255, 255, 0.2);
+              border-radius: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <i class="bi bi-grid-fill" style="color: #fff; font-size: 1.1rem"></i>
+          </div>
+          <div
+            style="
+              color: #fff;
+              font-family: var(--font-display);
+              font-weight: 800;
+              font-size: 1rem;
+            "
+          >
+            SA <span style="color: var(--yellow)">Parties</span>
+          </div>
+        </div>
+        <button
+          onclick="closeSidebar()"
+          style="
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+          aria-label="Close categories menu"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div style="padding: 1rem 1rem 0.5rem">
+        <div
+          style="
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 0.75rem;
+            padding: 0 0.25rem;
+          "
+        >
+          <i class="bi bi-tag-fill me-1" style="color: var(--pink-500)"></i>
+          Categories
+        </div>
+        <button
+          onclick="filterByCategory(null)"
+          class="sidebar-cat-btn active"
+          id="cat-btn-all"
+        >
+          <i
+            class="bi bi-grid-3x3-gap-fill me-2"
+            style="color: var(--pink-500)"
+          ></i>
+          All Products
+        </button>
+        <div id="sidebar-categories-list"></div>
+      </div>
+    </div>
+
+    <!-- Toast stack used by app.js -->
+    <div id="toast-stack" class="toast-stack"></div>
+
+    <!-- ============================================================
+    AUTH MODAL
+    ============================================================ -->
+    <div class="auth-modal-overlay" id="auth-modal-overlay">
+      <div class="auth-modal-box">
+        <div class="auth-modal-header">
+          <h4 id="auth-modal-title">🎈 Welcome to SA Parties!</h4>
+          <p id="auth-modal-subtitle">Choose an option: Log in or continue as a guest.</p>
+        </div>
+        <div class="auth-modal-body">
+          <div class="auth-tab-btns" id="auth-tab-btns">
+            <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+            <button class="auth-tab-btn" onclick="switchAuthTab('signup')">Signup</button>
+          </div>
+          <div class="auth-error-msg" id="auth-error-msg"></div>
+          <div class="auth-success-msg" id="auth-success-msg"></div>
+
+          <!-- LOGIN -->
+          <div id="login-form-section">
+            <div class="auth-form-group">
+              <label>Email</label>
+              <input type="email" id="login-email" placeholder="Your@email.com" />
+            </div>
+            <div class="auth-form-group">
+              <label>Password</label>
+              <input type="password" id="login-password" placeholder="Password" />
+            </div>
+            <button class="auth-submit-btn" onclick="handleLogin()">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </button>
+          </div>
+
+          <!-- SIGNUP -->
+          <div id="signup-form-section" style="display:none">
+            <div class="auth-form-group">
+              <label>Name</label>
+              <input type="text" id="signup-name" placeholder="Your name" />
+            </div>
+            <div class="auth-form-group">
+              <label>Email</label>
+              <input type="email" id="signup-email" placeholder="Your@email.com" />
+            </div>
+            <div class="auth-form-group">
+              <label>Password</label>
+              <input type="password" id="signup-password" placeholder="Set your password" />
+            </div>
+            <button class="auth-submit-btn" onclick="handleSignup()">
+              <i class="bi bi-person-plus me-2"></i>Signup
+            </button>
+          </div>
+
+          <!-- VERIFY -->
+          <div class="verify-section" id="verify-section">
+            <p style="font-size:0.86rem;color:var(--ink-soft);margin-bottom:1rem;">
+              <i class="bi bi-envelope-check" style="color:var(--pink-500);"></i>
+              Enter the <strong>6-digit code</strong> sent to your email:
+            </p>
+            <div class="auth-form-group">
+              <label>Verification Code</label>
+              <input type="text" id="verify-code-input" placeholder="e.g. 482910" maxlength="6" />
+            </div>
+            <button class="auth-submit-btn" onclick="handleVerify()">
+              <i class="bi bi-shield-check me-2"></i>Verify
+            </button>
+          </div>
+
+          <!-- GUEST -->
+          <div id="guest-section">
+            <div class="auth-divider">ya</div>
+            <button class="guest-btn" onclick="continueAsGuest()">
+              <i class="bi bi-person-walking me-2"></i>Continue as Guest
+            </button>
+            <p style="text-align:center;font-size:0.74rem;color:var(--ink-soft);margin-top:0.6rem;margin-bottom:0;">
+              You can place order without Login
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // lightweight reveal-on-scroll
+      (function () {
+        const els = document.querySelectorAll(".reveal");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => io.observe(el));
+      })();
+
+      // Navbar shadow on scroll
+      (function () {
+        const nav = document.getElementById("top-nav");
+        if (!nav) return;
+        window.addEventListener("scroll", () => {
+          nav.classList.toggle("scrolled", window.scrollY > 8);
+        });
+      })();
+
+      // Confetti burst on logo click
+      (function () {
+        const logo = document.getElementById("brand-logo");
+        if (!logo) return;
+        logo.addEventListener("click", (e) => {
+          const wrap = document.createElement("div");
+          wrap.className = "logo-confetti";
+          document.body.appendChild(wrap);
+          const rect = logo.getBoundingClientRect();
+          const x0 = rect.left + rect.width / 2;
+          const y0 = rect.top + rect.height / 2;
+          const colors = ["#ffd93d", "#e0218a", "#4fc3f7", "#fff"];
+          for (let i = 0; i < 26; i++) {
+            const s = document.createElement("span");
+            s.style.left = x0 + "px";
+            s.style.top = y0 + "px";
+            s.style.background = colors[i % colors.length];
+            const dx = (Math.random() * 2 - 1) * 220;
+            const dy = (Math.random() * 2 - 1) * 120 + 120;
+            s.style.setProperty("--dx", dx + "px");
+            s.style.setProperty("--dy", -Math.abs(dy) + "px");
+            s.style.animationDelay = Math.random() * 60 + "ms";
+            wrap.appendChild(s);
+          }
+          setTimeout(() => wrap.remove(), 900);
+        });
+      })();
+
+      // Minimal FAQ accordion
+      (function () {
+        document.querySelectorAll("[data-faq]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const item = btn.closest(".faq-item");
+            const a = item.querySelector(".faq-a");
+            const open = a.style.display === "block";
+            document
+              .querySelectorAll(".faq-a")
+              .forEach((x) => (x.style.display = "none"));
+            a.style.display = open ? "none" : "block";
+          });
+        });
+      })();
+    </script>
+
+    <!-- Existing app.js (kept) -->
+    <script src="app.js"></script>
+
+    <!-- Premium enhancement layer (visual only, does not touch app.js logic) -->
+    <script src="premium-enhance.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════════
+         ORDER HISTORY MODAL — SA Parties
+         Shows logged-in user's past orders with full details
+    ═══════════════════════════════════════════════════════ -->
+    <style>
+      /* ── Order History Modal ── */
+      .oh-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(42,27,46,0.55);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .oh-overlay.active { display: flex; }
+
+      .oh-modal {
+        background: #fff;
+        border-radius: 24px;
+        width: 100%;
+        max-width: 640px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 24px 60px rgba(173,10,105,0.22);
+        overflow: hidden;
+        animation: ohSlideIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      @keyframes ohSlideIn {
+        from { opacity:0; transform: scale(0.92) translateY(20px); }
+        to   { opacity:1; transform: scale(1) translateY(0); }
+      }
+
+      .oh-header {
+        background: linear-gradient(135deg, #e0218a, #ad0a69);
+        padding: 1.4rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .oh-header h3 {
+        margin: 0;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.15rem;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .oh-close-btn {
+        background: rgba(255,255,255,0.18);
+        border: 1.5px solid rgba(255,255,255,0.35);
+        color: #fff;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s;
+      }
+      .oh-close-btn:hover { background: rgba(255,255,255,0.32); }
+
+      .oh-body {
+        padding: 1.25rem 1.5rem;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      /* ── Order Card ── */
+      .oh-order-card {
+        border: 1.5px solid #fbdcee;
+        border-radius: 16px;
+        padding: 1rem 1.15rem;
+        margin-bottom: 1rem;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(173,10,105,0.05);
+        transition: box-shadow 0.2s;
+      }
+      .oh-order-card:hover { box-shadow: 0 8px 20px rgba(173,10,105,0.12); }
+
+      .oh-order-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px dashed #fbdcee;
+      }
+      .oh-order-number {
+        font-size: 0.88rem;
+        font-weight: 900;
+        color: #e0218a;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 0.05em;
+        background: #fff1f8;
+        border: 1.5px solid #fbdcee;
+        border-radius: 8px;
+        padding: 2px 10px;
+        display: inline-block;
+      }
+      .oh-order-date {
+        font-size: 0.78rem;
+        color: #8c7a92;
+        margin-top: 3px;
+      }
+      .oh-status-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 3px 12px;
+        white-space: nowrap;
+        display: inline-block;
+      }
+      .oh-status-pending           { background: #fff3cd; color: #856404; }
+      .oh-status-payment-verification { background: #fff3e0; color: #e65100; }
+      .oh-status-shipped           { background: #e3f2fd; color: #1565c0; }
+      .oh-status-delivered         { background: #e8f5e9; color: #2e7d32; }
+      .oh-status-cancelled         { background: #fde8e8; color: #c62828; }
+      .oh-status-payment-rejected  { background: #fde8e8; color: #c62828; }
+
+      .oh-items-list {
+        margin-bottom: 0.65rem;
+      }
+      .oh-item-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #2a1b2e;
+        padding: 4px 0;
+        border-bottom: 1px solid #fff1f8;
+        flex-wrap: wrap;
+      }
+      .oh-item-name { font-weight: 600; flex: 1; min-width: 120px; }
+      .oh-item-qty  {
+        background: #e0218a;
+        color: #fff;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 1px 7px;
+      }
+      .oh-item-price { color: #8c7a92; font-size: 0.8rem; }
+
+      .oh-order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.65rem;
+        padding-top: 0.65rem;
+        border-top: 1px dashed #fbdcee;
+      }
+      .oh-payment-method {
+        font-size: 0.78rem;
+        color: #8c7a92;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .oh-total {
+        font-weight: 900;
+        font-size: 1rem;
+        color: #e0218a;
+      }
+
+      /* ── Order History button in navbar ── */
+      .btn-order-history {
+        background: #fff1f8;
+        border: 1.5px solid #fbdcee;
+        color: #e0218a;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        padding: 0.45rem 1rem;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.25s;
+        font-family: inherit;
+      }
+      .btn-order-history:hover {
+        background: #e0218a;
+        color: #fff;
+        border-color: #e0218a;
+        transform: translateY(-2px);
+      }
+      .btn-order-history.visible { display: inline-flex; }
+
+      .oh-empty {
+        text-align: center;
+        padding: 3rem 1.5rem;
+      }
+      .oh-empty .icon {
+        font-size: 2.5rem;
+        color: #fbdcee;
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+      .oh-empty h6 {
+        font-weight: 700;
+        color: #2a1b2e;
+        margin-bottom: 0.3rem;
+      }
+      .oh-empty p { color: #8c7a92; font-size: 0.88rem; margin: 0; }
+
+      .oh-loading {
+        text-align: center;
+        padding: 2.5rem;
+        color: #8c7a92;
+      }
+    </style>
+
+    <!-- Order History Button (shown when logged in) -->
+    <script>
+      // Inject Order History button into navbar after DOM loads
+      document.addEventListener("DOMContentLoaded", function() {
+        const authBtn = document.getElementById("navbar-auth-btn");
+        if (authBtn && authBtn.parentNode) {
+          const ohBtn = document.createElement("button");
+          ohBtn.id = "order-history-btn";
+          ohBtn.className = "btn-order-history";
+          ohBtn.innerHTML = '<i class="bi bi-bag-check-fill"></i> My Orders';
+          ohBtn.onclick = openOrderHistory;
+          authBtn.parentNode.insertBefore(ohBtn, authBtn);
+        }
+        // Check if already logged in
+        checkAndShowOrderHistoryBtn();
+      });
+    </script>
+
+    <!-- Order History Modal HTML -->
+    <div class="oh-overlay" id="oh-overlay" onclick="closeOrderHistoryOnBg(event)">
+      <div class="oh-modal">
+        <div class="oh-header">
+          <h3><i class="bi bi-bag-check-fill"></i> My Order History</h3>
+          <button class="oh-close-btn" onclick="closeOrderHistory()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="oh-body" id="oh-body">
+          <div class="oh-loading">
+            <div class="spinner-border text-pink" style="color:#e0218a;width:2rem;height:2rem;border-width:3px;" role="status"></div>
+            <p style="margin-top:0.75rem;font-size:0.9rem;">Loading your orders...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order History JS Logic -->
+    <script>
+      // ── Check if user logged in → show Order History button ──
+      function checkAndShowOrderHistoryBtn() {
+        const userData = getSAUser();
+        const btn = document.getElementById("order-history-btn");
+        if (!btn) return;
+        if (userData && userData.id) {
+          btn.classList.add("visible");
+        } else {
+          btn.classList.remove("visible");
+        }
+      }
+
+      // ── Get current user from localStorage ──
+      function getSAUser() {
+        try {
+          const raw = localStorage.getItem("saUser") ||
+                      localStorage.getItem("sa_user") ||
+                      localStorage.getItem("user") ||
+                      localStorage.getItem("userData");
+          if (raw) return JSON.parse(raw);
+        } catch(e) {}
+        return null;
+      }
+
+      // ── Open Order History modal ──
+      async function openOrderHistory() {
+        const userData = getSAUser();
+        if (!userData || !userData.id) {
+          // Not logged in — open auth modal instead
+          if (typeof openAuthModal === "function") openAuthModal();
+          return;
+        }
+
+        const overlay = document.getElementById("oh-overlay");
+        const body = document.getElementById("oh-body");
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+        body.innerHTML = `
+          <div class="oh-loading">
+            <div class="spinner-border" style="color:#e0218a;width:2rem;height:2rem;border-width:3px;" role="status"></div>
+            <p style="margin-top:0.75rem;font-size:0.9rem;color:#8c7a92;">Loading your orders...</p>
+          </div>`;
+
+        try {
+          const res = await fetch(`/api/orders/user/${userData.id}`);
+          const orders = await res.json();
+          renderOrderHistory(orders);
+        } catch(err) {
+          body.innerHTML = `
+            <div class="oh-empty">
+              <i class="bi bi-wifi-off icon"></i>
+              <h6>Could not load orders</h6>
+              <p>Please check your connection and try again.</p>
+            </div>`;
+        }
+      }
+
+      // ── Render order history list ──
+      function renderOrderHistory(orders) {
+        const body = document.getElementById("oh-body");
+        if (!Array.isArray(orders) || orders.length === 0) {
+          body.innerHTML = `
+            <div class="oh-empty">
+              <i class="bi bi-bag-x icon"></i>
+              <h6>No Orders Yet</h6>
+              <p>You haven't placed any orders yet. Start shopping!</p>
+            </div>`;
+          return;
+        }
+
+        const statusClass = (s) => {
+          const map = {
+            "payment verification": "oh-status-payment-verification",
+            "pending":              "oh-status-pending",
+            "shipped":              "oh-status-shipped",
+            "delivered":            "oh-status-delivered",
+            "cancelled":            "oh-status-cancelled",
+            "payment rejected":     "oh-status-payment-rejected",
+          };
+          return map[(s || "").toLowerCase()] || "oh-status-pending";
+        };
+
+        const statusIcon = (s) => {
+          const map = {
+            "payment verification": "⏳",
+            "pending":              "🕐",
+            "shipped":              "🚚",
+            "delivered":            "✅",
+            "cancelled":            "❌",
+            "payment rejected":     "❌",
+          };
+          return map[(s || "").toLowerCase()] || "🕐";
+        };
+
+        const paymentLabel = (m) => {
+          const map = { cod: "💵 Cash on Delivery", easypaisa: "📱 Easypaisa", jazzcash: "📱 JazzCash" };
+          return map[(m || "").toLowerCase()] || m || "—";
+        };
+
+        let html = "";
+        orders.forEach((order) => {
+          const date = order.created_at
+            ? new Date(order.created_at).toLocaleDateString("en-PK", { year: "numeric", month: "long", day: "numeric" })
+            : "—";
+
+          // Parse items
+          const rawItems = (order.items_list || "").split("||").map(s => s.trim()).filter(Boolean);
+          let itemsHTML = "";
+          rawItems.forEach((item) => {
+            // Format: "Product Name (Color) x2 @ Rs.500"
+            const match = item.match(/^(.+?)\s+x(\d+)\s+@\s+Rs\.(.+)$/i);
+            if (match) {
+              itemsHTML += `
+                <div class="oh-item-row">
+                  <span class="oh-item-name">${escOH(match[1])}</span>
+                  <span class="oh-item-qty">×${match[2]}</span>
+                  <span class="oh-item-price">Rs. ${match[3]}</span>
+                </div>`;
+            } else {
+              itemsHTML += `<div class="oh-item-row"><span class="oh-item-name">${escOH(item)}</span></div>`;
+            }
+          });
+
+          // Rejection reason (if any)
+          const rejectionNote = order.rejection_reason
+            ? `<div style="background:#fde8e8;border-left:3px solid #c62828;border-radius:8px;padding:8px 12px;margin-top:8px;font-size:0.8rem;color:#c62828;">
+                 <strong>Rejection Reason:</strong> ${escOH(order.rejection_reason)}
+               </div>`
+            : "";
+
+          html += `
+            <div class="oh-order-card">
+              <div class="oh-order-top">
+                <div>
+                  <div class="oh-order-number">${escOH(order.order_number || "#" + order.id)}</div>
+                  <div class="oh-order-date"><i class="bi bi-calendar3"></i> ${date}</div>
+                </div>
+                <span class="oh-status-badge ${statusClass(order.status)}">
+                  ${statusIcon(order.status)} ${escOH(order.status)}
+                </span>
+              </div>
+
+              <div class="oh-items-list">
+                ${itemsHTML || '<div class="oh-item-row"><span class="oh-item-name" style="color:#8c7a92;">Items not available</span></div>'}
+              </div>
+
+              ${rejectionNote}
+
+              <div class="oh-order-footer">
+                <span class="oh-payment-method">
+                  <i class="bi bi-credit-card"></i> ${paymentLabel(order.payment_method)}
+                </span>
+                <span class="oh-total">Rs. ${Number(order.total_amount).toLocaleString("en-PK")}</span>
+              </div>
+            </div>`;
+        });
+
+        body.innerHTML = html;
+      }
+
+      // ── Close modal ──
+      function closeOrderHistory() {
+        document.getElementById("oh-overlay").classList.remove("active");
+        document.body.style.overflow = "";
+      }
+      function closeOrderHistoryOnBg(e) {
+        if (e.target === document.getElementById("oh-overlay")) closeOrderHistory();
+      }
+
+      // ── HTML escape helper ──
+      function escOH(str) {
+        return String(str ?? "").replace(/[&<>"']/g, ch =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]
+        );
+      }
+
+      // ── Hook into app.js login/logout to toggle button ──
+      // Poll for user state changes (works with any auth implementation)
+      let _ohLastUserId = null;
+      setInterval(() => {
+        const u = getSAUser();
+        const uid = u ? u.id : null;
+        if (uid !== _ohLastUserId) {
+          _ohLastUserId = uid;
+          checkAndShowOrderHistoryBtn();
+        }
+      }, 1000);
+
+      // ── If app.js sets user in localStorage with key 'saUser', hook placeOrder ──
+      // Ensure user_id is sent with order placement
+      const _origFetch = window.fetch;
+      window.fetch = function(url, opts) {
+        if (opts && opts.method === "POST" && typeof url === "string" && url.includes("/api/orders")) {
+          try {
+            const userData = getSAUser();
+            if (userData && userData.id && opts.body) {
+              const body = JSON.parse(opts.body);
+              if (!body.user_id) {
+                body.user_id = userData.id;
+                opts.body = JSON.stringify(body);
+              }
+            }
+          } catch(e) {}
+        }
+        return _origFetch.apply(this, arguments);
+      };
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════
+         STOCK ENFORCEMENT LAYER — SA Parties
+         Watches the shop grid + product modal rendered by app.js
+         and enforces Out-of-Stock rules without touching app.js
+    ═══════════════════════════════════════════════════════ -->
+    <style>
+      /* Out of Stock badge on product card */
+      .soe-oos-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #b3261e;
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        z-index: 5;
+        box-shadow: 0 3px 10px rgba(179,38,30,0.35);
+      }
+      /* Dim the image when out of stock */
+      .soe-card-dimmed .img-wrap img {
+        filter: grayscale(55%) brightness(0.92);
+        opacity: 0.75;
+      }
+      /* Disabled buy/add buttons */
+      .soe-disabled-btn {
+        background: #e9dfe6 !important;
+        color: #ad9ca8 !important;
+        cursor: not-allowed !important;
+        pointer-events: none;
+        opacity: 0.85;
+      }
+      /* Out of stock message banner inside product detail modal */
+      .soe-detail-oos-banner {
+        background: #fbe7ea;
+        border: 1.5px solid #f6c9cf;
+        color: #b3261e;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 0.86rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .soe-color-disabled {
+        opacity: 0.4;
+        cursor: not-allowed !important;
+        pointer-events: none;
+        position: relative;
+      }
+      .soe-color-disabled::after {
+        content: "✕";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b3261e;
+        font-weight: 900;
+        font-size: 0.9rem;
+      }
+    </style>
+    <script>
+      (function () {
+        "use strict";
+
+        // ── In-memory stock cache: productId -> stock qty ──
+        const stockCache = new Map();
+
+        // ── Fetch fresh stock for a product from backend ──
+        async function fetchStock(productId) {
+          try {
+            const res = await fetch(`/api/orders/stock/${productId}`);
+            if (!res.ok) return null;
+            const data = await res.json();
+            stockCache.set(String(productId), data.stock);
+            return data.stock;
+          } catch (e) {
+            return null;
+          }
+        }
+
+        // ── Determine stock from a product object various shapes ──
+        function getStockFromObj(obj) {
+          if (!obj) return null;
+          if (obj.stock !== undefined) return Number(obj.stock);
+          if (obj.dataset && obj.dataset.stock !== undefined) return Number(obj.dataset.stock);
+          return null;
+        }
+
+        // ── Apply Out-of-Stock visuals to a single product card ──
+        function applyCardState(card) {
+          const productId = card.dataset.productId || card.getAttribute("data-id");
+          let stock = card.dataset.stock !== undefined ? Number(card.dataset.stock) : null;
+
+          // Try to read stock from any element carrying it
+          if (stock === null) {
+            const stockEl = card.querySelector("[data-stock]");
+            if (stockEl) stock = Number(stockEl.dataset.stock);
+          }
+
+          if (stock === null || isNaN(stock)) return; // unknown — don't touch
+
+          const imgWrap = card.querySelector(".img-wrap") || card;
+          const addBtn = card.querySelector(".btn-add, [data-action='add-to-cart'], [onclick*='addToCart']");
+          const buyBtn = card.querySelector("[data-action='buy-now'], [onclick*='buyNow']");
+
+          // Remove any existing badge first (idempotent re-render safe)
+          const existingBadge = card.querySelector(".soe-oos-badge");
+          if (existingBadge) existingBadge.remove();
+          card.classList.remove("soe-card-dimmed");
+          [addBtn, buyBtn].forEach((btn) => {
+            if (btn) {
+              btn.classList.remove("soe-disabled-btn");
+              btn.disabled = false;
+            }
+          });
+
+          if (stock <= 0) {
+            // Add Out of Stock badge
+            const badge = document.createElement("span");
+            badge.className = "soe-oos-badge";
+            badge.textContent = "Out of Stock";
+            if (imgWrap.style.position !== "relative") imgWrap.style.position = "relative";
+            imgWrap.prepend(badge);
+            card.classList.add("soe-card-dimmed");
+
+            // Disable buttons
+            [addBtn, buyBtn].forEach((btn) => {
+              if (btn) {
+                btn.classList.add("soe-disabled-btn");
+                btn.disabled = true;
+                btn.setAttribute("title", "This item is currently unavailable");
+              }
+            });
+          }
+        }
+
+        // ── Scan and patch all visible product cards ──
+        function scanProductCards() {
+          const cards = document.querySelectorAll(
+            "#shop-products-container .product-card-modern, .product-card-modern"
+          );
+          cards.forEach(applyCardState);
+        }
+
+        // ── Patch the product detail modal (color selection + add/buy) ──
+        function patchDetailModal() {
+          const modal = document.querySelector(
+            "#product-detail-modal, .product-detail-modal, [id*='product-detail']"
+          );
+          if (!modal) return;
+
+          const productId =
+            modal.dataset.productId ||
+            modal.querySelector("[data-product-id]")?.dataset.productId;
+          if (!productId) return;
+
+          const cachedStock = stockCache.get(String(productId));
+          const applyDetailState = (stock) => {
+            const addBtn = modal.querySelector(
+              ".btn-add, [data-action='add-to-cart'], [onclick*='addToCart']"
+            );
+            const buyBtn = modal.querySelector(
+              "[data-action='buy-now'], [onclick*='buyNow']"
+            );
+            const colorSwatches = modal.querySelectorAll(
+              ".color-swatch, [data-color-id], [class*='color-option']"
+            );
+
+            // Remove old banner
+            const oldBanner = modal.querySelector(".soe-detail-oos-banner");
+            if (oldBanner) oldBanner.remove();
+
+            if (stock !== null && stock <= 0) {
+              // Insert banner above buttons
+              const banner = document.createElement("div");
+              banner.className = "soe-detail-oos-banner";
+              banner.innerHTML =
+                '<i class="bi bi-exclamation-circle-fill"></i> This item is currently unavailable. Please check back later.';
+              const anchor = addBtn || buyBtn || modal.querySelector(".modal-body, .card-body");
+              if (anchor && anchor.parentNode) {
+                anchor.parentNode.insertBefore(banner, anchor);
+              }
+
+              [addBtn, buyBtn].forEach((btn) => {
+                if (btn) {
+                  btn.classList.add("soe-disabled-btn");
+                  btn.disabled = true;
+                }
+              });
+              colorSwatches.forEach((sw) => sw.classList.add("soe-color-disabled"));
+            } else {
+              [addBtn, buyBtn].forEach((btn) => {
+                if (btn) {
+                  btn.classList.remove("soe-disabled-btn");
+                  btn.disabled = false;
+                }
+              });
+              colorSwatches.forEach((sw) => sw.classList.remove("soe-color-disabled"));
+            }
+          };
+
+          if (cachedStock !== undefined) {
+            applyDetailState(cachedStock);
+          } else {
+            fetchStock(productId).then(applyDetailState);
+          }
+        }
+
+        // ── Validate before allowing add-to-cart / buy-now (capture phase) ──
+        document.addEventListener(
+          "click",
+          async function (e) {
+            const target = e.target.closest(
+              ".btn-add, [data-action='add-to-cart'], [data-action='buy-now'], [onclick*='addToCart'], [onclick*='buyNow']"
+            );
+            if (!target) return;
+            if (target.disabled || target.classList.contains("soe-disabled-btn")) {
+              e.preventDefault();
+              e.stopPropagation();
+              e.stopImmediatePropagation();
+              if (typeof showToast === "function") {
+                showToast(
+                  "error",
+                  "Unavailable",
+                  "This item is currently out of stock."
+                );
+              } else {
+                alert("This item is currently out of stock.");
+              }
+              return;
+            }
+
+            // Re-validate against server before allowing add (covers race conditions)
+            const card = target.closest("[data-product-id], .product-card-modern, #product-detail-modal, .product-detail-modal");
+            const productId =
+              card?.dataset?.productId ||
+              card?.querySelector("[data-product-id]")?.dataset.productId;
+            if (productId) {
+              const freshStock = await fetchStock(productId);
+              if (freshStock !== null && freshStock <= 0) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                applyCardState(card);
+                patchDetailModal();
+                if (typeof showToast === "function") {
+                  showToast(
+                    "error",
+                    "Just Sold Out",
+                    "This item just went out of stock."
+                  );
+                } else {
+                  alert("This item just went out of stock.");
+                }
+              }
+            }
+          },
+          true // capture phase — runs before app.js's own click handler
+        );
+
+        // ── Handle backend rejection responses for stock errors ──
+        const origFetch2 = window.fetch;
+        window.fetch = function (url, opts) {
+          const callPromise = origFetch2.apply(this, arguments);
+          if (typeof url === "string" && url.includes("/api/orders") && opts && opts.method === "POST") {
+            return callPromise.then((res) => {
+              const clone = res.clone();
+              clone.json().then((data) => {
+                if (!res.ok && (data.outOfStock || data.insufficientStock)) {
+                  if (typeof showToast === "function") {
+                    showToast("error", "Stock Issue", data.error);
+                  } else {
+                    alert(data.error);
+                  }
+                  // Refresh cards to reflect real stock
+                  scanProductCards();
+                }
+              }).catch(() => {});
+              return res;
+            });
+          }
+          return callPromise;
+        };
+
+        // ── Observe DOM mutations: re-apply rules whenever app.js re-renders ──
+        const observer = new MutationObserver((mutations) => {
+          let shouldScan = false;
+          let shouldPatchModal = false;
+          mutations.forEach((m) => {
+            m.addedNodes.forEach((node) => {
+              if (node.nodeType !== 1) return;
+              if (
+                node.classList?.contains("product-card-modern") ||
+                node.querySelector?.(".product-card-modern")
+              ) {
+                shouldScan = true;
+              }
+              if (
+                node.id?.includes("product-detail") ||
+                node.querySelector?.("[id*='product-detail']")
+              ) {
+                shouldPatchModal = true;
+              }
+            });
+          });
+          if (shouldScan) scanProductCards();
+          if (shouldPatchModal) patchDetailModal();
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // ── Initial scan + periodic refresh (catches stock changes from admin) ──
+        document.addEventListener("DOMContentLoaded", () => {
+          scanProductCards();
+          setInterval(scanProductCards, 15000); // refresh every 15s
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SA Parties - Admin Central</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --pink-primary: #e0218a;
+        --pink-dark: #ad0a69;
+        --pink-light: #fff1f8;
+        --pink-soft: #fbdcee;
+        --yellow-accent: #ffd93d;
+        --blue-accent: #4fc3f7;
+        --ink: #2a1b2e;
+        --ink-soft: #8c7a92;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --shadow-soft: 0 10px 30px -14px rgba(173, 10, 105, 0.28);
+        --shadow-hover: 0 18px 38px -12px rgba(173, 10, 105, 0.35);
+      }
+
+      * {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        color: var(--ink);
+        background-color: var(--pink-light);
+        background-image:
+          radial-gradient(rgba(224, 33, 138, 0.07) 1.5px, transparent 1.5px),
+          radial-gradient(rgba(79, 195, 247, 0.06) 1.5px, transparent 1.5px);
+        background-size:
+          42px 42px,
+          64px 64px;
+        background-position:
+          0 0,
+          22px 28px;
+        min-height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      .brand-text,
+      .section-title {
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* ============ Navbar ============ */
+      .navbar-shop {
+        background: #ffffff;
+        padding: 0.75rem 0;
+        box-shadow: 0 4px 24px -10px rgba(173, 10, 105, 0.18);
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+      }
+      .brand-logo-img {
+        height: 46px;
+        width: 46px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(224, 33, 138, 0.3);
+      }
+      .brand-text {
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+        color: var(--ink);
+      }
+      .brand-text .accent {
+        color: var(--pink-primary);
+      }
+      .brand-tagline {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .btn-back {
+        border: 1.5px solid var(--pink-primary);
+        color: var(--pink-primary);
+        background: transparent;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.5rem 1.15rem;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .btn-back:hover {
+        background: var(--pink-primary);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+      }
+
+      /* ============ Sidebar Custom Navigation ============ */
+      .nav-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: 1.25rem;
+      }
+      .nav-link-pink {
+        color: var(--ink);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 6px;
+        transition: all 0.25s ease;
+      }
+      .nav-link-pink:hover,
+      .nav-link-pink.active {
+        background: var(--pink-light);
+        color: var(--pink-primary);
+      }
+
+      /* ============ Login Section ============ */
+      #login-box {
+        max-width: 440px;
+        margin: 0 auto;
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+      }
+      .login-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+      .login-card-header {
+        background: linear-gradient(
+          120deg,
+          var(--pink-primary) 0%,
+          #c81d80 55%,
+          var(--pink-dark) 100%
+        );
+        padding: 2rem 2rem 1.75rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .login-card-header::before {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        width: 160px;
+        height: 160px;
+        top: -70px;
+        right: -40px;
+      }
+      .login-card-header::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 217, 61, 0.12);
+        width: 100px;
+        height: 100px;
+        bottom: -50px;
+        left: 20px;
+      }
+      .login-card-header h3 {
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin: 0.6rem 0 0.3rem;
+        position: relative;
+        z-index: 1;
+      }
+      .login-card-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .login-icon-circle {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.6rem;
+        color: var(--yellow-accent);
+        position: relative;
+        z-index: 1;
+      }
+      .login-card-body {
+        padding: 1.75rem 2rem 2rem;
+      }
+      .form-label {
+        font-weight: 600;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+      }
+      .form-control-pink {
+        border: 1.5px solid var(--pink-soft);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: var(--ink);
+        background: var(--pink-light);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        width: 100%;
+      }
+      .form-control-pink:focus {
+        outline: none;
+        border-color: var(--pink-primary);
+        box-shadow: 0 0 0 0.2rem rgba(224, 33, 138, 0.14);
+        background: #fff;
+      }
+      .form-control-pink::placeholder {
+        color: var(--ink-soft);
+      }
+      .btn-login {
+        background: linear-gradient(
+          135deg,
+          var(--pink-primary),
+          var(--pink-dark)
+        );
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        width: 100%;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+        font-family: "Poppins", sans-serif;
+        letter-spacing: 0.01em;
+      }
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+      }
+      .login-note {
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        text-align: center;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      /* ============ Admin Dashboard ============ */
+      #admin-dashboard {
+        display: none;
+      }
+
+      .admin-hero {
+        background: linear-gradient(
+          120deg,
+          var(--pink-primary) 0%,
+          #c81d80 55%,
+          var(--pink-dark) 100%
+        );
+        color: #fff;
+        padding: 2.25rem 0 2.5rem;
+        border-radius: 0 0 36px 36px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+      }
+      .admin-hero::before {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        width: 220px;
+        height: 220px;
+        top: -100px;
+        right: -50px;
+      }
+      .admin-hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 217, 61, 0.1);
+        width: 140px;
+        height: 140px;
+        bottom: -70px;
+        right: 18%;
+      }
+      .admin-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        padding: 0.35rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.75rem;
+      }
+      .admin-hero h1 {
+        font-weight: 800;
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        margin: 0 0 0.4rem;
+        line-height: 1.2;
+      }
+      .admin-hero h1 .highlight {
+        color: var(--yellow-accent);
+      }
+      .admin-hero p {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+      .btn-logout {
+        border: 1.5px solid rgba(255, 255, 255, 0.5);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.5rem 1.15rem;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(6px);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .btn-logout:hover {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      /* ============ Section title ============ */
+      .section-title {
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 0.65rem;
+        margin-bottom: 0.4rem;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 52px;
+        height: 5px;
+        border-radius: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--pink-primary),
+          var(--yellow-accent)
+        );
+      }
+      .section-subtitle {
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        margin-bottom: 1.75rem;
+      }
+
+      /* ============ Cards & Forms ============ */
+      .panel-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+      .panel-card-header {
+        background: linear-gradient(
+          135deg,
+          var(--pink-primary),
+          var(--pink-dark)
+        );
+        color: #fff;
+        padding: 1.1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .panel-card-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+      .panel-card-body {
+        padding: 1.5rem;
+      }
+
+      .form-floating > .form-control,
+      .form-floating > .form-select,
+      .form-floating > textarea.form-control {
+        border: 1.5px solid var(--pink-soft);
+        border-radius: 12px;
+        background: var(--pink-light);
+      }
+      .form-floating > .form-control:focus,
+      .form-floating > .form-select:focus {
+        border-color: var(--pink-primary);
+        box-shadow: 0 0 0 0.2rem rgba(224, 33, 138, 0.14);
+        background: #fff;
+      }
+      #admin-search-input:focus {
+        border-color: var(--pink-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(224, 33, 138, 0.14) !important;
+        background: #fff !important;
+        outline: none;
+      }
+      .form-floating > label {
+        color: var(--ink-soft);
+      }
+      textarea.form-control {
+        min-height: 88px;
+      }
+
+      .file-upload-area {
+        border: 2px dashed var(--pink-soft);
+        border-radius: 12px;
+        background: var(--pink-light);
+        padding: 1.25rem;
+        text-align: center;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+        cursor: pointer;
+        position: relative;
+      }
+      .file-upload-area:hover,
+      .file-upload-area.dragover {
+        border-color: var(--pink-primary);
+        background: #fdeef6;
+      }
+      .file-upload-area input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .file-upload-area .upload-icon {
+        font-size: 1.8rem;
+        color: var(--pink-primary);
+        display: block;
+        margin-bottom: 0.4rem;
+      }
+      .file-upload-area .upload-text {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        font-weight: 500;
+      }
+      .file-upload-area .file-name {
+        font-size: 0.82rem;
+        color: var(--pink-primary);
+        font-weight: 600;
+        margin-top: 0.4rem;
+      }
+
+      .btn-upload {
+        background: linear-gradient(
+          135deg,
+          var(--pink-primary),
+          var(--pink-dark)
+        );
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        width: 100%;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+        font-family: "Poppins", sans-serif;
+      }
+      .btn-upload:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        color: #fff;
+      }
+
+      /* ============ Inventory & Order Row Items ============ */
+      .inventory-item {
+        background: var(--pink-light);
+        border: 1px solid var(--pink-soft);
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        transition:
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+      .inventory-item:hover {
+        box-shadow: 0 6px 18px -8px rgba(173, 10, 105, 0.22);
+        transform: translateY(-2px);
+      }
+      .inventory-img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+        border: 2px solid var(--pink-soft);
+      }
+      .inventory-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--ink);
+        margin: 0 0 0.15rem;
+        font-family: "Poppins", sans-serif;
+      }
+      .inventory-meta {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        font-weight: 500;
+      }
+      .inventory-meta .price {
+        color: var(--pink-primary);
+        font-weight: 700;
+      }
+
+      /* Order Cards custom styles */
+      .order-box {
+        background: #fff;
+        border: 1px solid var(--pink-soft);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(173, 10, 105, 0.03);
+      }
+
+      /* ── Order Card Header alignment fix ── */
+      .order-box .order-header,
+      .order-box > div:first-child {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      /* ── Color badge chip ── */
+      .color-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--pink-light);
+        border: 1px solid var(--pink-soft);
+        border-radius: 50px;
+        padding: 2px 8px 2px 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .color-badge .color-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      /* ── Item quantity chip beside item name ── */
+      .item-qty-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--pink-primary);
+        color: #fff;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 1px 7px;
+        min-width: 22px;
+        flex-shrink: 0;
+      }
+
+      /* ── Order items list wrapper ── */
+      .order-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0.6rem 0;
+      }
+      .order-item-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 0.88rem;
+        color: var(--ink);
+      }
+      .order-item-name {
+        font-weight: 600;
+      }
+      .order-items-total {
+        margin-top: 4px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--ink);
+      }
+
+      /* ── Order Summary panel ── */
+      .order-summary-panel {
+        background: var(--pink-light);
+        border: 1px solid var(--pink-soft);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.15rem;
+        margin-top: 0.85rem;
+      }
+      .order-summary-panel .summary-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 0.65rem;
+      }
+      .order-summary-panel .summary-item-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 0.85rem;
+      }
+      .order-summary-panel .summary-divider {
+        border: none;
+        border-top: 1px solid var(--pink-soft);
+        margin: 0.5rem 0;
+      }
+      .order-summary-panel .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.88rem;
+        padding: 3px 0;
+      }
+      .order-summary-panel .summary-row.total-items-row {
+        color: var(--ink-soft);
+        font-weight: 600;
+      }
+      .order-summary-panel .summary-row.shipping-row {
+        color: var(--ink-soft);
+      }
+      .order-summary-panel .summary-row.items-total-row {
+        color: var(--ink-soft);
+      }
+      .order-summary-panel .summary-row.grand-total-row {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: var(--ink);
+        padding-top: 5px;
+        border-top: 1.5px solid var(--pink-soft);
+        margin-top: 3px;
+      }
+
+      /* ── Address block ── */
+      .order-address-block {
+        font-size: 0.84rem;
+        color: var(--ink-soft);
+        line-height: 1.6;
+        padding: 0.6rem 0.75rem;
+        background: var(--pink-light);
+        border-radius: 10px;
+        border: 1px solid var(--pink-soft);
+        margin-top: 0.5rem;
+      }
+      .order-address-block strong {
+        color: var(--ink);
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* ============ Section Pane Switcher ============ */
+      .section-pane {
+        display: none;
+      }
+      .section-pane.active {
+        display: block;
+      }
+
+      /* ============ Skeletons ============ */
+      .skeleton-item {
+        background: #fff;
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        border: 1px solid var(--pink-soft);
+      }
+      .skel-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      .skel-line {
+        height: 11px;
+        border-radius: 6px;
+        margin-bottom: 0.45rem;
+      }
+      .skel-img,
+      .skel-line {
+        background: linear-gradient(
+          90deg,
+          var(--pink-soft) 25%,
+          #fdeef6 37%,
+          var(--pink-soft) 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.4s ease infinite;
+      }
+      .skel-line.w-60 {
+        width: 60%;
+      }
+      .skel-line.w-40 {
+        width: 40%;
+      }
+      .skel-grow {
+        flex: 1;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+      }
+      .empty-state .icon {
+        font-size: 2.5rem;
+        color: var(--pink-soft);
+        margin-bottom: 0.6rem;
+      }
+      .empty-state h6 {
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0.3rem;
+        font-family: "Poppins", sans-serif;
+      }
+      .empty-state p {
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+        margin: 0;
+      }
+
+      /* ============ Toast ============ */
+      .toast-stack {
+        position: fixed;
+        top: 88px;
+        right: 1rem;
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .toast-card {
+        background: #fff;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-hover);
+        padding: 0.9rem 1.1rem;
+        min-width: 270px;
+        max-width: 320px;
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+        border-left: 5px solid var(--pink-primary);
+        transform: translateX(130%);
+        opacity: 0;
+        transition:
+          transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.3s ease;
+      }
+      .toast-card.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast-card.error {
+        border-left-color: #b3261e;
+      }
+      .toast-card .toast-icon {
+        font-size: 1.3rem;
+        line-height: 1;
+        margin-top: 0.1rem;
+      }
+      .toast-card.error .toast-icon {
+        color: #b3261e;
+      }
+      .toast-card:not(.error) .toast-icon {
+        color: var(--pink-primary);
+      }
+      .toast-card .toast-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.1rem;
+      }
+      .toast-card .toast-msg {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        line-height: 1.35;
+      }
+
+      /* ============ Footer ============ */
+      .footer-shop {
+        margin-top: 3rem;
+        padding: 1.75rem 0 2.25rem;
+        text-align: center;
+        border-top: 1px solid var(--pink-soft);
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+      }
+      .footer-shop strong {
+        color: var(--ink);
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-in {
+        opacity: 0;
+        animation: fadeInUp 0.5s ease forwards;
+      }
+      /* ── Product Form Styles ── */
+      .pf-section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+        margin-bottom: 0.85rem;
+        margin-top: 0.5rem;
+      }
+      .pf-step {
+        background: var(--gradient-primary);
+        color: #fff;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 900;
+        flex-shrink: 0;
+      }
+
+      /* Main image slots */
+      .pf-img-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .pf-img-slot {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        border: 2px dashed var(--pink-soft);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--pink-light);
+        cursor: pointer;
+        transition: border-color 0.2s;
+        flex-shrink: 0;
+      }
+      .pf-img-slot:hover {
+        border-color: var(--pink-primary);
+      }
+      .pf-img-slot input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .pf-img-slot .pf-img-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      .pf-img-slot .pf-img-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--pink-primary);
+        font-size: 0.68rem;
+        font-weight: 700;
+        gap: 4px;
+      }
+      .pf-img-slot .pf-del-img {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: #c0392b;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        cursor: pointer;
+        z-index: 2;
+        padding: 0;
+      }
+      .pf-img-slot.has-img .pf-del-img {
+        display: flex;
+      }
+      .pf-img-slot.has-img .pf-img-placeholder {
+        display: none;
+      }
+      .pf-img-slot.has-img .pf-img-preview {
+        display: block;
+      }
+
+      .pf-add-img-btn {
+        border: 2px dashed var(--pink-soft);
+        background: var(--pink-light);
+        color: var(--pink-primary);
+        border-radius: 10px;
+        padding: 0.45rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .pf-add-img-btn:hover {
+        border-color: var(--pink-primary);
+        background: #fdeef6;
+      }
+
+      /* Color variant cards */
+      .pf-color-card {
+        border: 1.5px solid var(--pink-soft);
+        border-radius: 14px;
+        padding: 14px 14px 12px;
+        background: #fdfafc;
+        margin-bottom: 12px;
+        position: relative;
+      }
+      .pf-color-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .pf-color-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-soft);
+        flex: 1;
+      }
+      .pf-color-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .pf-color-img-slot {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border: 2px dashed var(--pink-soft);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--pink-light);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .pf-color-img-slot input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .pf-color-img-slot .pf-img-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      .pf-color-img-slot .pf-img-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--pink-primary);
+        font-size: 0.6rem;
+        font-weight: 700;
+        gap: 3px;
+      }
+      .pf-color-img-slot .pf-del-img {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        background: #c0392b;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        cursor: pointer;
+        z-index: 2;
+        padding: 0;
+      }
+      .pf-color-img-slot.has-img .pf-del-img {
+        display: flex;
+      }
+      .pf-color-img-slot.has-img .pf-img-placeholder {
+        display: none;
+      }
+      .pf-color-img-slot.has-img .pf-img-preview {
+        display: block;
+      }
+
+      .pf-add-color-btn {
+        border: 2px dashed #b8c4cc;
+        background: #f5f8fa;
+        color: #4a6785;
+        border-radius: 10px;
+        padding: 0.45rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s;
+      }
+      .pf-add-color-btn:hover {
+        border-color: #4a6785;
+        background: #edf2f7;
+      }
+
+      .pf-add-cimg-btn {
+        border: 2px dashed var(--pink-soft);
+        background: var(--pink-light);
+        color: var(--pink-primary);
+        border-radius: 8px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        flex-shrink: 0;
+        align-self: flex-end;
+        margin-bottom: 2px;
+      }
+      .pf-add-cimg-btn:hover {
+        border-color: var(--pink-primary);
+      }
+      /* ── Order Search Bar ── */
+      .order-search-wrap {
+        position: relative;
+        min-width: 240px;
+      }
+      .order-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--pink-primary);
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+      .order-search-input {
+        width: 100%;
+        padding: 0.5rem 1rem 0.5rem 2.2rem;
+        border: 1.5px solid var(--pink-soft);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-family: inherit;
+        background: var(--pink-light);
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .order-search-input:focus {
+        border-color: var(--pink-primary);
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar-shop">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a
+          href="#"
+          class="d-flex align-items-center gap-2 text-decoration-none"
+        >
+          <img
+            src="assets/logo.jpg"
+            alt="SA Parties Logo"
+            class="brand-logo-img"
+            onerror="this.style.display = 'none'"
+          />
+          <div>
+            <div class="brand-text">SA <span class="accent">Parties</span></div>
+            <div class="brand-tagline">Admin Portal</div>
+          </div>
+        </a>
+        <div id="nav-actions">
+          <a class="btn-back" href="/index.html">
+            <i class="bi bi-arrow-left"></i> Back to Shop
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container" id="login-box">
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="login-icon-circle">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <h3>Admin Login</h3>
+          <p>Enter your credentials to access the control panel</p>
+        </div>
+        <div class="login-card-body">
+          <form id="login-form">
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input
+                type="text"
+                id="login-user"
+                class="form-control-pink"
+                placeholder="Enter username"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                id="login-pass"
+                class="form-control-pink"
+                placeholder="Enter password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn-login">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Access Admin Portal
+            </button>
+          </form>
+          <div class="login-note">
+            <i class="bi bi-shield-check"></i>
+            Secure admin access only
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="admin-dashboard">
+      <section class="admin-hero">
+        <div
+          class="container d-flex justify-content-between align-items-center flex-wrap gap-3"
+        >
+          <div>
+            <span class="admin-hero-eyebrow"
+              ><i class="bi bi-gear-fill"></i> Admin Control Center</span
+            >
+            <h1>SA <span class="highlight">Parties</span> Dashboard</h1>
+            <p>
+              Manage products, track orders, and fulfill shipments efficiently.
+            </p>
+          </div>
+          <button class="btn-logout" onclick="logoutAdmin()">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </div>
+      </section>
+
+      <div class="container pb-5">
+        <div class="row g-4">
+          <div class="col-md-3">
+            <div class="nav-card">
+              <h6
+                class="text-uppercase small fw-bold mb-3 text-muted tracking-wide"
+              >
+                Menu
+              </h6>
+
+              <!-- Quick Manage -->
+              <a
+                href="#"
+                class="nav-link-pink active"
+                onclick="switchPane('quick-manage-pane', this)"
+                id="nav-quick-manage"
+              >
+                <i class="bi bi-lightning-charge-fill"></i> Quick Manage
+              </a>
+
+              <!-- Orders — main toggle -->
+              <a
+                href="#"
+                class="nav-link-pink"
+                onclick="toggleOrdersMenu(event)"
+                id="nav-orders-toggle"
+              >
+                <i class="bi bi-bag-fill"></i> Orders
+                <i
+                  class="bi bi-chevron-down ms-auto"
+                  id="orders-chevron"
+                  style="font-size: 0.75rem; transition: transform 0.2s"
+                ></i>
+              </a>
+
+              <!-- Sub-nav inside Orders -->
+              <div
+                id="orders-sub-nav"
+                style="
+                  display: none;
+                  padding-left: 1rem;
+                  border-left: 2px solid var(--pink-soft);
+                  margin: 4px 0 6px;
+                "
+              >
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchOrderPane('payment-verification-pane', this)"
+                  id="nav-payment"
+                >
+                  <i class="bi bi-shield-check-fill"></i> Payment Verification
+                  <span
+                    id="badge-payment-count"
+                    class="badge bg-warning ms-auto rounded-pill"
+                    >0</span
+                  >
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchOrderPane('pending-pane', this)"
+                  id="nav-pending"
+                >
+                  <i class="bi bi-clock-fill"></i> Pending Orders
+                  <span
+                    id="badge-pending-count"
+                    class="badge bg-danger ms-auto rounded-pill"
+                    >0</span
+                  >
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchOrderPane('shipped-pane', this)"
+                  id="nav-shipped"
+                >
+                  <i class="bi bi-truck"></i> Shipped Out
+                  <span
+                    id="badge-shipped-count"
+                    class="badge bg-info ms-auto rounded-pill"
+                    style="display: none"
+                    >0</span
+                  >
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchOrderPane('delivered-pane', this)"
+                  id="nav-delivered"
+                >
+                  <i class="bi bi-check-circle-fill"></i> Delivered Jobs
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchOrderPane('cancelled-pane', this)"
+                  id="nav-cancelled"
+                  style="color: #c0392b"
+                >
+                  <i class="bi bi-x-circle-fill"></i> Cancelled Orders
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-9">
+            <!-- ── Global Order Search ── -->
+            <div style="margin-bottom: 1.25rem; position: relative">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  background: #fff;
+                  border: 1.5px solid var(--pink-soft);
+                  border-radius: 50px;
+                  padding: 0.5rem 1.1rem;
+                  box-shadow: 0 2px 8px rgba(173, 10, 105, 0.06);
+                "
+              >
+                <i
+                  class="bi bi-search"
+                  style="
+                    color: var(--pink-primary);
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                  "
+                ></i>
+                <input
+                  type="text"
+                  id="global-order-search"
+                  placeholder="Search orders by Order No. or Customer Name…"
+                  oninput="globalOrderSearch(this.value)"
+                  style="
+                    border: none;
+                    outline: none;
+                    flex: 1;
+                    font-size: 0.88rem;
+                    font-family: inherit;
+                    color: var(--ink);
+                    background: transparent;
+                  "
+                />
+                <button
+                  onclick="
+                    document.getElementById('global-order-search').value = '';
+                    globalOrderSearch('');
+                  "
+                  style="
+                    background: none;
+                    border: none;
+                    color: #8c7a92;
+                    cursor: pointer;
+                    padding: 0;
+                    font-size: 1rem;
+                  "
+                >
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <div
+                id="global-search-wrap"
+                style="
+                  display: none;
+                  position: absolute;
+                  left: 0;
+                  right: 0;
+                  top: calc(100% + 6px);
+                  background: #fff;
+                  border: 1.5px solid var(--pink-soft);
+                  border-radius: 16px;
+                  box-shadow: 0 8px 24px rgba(173, 10, 105, 0.12);
+                  z-index: 999;
+                  max-height: 480px;
+                  overflow-y: auto;
+                  padding: 12px;
+                "
+              >
+                <div id="global-search-results"></div>
+              </div>
+            </div>
+
+            <div id="quick-manage-pane" class="section-pane active">
+              <div class="row g-4">
+                <!-- Add Product Form -->
+                <div class="col-md-5">
+                  <h2 class="section-title" id="form-panel-title">
+                    Add Product
+                  </h2>
+                  <p class="section-subtitle">
+                    Fill details to deploy items into live market.
+                  </p>
+
+                  <div class="panel-card">
+                    <div class="panel-card-header" id="form-header-bg">
+                      <i class="bi bi-plus-circle-fill fs-5" id="form-icon"></i>
+                      <h4 id="form-title-text">New Product</h4>
+                    </div>
+                    <div class="panel-card-body">
+                      <form
+                        id="admin-product-form"
+                        enctype="multipart/form-data"
+                      >
+                        <input type="hidden" id="edit-product-id" value="" />
+
+                        <!-- ── STEP 1: Basic Info ── -->
+                        <div class="pf-section-label">
+                          <span class="pf-step">1</span> Basic Information
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <input
+                            type="text"
+                            id="prod-name"
+                            class="form-control"
+                            placeholder="Product Name"
+                            required
+                          />
+                          <label for="prod-name"
+                            ><i class="bi bi-tag me-1"></i>Product Name</label
+                          >
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <textarea
+                            id="prod-desc"
+                            class="form-control"
+                            placeholder="Description"
+                            style="min-height: 90px"
+                          ></textarea>
+                          <label for="prod-desc"
+                            ><i class="bi bi-card-text me-1"></i
+                            >Description</label
+                          >
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                          <div class="col-6">
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                id="prod-price"
+                                class="form-control"
+                                placeholder="Price"
+                                min="0"
+                                required
+                              />
+                              <label for="prod-price"
+                                ><i class="bi bi-cash-coin me-1"></i>Price
+                                (Rs.)</label
+                              >
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                id="prod-stock"
+                                class="form-control"
+                                placeholder="Stock"
+                                min="0"
+                                required
+                              />
+                              <label for="prod-stock"
+                                ><i class="bi bi-boxes me-1"></i>Base Stock
+                                Qty</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <select id="prod-category" class="form-select">
+                            <option value="">Loading categories...</option>
+                          </select>
+                          <label for="prod-category"
+                            ><i class="bi bi-grid-3x3-gap me-1"></i>Select
+                            Category</label
+                          >
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <input
+                            type="text"
+                            id="prod-keywords"
+                            class="form-control"
+                            placeholder="Keywords"
+                          />
+                          <label for="prod-keywords"
+                            ><i class="bi bi-search me-1"></i>Search Keywords
+                            (e.g. balloon, banner)</label
+                          >
+                        </div>
+
+                        <!-- ── STEP 2: Dimensions ── -->
+                        <div class="pf-section-label mt-1">
+                          <span class="pf-step">2</span> Package Dimensions
+                          <span
+                            style="
+                              font-weight: 400;
+                              font-size: 0.78rem;
+                              opacity: 0.7;
+                            "
+                            >(cm · for shipping calc)</span
+                          >
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                          <div class="col-4">
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                id="prod-length"
+                                class="form-control"
+                                placeholder="Length"
+                                min="0"
+                                step="0.1"
+                                oninput="updateVolPreview()"
+                              />
+                              <label for="prod-length"
+                                ><i class="bi bi-arrows-horizontal me-1"></i
+                                >Length</label
+                              >
+                            </div>
+                          </div>
+                          <div class="col-4">
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                id="prod-width"
+                                class="form-control"
+                                placeholder="Width"
+                                min="0"
+                                step="0.1"
+                                oninput="updateVolPreview()"
+                              />
+                              <label for="prod-width"
+                                ><i class="bi bi-arrows-vertical me-1"></i
+                                >Width</label
+                              >
+                            </div>
+                          </div>
+                          <div class="col-4">
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                id="prod-height"
+                                class="form-control"
+                                placeholder="Height"
+                                min="0"
+                                step="0.1"
+                                oninput="updateVolPreview()"
+                              />
+                              <label for="prod-height"
+                                ><i class="bi bi-layers me-1"></i>Height</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          id="vol-weight-preview"
+                          style="
+                            display: none;
+                            font-size: 0.8rem;
+                            color: var(--ink-soft);
+                            background: var(--pink-light);
+                            border-radius: 10px;
+                            padding: 0.4rem 0.85rem;
+                          "
+                          class="mb-3"
+                        >
+                          <i
+                            class="bi bi-calculator me-1"
+                            style="color: var(--pink-primary)"
+                          ></i>
+                          Vol. Weight: <strong id="vol-weight-val">—</strong> kg
+                          &nbsp;→&nbsp; Shipping:
+                          <strong id="vol-shipping-val">—</strong>
+                        </div>
+
+                        <!-- ── STEP 3: Main Product Images ── -->
+                        <div class="pf-section-label mt-1">
+                          <span class="pf-step">3</span> Product Images
+                          <span
+                            style="
+                              font-weight: 400;
+                              font-size: 0.78rem;
+                              opacity: 0.7;
+                            "
+                            >(first image = thumbnail)</span
+                          >
+                        </div>
+
+                        <div
+                          id="main-images-list"
+                          class="pf-img-list mb-2"
+                        ></div>
+                        <button
+                          type="button"
+                          class="pf-add-img-btn"
+                          onclick="addMainImageSlot()"
+                        >
+                          <i class="bi bi-plus-circle me-1"></i> Add Image
+                        </button>
+
+                        <!-- ── STEP 4: Color Variants (Daraz style) ── -->
+                        <div class="pf-section-label mt-4">
+                          <span class="pf-step">4</span> Color Variants
+                          <span
+                            style="
+                              font-weight: 400;
+                              font-size: 0.78rem;
+                              opacity: 0.7;
+                            "
+                            >(optional — add if product has colors)</span
+                          >
+                        </div>
+
+                        <div id="colors-container"></div>
+
+                        <button
+                          type="button"
+                          class="pf-add-color-btn mt-2"
+                          onclick="addColorRow()"
+                        >
+                          <i class="bi bi-palette me-1"></i> Add Color Variant
+                        </button>
+
+                        <!-- ── Submit ── -->
+                        <div class="mt-4">
+                          <button
+                            type="submit"
+                            class="btn-upload"
+                            id="upload-btn"
+                          >
+                            <i class="bi bi-rocket-takeoff-fill me-2"></i>Upload
+                            & Go Live
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary w-100 rounded-3 mt-2 py-2"
+                            id="cancel-edit-btn"
+                            style="display: none"
+                            onclick="clearEditState()"
+                          >
+                            Cancel Editing Mode
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                  <!-- Create Category Form -->
+                  <div class="panel-card mt-4">
+                    <div class="panel-card-header">
+                      <i class="bi bi-folder-plus fs-5"></i>
+                      <h4>Create Category</h4>
+                    </div>
+                    <div class="panel-card-body">
+                      <form id="admin-category-form">
+                        <div class="form-floating mb-3">
+                          <input
+                            type="text"
+                            id="cat-name"
+                            class="form-control"
+                            placeholder="Category Name"
+                            required
+                          />
+                          <label for="cat-name"
+                            ><i class="bi bi-folder2 me-1"></i>Category
+                            Name</label
+                          >
+                        </div>
+                        <div class="form-floating mb-3">
+                          <select id="cat-parent" class="form-select">
+                            <option value="">None (Top-Level Category)</option>
+                          </select>
+                          <label for="cat-parent"
+                            ><i class="bi bi-diagram-3-fill me-1"></i>Parent
+                            Category (Optional)</label
+                          >
+                        </div>
+                        <button type="submit" class="btn-upload">
+                          <i class="bi bi-plus-circle-fill me-2"></i>Add
+                          Category
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+
+                  <!-- Delete Category -->
+                  <div class="panel-card mt-4">
+                    <div
+                      class="panel-card-header"
+                      style="
+                        background: linear-gradient(
+                          135deg,
+                          #c0392b22,
+                          #e74c3c11
+                        );
+                      "
+                    >
+                      <i class="bi bi-folder-x fs-5" style="color: #c0392b"></i>
+                      <h4 style="color: #c0392b">Delete Category</h4>
+                    </div>
+                    <div class="panel-card-body">
+                      <p
+                        class="text-muted"
+                        style="font-size: 0.85rem; margin-bottom: 1rem"
+                      >
+                        Select a category to permanently delete it.
+                        Sub-categories will also be removed.
+                      </p>
+                      <div class="form-floating mb-3">
+                        <select id="delete-cat-select" class="form-select">
+                          <option value="">-- Select Category --</option>
+                        </select>
+                        <label for="delete-cat-select"
+                          ><i class="bi bi-folder2 me-1"></i>Choose
+                          Category</label
+                        >
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-upload"
+                        style="
+                          background: linear-gradient(135deg, #c0392b, #e74c3c);
+                        "
+                        onclick="deleteCategory()"
+                      >
+                        <i class="bi bi-trash3-fill me-2"></i>Delete Category
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Edit / Rename Category Card -->
+                <div class="col-md-5 mt-3">
+                  <div
+                    class="panel-card"
+                    style="border: 1.5px solid #a78bfa; border-radius: 16px"
+                  >
+                    <div
+                      class="panel-card-header"
+                      style="
+                        background: linear-gradient(
+                          135deg,
+                          #7c3aed11,
+                          #a78bfa11
+                        );
+                        border-bottom: 1.5px solid #a78bfa44;
+                      "
+                    >
+                      <i
+                        class="bi bi-pencil-square fs-5"
+                        style="color: #7c3aed"
+                      ></i>
+                      <h4 style="color: #7c3aed">Rename Category</h4>
+                    </div>
+                    <div class="panel-card-body">
+                      <p
+                        class="text-muted"
+                        style="font-size: 0.85rem; margin-bottom: 1rem"
+                      >
+                        Select a category and enter a new name to rename it.
+                      </p>
+                      <div class="form-floating mb-3">
+                        <select
+                          id="edit-cat-select"
+                          class="form-select"
+                          style="border-color: #a78bfa"
+                        >
+                          <option value="">-- Select Category --</option>
+                        </select>
+                        <label for="edit-cat-select"
+                          ><i class="bi bi-folder2 me-1"></i>Choose
+                          Category</label
+                        >
+                      </div>
+                      <div class="form-floating mb-3">
+                        <input
+                          type="text"
+                          id="edit-cat-name"
+                          class="form-control"
+                          placeholder="New category name"
+                          style="border-color: #a78bfa"
+                        />
+                        <label for="edit-cat-name"
+                          ><i class="bi bi-pencil me-1"></i>New Name</label
+                        >
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-upload"
+                        style="
+                          background: linear-gradient(135deg, #7c3aed, #a78bfa);
+                        "
+                        onclick="renameCategory()"
+                      >
+                        <i class="bi bi-pencil-fill me-2"></i>Rename Category
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Inventory on the right -->
+                <div class="col-md-7">
+                  <h2 class="section-title">Current Inventory</h2>
+                  <p class="section-subtitle">
+                    All live items visible inside catalogs.
+                  </p>
+                  <div class="panel-card">
+                    <div class="panel-card-header">
+                      <i class="bi bi-boxes fs-5"></i>
+                      <h4>Product Inventory</h4>
+                    </div>
+                    <div class="panel-card-body">
+                      <div class="input-group mb-3">
+                        <span
+                          class="input-group-text bg-transparent border-end-0 text-muted"
+                          style="
+                            border: 1.5px solid var(--pink-soft);
+                            border-radius: 12px 0 0 12px;
+                          "
+                        >
+                          <i class="bi bi-search"></i>
+                        </span>
+                        <input
+                          type="text"
+                          id="admin-search-input"
+                          class="form-control border-start-0"
+                          placeholder="Search products..."
+                          style="
+                            border: 1.5px solid var(--pink-soft);
+                            border-radius: 0 12px 12px 0;
+                            background: var(--pink-light);
+                            font-size: 0.9rem;
+                          "
+                          oninput="filterAdminProducts()"
+                        />
+                      </div>
+                      <div
+                        id="admin-products-preview"
+                        class="d-flex flex-column gap-3"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="payment-verification-pane" class="section-pane">
+              <div
+                class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"
+              >
+                <div>
+                  <h2 class="section-title text-warning mb-0">
+                    Payment Verification
+                  </h2>
+                  <p class="section-subtitle mb-0">
+                    Review and verify online payment submissions from customers.
+                  </p>
+                </div>
+              </div>
+              <div id="payment-verification-box"></div>
+            </div>
+
+            <div id="pending-pane" class="section-pane">
+              <div
+                class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"
+              >
+                <div>
+                  <h2 class="section-title text-danger mb-0">
+                    Pending Requests
+                  </h2>
+                  <p class="section-subtitle mb-0">
+                    Incoming checkout requests processing pipeline.
+                  </p>
+                </div>
+              </div>
+              <div id="pending-orders-box"></div>
+            </div>
+
+            <div id="shipped-pane" class="section-pane">
+              <div
+                class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"
+              >
+                <div>
+                  <h2 class="section-title text-warning mb-0">Shipped Out</h2>
+                  <p class="section-subtitle mb-0">
+                    Items currently inside shipping couriers.
+                  </p>
+                </div>
+              </div>
+              <div id="shipped-orders-box"></div>
+            </div>
+
+            <div id="delivered-pane" class="section-pane">
+              <div
+                class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"
+              >
+                <div>
+                  <h2 class="section-title text-success mb-0">
+                    Delivered Jobs
+                  </h2>
+                  <p class="section-subtitle mb-0">
+                    Closed histories and completed deliveries.
+                  </p>
+                </div>
+              </div>
+              <div id="delivered-orders-box"></div>
+            </div>
+
+            <div id="cancelled-pane" class="section-pane">
+              <div
+                class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3"
+              >
+                <div>
+                  <h2 class="section-title mb-0" style="color: #c0392b">
+                    Cancelled Orders
+                  </h2>
+                  <p class="section-subtitle mb-0">
+                    Orders cancelled by admin — customer was notified via email.
+                  </p>
+                </div>
+              </div>
+              <div id="cancelled-orders-box"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer-shop">
+      <div class="container">
+        🎈 <strong>SA Parties</strong> — making every celebration a little more
+        colourful.
+      </div>
+    </footer>
+
+    <div id="toast-stack" class="toast-stack"></div>
+
+    <script>
+      function quickAddProduct() {
+        const name = document.getElementById("qp-name").value.trim();
+        const price = document.getElementById("qp-price").value.trim();
+        const stock = document.getElementById("qp-stock").value.trim();
+        if (!name || !price || !stock) {
+          alert("Please fill all fields!");
+          return;
+        }
+        const list = document.getElementById("inventory-list");
+        // Remove empty state if present
+        const empty = list.querySelector(".empty-state");
+        if (empty) empty.remove();
+
+        const item = document.createElement("div");
+        item.className = "inventory-item fade-in";
+        item.innerHTML = `
+          <div style="width:56px;height:56px;border-radius:10px;background:var(--pink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="bi bi-box-seam" style="font-size:1.5rem;color:var(--pink-primary);"></i>
+          </div>
+          <div style="flex:1;">
+            <div class="inventory-name">${name}</div>
+            <div class="inventory-meta">
+              <span class="price">Rs. ${parseFloat(price).toLocaleString()}</span>
+              &nbsp;·&nbsp; Stock: ${stock}
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-danger rounded-3" onclick="this.closest('.inventory-item').remove()">
+            <i class="bi bi-trash"></i>
+          </button>
+        `;
+        list.appendChild(item);
+        document.getElementById("qp-name").value = "";
+        document.getElementById("qp-price").value = "";
+        document.getElementById("qp-stock").value = "";
+      }
+
+      function quickAddCategory() {
+        const name = document.getElementById("qcat-name").value.trim();
+        if (!name) {
+          alert("Enter a category name!");
+          return;
+        }
+        // Add to existing prod-category select if it exists
+        const sel = document.getElementById("prod-category");
+        if (sel) {
+          const opt = document.createElement("option");
+          opt.value = name.toLowerCase().replace(/\s+/g, "-");
+          opt.textContent = name;
+          sel.appendChild(opt);
+        }
+        document.getElementById("qcat-name").value = "";
+        alert(`Category "${name}" added successfully!`);
+      }
+    </script>
+    <script>
+      function calcAdminShipping(kg) {
+        if (kg <= 0.5) return 250;
+        if (kg <= 1) return 350;
+        if (kg <= 2) return 450;
+        return 450 + Math.ceil((kg - 2) / 0.5) * 50;
+      }
+      function updateVolPreview() {
+        const l =
+          parseFloat(document.getElementById("prod-length")?.value) || 0;
+        const w = parseFloat(document.getElementById("prod-width")?.value) || 0;
+        const h =
+          parseFloat(document.getElementById("prod-height")?.value) || 0;
+        const preview = document.getElementById("vol-weight-preview");
+        if (!preview) return;
+        if (l > 0 && w > 0 && h > 0) {
+          const kg = (l * w * h) / 5000;
+          const ship = calcAdminShipping(kg);
+          document.getElementById("vol-weight-val").textContent =
+            kg.toFixed(3) + " kg";
+          document.getElementById("vol-shipping-val").textContent =
+            "Rs. " + ship;
+          preview.style.display = "block";
+        } else {
+          preview.style.display = "none";
+        }
+      }
+    </script>
+    <script src="admin.js"></script>
+    <script>
+      /* ═══════════════════════════════════════════════════════════════
+       Admin Orders UI Patch — pure frontend display only.
+       Observes dynamically-rendered order cards and re-formats:
+         • Item rows: color badge + per-item qty chip + total qty line
+         • Summary panel: color badge + per-item qty + Shipping row + clean borders
+         • Header alignment fix
+       Does NOT touch fetch, status logic, or server calls.
+    ═══════════════════════════════════════════════════════════════ */
+      (function () {
+        // ── Helper: derive a CSS-safe dot color from a color name string ──
+        function colorNameToHex(name) {
+          const map = {
+            red: "#e74c3c",
+            blue: "#3498db",
+            green: "#27ae60",
+            yellow: "#f1c40f",
+            pink: "#e0218a",
+            purple: "#9b59b6",
+            orange: "#e67e22",
+            white: "#f5f5f5",
+            black: "#2c2c2c",
+            brown: "#795548",
+            grey: "#95a5a6",
+            gray: "#95a5a6",
+            cyan: "#00bcd4",
+            teal: "#009688",
+            lime: "#8bc34a",
+            magenta: "#e040fb",
+            navy: "#1a237e",
+            gold: "#ffd700",
+            silver: "#bdbdbd",
+            beige: "#f5f0e8",
+            cream: "#fffdd0",
+            peach: "#ffcba4",
+            lavender: "#e6b3ff",
+            mint: "#98ff98",
+            rose: "#ff6b8a",
+            coral: "#ff7f50",
+            sky: "#87ceeb",
+            indigo: "#3f51b5",
+            violet: "#7c3aed",
+          };
+          const n = (name || "").toLowerCase().trim();
+          // check map keys
+          for (const [k, v] of Object.entries(map)) {
+            if (n.includes(k)) return v;
+          }
+          // fallback: derive from char codes for unknown colors
+          let h = 0;
+          for (let i = 0; i < n.length; i++)
+            h = (h * 31 + n.charCodeAt(i)) & 0xffff;
+          return `hsl(${h % 360}, 60%, 55%)`;
+        }
+
+        // ── Build a color badge element ──
+        function makeColorBadge(colorName) {
+          const badge = document.createElement("span");
+          badge.className = "color-badge";
+          badge.innerHTML = `<span class="color-dot" style="background:${colorNameToHex(colorName)}"></span>${colorName}`;
+          return badge;
+        }
+
+        // ── Build a quantity chip ──
+        function makeQtyChip(qty) {
+          const chip = document.createElement("span");
+          chip.className = "item-qty-badge";
+          chip.textContent = `×${qty}`;
+          return chip;
+        }
+
+        // ── Parse item text into {name, color, qty} ──
+        // Handles patterns like:
+        //   "Balloon Red x3", "Balloon (Red) ×3", "Balloon - Red qty:3"
+        //   "Balloon Red 3", "3× Balloon Red"
+        function parseItemText(raw) {
+          let text = raw.trim();
+          let qty = 1;
+          let color = "";
+
+          // qty patterns: ×N, xN, x N, qty:N, QtyN, trailing plain number
+          const qtyRe =
+            /[×x]\s*(\d+)|qty[:\s]*(\d+)|(\d+)\s*[×x]|(?:\s|^)(\d+)$/i;
+          const qm = text.match(qtyRe);
+          if (qm) {
+            qty = parseInt(qm[1] || qm[2] || qm[3] || qm[4]) || 1;
+            text = text.replace(qm[0], "").trim();
+          }
+
+          // color patterns: "(Red)", "- Red", "| Red", trailing color word
+          const colorRe = /\(([^)]+)\)|[-|]\s*([A-Za-z][A-Za-z\s]+)$/;
+          const cm = text.match(colorRe);
+          if (cm) {
+            color = (cm[1] || cm[2]).trim();
+            text = text.replace(cm[0], "").trim();
+          }
+
+          return { name: text || raw.trim(), color, qty };
+        }
+
+        // ── Reformat a single order-box ──
+        function patchOrderBox(box) {
+          if (box.dataset.uiPatched) return;
+          box.dataset.uiPatched = "1";
+
+          // ── 1. Fix order header alignment (order# + price badge) ──
+          const firstRow = box.querySelector(
+            '[class*="d-flex"]:first-child, .order-header',
+          );
+          if (firstRow) {
+            firstRow.style.display = "flex";
+            firstRow.style.alignItems = "center";
+            firstRow.style.flexWrap = "wrap";
+            firstRow.style.gap = "0.5rem";
+          }
+
+          // ── 2. Find item lines ──
+          // admin.js renders items in various ways; we look for the items container.
+          // Common patterns: ul/li lists, div.order-items, spans with item names.
+          // We'll scan for text nodes / elements that look like item lines.
+
+          // Strategy: look for a container that holds item-like children
+          // Typical structure from admin.js:
+          //   <div class="order-items"> or <ul> with <li> items
+          //   OR inline spans separated by commas/newlines
+
+          let itemsContainer = box.querySelector(
+            ".order-items, .items-list, ul.order-items-ul",
+          );
+          if (!itemsContainer) {
+            // Try to find any <ul> or ordered list of items
+            itemsContainer = box.querySelector("ul");
+          }
+
+          if (itemsContainer) {
+            const listItems =
+              itemsContainer.querySelectorAll("li, .order-item");
+            if (listItems.length > 0) {
+              const newContainer = document.createElement("div");
+              newContainer.className = "order-items-list";
+              let totalQty = 0;
+
+              listItems.forEach((li) => {
+                const raw = li.textContent.trim();
+                if (!raw) return;
+                const { name, color, qty } = parseItemText(raw);
+                totalQty += qty;
+
+                const row = document.createElement("div");
+                row.className = "order-item-row";
+                const nameEl = document.createElement("span");
+                nameEl.className = "order-item-name";
+                nameEl.textContent = name;
+                row.appendChild(nameEl);
+                if (color) row.appendChild(makeColorBadge(color));
+                row.appendChild(makeQtyChip(qty));
+                newContainer.appendChild(row);
+              });
+
+              // Total line
+              const totalLine = document.createElement("div");
+              totalLine.className = "order-items-total";
+              totalLine.innerHTML = `= <strong>${totalQty} item${totalQty !== 1 ? "s" : ""}</strong>`;
+              newContainer.appendChild(totalLine);
+
+              itemsContainer.replaceWith(newContainer);
+            }
+          }
+
+          // ── 3. Patch summary panel ──
+          let summaryPanel = box.querySelector(
+            '.order-summary, .summary-box, .order-summary-panel, [class*="summary"]',
+          );
+          if (summaryPanel) {
+            patchSummaryPanel(summaryPanel);
+          }
+
+          // ── 4. Address spacing ──
+          const addrEl = box.querySelector(
+            '.order-address, .delivery-address, [class*="address"]',
+          );
+          if (addrEl && !addrEl.classList.contains("order-address-block")) {
+            addrEl.classList.add("order-address-block");
+          }
+        }
+
+        // ── Patch summary panel: add color badges, qty per item, shipping row, clean border ──
+        function patchSummaryPanel(panel) {
+          if (panel.dataset.summaryPatched) return;
+          panel.dataset.summaryPatched = "1";
+
+          // Clean up dashed borders → solid
+          panel.style.border = "1px solid var(--pink-soft)";
+          panel.style.borderRadius = "var(--radius-md)";
+
+          // Find summary item rows (inside summary)
+          const summaryItems = panel.querySelectorAll(
+            "li, .summary-item, .summary-item-row:not(.summary-row)",
+          );
+          if (summaryItems.length > 0) {
+            let totalQty = 0;
+            summaryItems.forEach((si) => {
+              if (si.dataset.summaryItemPatched) return;
+              si.dataset.summaryItemPatched = "1";
+
+              const raw = si.textContent.trim();
+              const { name, color, qty } = parseItemText(raw);
+              totalQty += qty;
+
+              // Clear and rebuild
+              si.innerHTML = "";
+              si.className = "summary-item-row";
+              si.style.display = "flex";
+              si.style.alignItems = "center";
+              si.style.flexWrap = "wrap";
+              si.style.gap = "6px";
+              si.style.fontSize = "0.85rem";
+              si.style.marginBottom = "4px";
+
+              const nameEl = document.createElement("span");
+              nameEl.style.fontWeight = "600";
+              nameEl.textContent = name;
+              si.appendChild(nameEl);
+              if (color) si.appendChild(makeColorBadge(color));
+              si.appendChild(makeQtyChip(qty));
+            });
+
+            // Add "Total Items | X pcs" row if not present
+            if (!panel.querySelector(".summary-total-items-row")) {
+              const totalItemsRow = document.createElement("div");
+              totalItemsRow.className = "summary-row total-items-row";
+              totalItemsRow.dataset.key = "total-items";
+              const lastSummaryItem = summaryItems[summaryItems.length - 1];
+              const divider = document.createElement("hr");
+              divider.className = "summary-divider";
+              totalItemsRow.innerHTML = `<span>Total Items</span><span><strong>${totalQty} pcs</strong></span>`;
+              if (lastSummaryItem && lastSummaryItem.parentNode) {
+                lastSummaryItem.parentNode.insertBefore(
+                  divider,
+                  lastSummaryItem.nextSibling,
+                );
+                lastSummaryItem.parentNode.insertBefore(
+                  totalItemsRow,
+                  divider.nextSibling,
+                );
+              } else {
+                panel.insertBefore(divider, panel.firstChild);
+                panel.insertBefore(totalItemsRow, divider.nextSibling);
+              }
+            }
+          }
+
+          // ── Add Shipping row above Total if missing ──
+          const totalRow = panel.querySelector(
+            '.summary-row.grand-total-row, .total-row, [class*="total"]:not([class*="items"])',
+          );
+          if (totalRow && !panel.querySelector(".shipping-row")) {
+            // Look for existing shipping value in the panel text
+            let shippingText = "Rs. —";
+            const allText = panel.innerHTML;
+            const shippingMatch = allText.match(
+              /shipping[^\d]*(rs\.?\s*[\d,]+)/i,
+            );
+            if (shippingMatch) shippingText = shippingMatch[1];
+
+            // Also look for items-total row
+            let itemsTotalRow = panel.querySelector(".items-total-row");
+            if (!itemsTotalRow) {
+              // Try to find a row labelled "Items Total" or "Subtotal"
+              panel.querySelectorAll(".summary-row, div").forEach((el) => {
+                if (
+                  /items\s*total|sub\s*total/i.test(el.textContent) &&
+                  !el.dataset.key
+                ) {
+                  el.classList.add("items-total-row");
+                  itemsTotalRow = el;
+                }
+              });
+            }
+
+            const shippingRow = document.createElement("div");
+            shippingRow.className = "summary-row shipping-row";
+            shippingRow.innerHTML = `<span>Shipping</span><span>${shippingText}</span>`;
+
+            if (totalRow.parentNode) {
+              totalRow.parentNode.insertBefore(shippingRow, totalRow);
+            }
+
+            // Style total row
+            totalRow.classList.add("grand-total-row");
+            totalRow.style.fontWeight = "800";
+            totalRow.style.borderTop = "1.5px solid var(--pink-soft)";
+            totalRow.style.paddingTop = "5px";
+            totalRow.style.marginTop = "3px";
+          }
+        }
+
+        // ── Observe all order container boxes ──
+        const orderContainerIds = [
+          "payment-verification-box",
+          "pending-orders-box",
+          "shipped-orders-box",
+          "delivered-orders-box",
+          "cancelled-orders-box",
+        ];
+
+        function processAllBoxes() {
+          document.querySelectorAll(".order-box").forEach(patchOrderBox);
+          // Also fix any dashed borders in summary panels globally
+          document
+            .querySelectorAll(
+              '[style*="border: 1px dashed"], [style*="border:1px dashed"], [style*="border-style: dashed"]',
+            )
+            .forEach((el) => {
+              el.style.borderStyle = "solid";
+            });
+        }
+
+        // Observe mutations in all order containers
+        const observer = new MutationObserver(() => {
+          processAllBoxes();
+        });
+
+        function attachObservers() {
+          orderContainerIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el, { childList: true, subtree: true });
+          });
+          // Also observe body for dynamic container additions
+          observer.observe(document.body, { childList: true, subtree: false });
+          processAllBoxes();
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", attachObservers);
+        } else {
+          attachObservers();
+        }
+      })();
+    </script>
+    <script>
+      document.addEventListener("click", function (e) {
+        const wrap = document.getElementById("global-search-wrap");
+        const input = document.getElementById("global-order-search");
+        if (wrap && input && !wrap.contains(e.target) && e.target !== input) {
+          wrap.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

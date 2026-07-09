@@ -1,0 +1,444 @@
+/* =========================================================================
+   SA PARTIES — PREMIUM ENHANCEMENT LAYER
+   Purely additive, presentation-only styles.
+   Does NOT alter the logo, brand colors, structure, or any app.js logic.
+   Palette stays Pink + White, gold used only as a rare luxury highlight.
+   ========================================================================= */
+
+:root {
+  --sa-gold: #d4a437;
+  --sa-gold-soft: #f3d98b;
+  --sa-rose: #ff8fc0;
+  --sa-blush: #fff5fa;
+  --sa-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sa-ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   0. PAGE LOADER — animated logo reveal, then soft-blur fade into page
+   --------------------------------------------------------------------- */
+#sa-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(
+      900px 500px at 50% 30%,
+      rgba(224, 33, 138, 0.1),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #fffaf9 0%, #fff1f8 100%);
+  transition:
+    opacity 0.8s var(--sa-ease),
+    visibility 0.8s var(--sa-ease);
+}
+#sa-loader.sa-loader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.sa-loader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+.sa-loader-ring-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sa-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #e0218a;
+  border-right-color: var(--sa-gold-soft);
+  animation: sa-spin 1.4s linear infinite;
+}
+.sa-loader-ring.sa-ring-2 {
+  inset: 10px;
+  opacity: 0.55;
+  animation-duration: 2.1s;
+  animation-direction: reverse;
+}
+.sa-loader-logo-clip {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 26px rgba(224, 33, 138, 0.28);
+  animation: sa-logo-pop 1.1s var(--sa-ease) both;
+}
+.sa-loader-logo-clip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sa-loader-word {
+  font-family: var(--font-display, "Poppins", sans-serif);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: #ad0a69;
+  opacity: 0;
+  animation: sa-fade-up 0.8s var(--sa-ease) 0.35s forwards;
+}
+@keyframes sa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sa-logo-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes sa-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.sa-loading {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------
+   1. SCROLL PROGRESS BAR
+   --------------------------------------------------------------------- */
+#sa-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #e0218a, var(--sa-gold), #e0218a);
+  background-size: 200% 100%;
+  z-index: 10000;
+  transition: width 0.12s linear;
+  box-shadow: 0 0 10px rgba(224, 33, 138, 0.5);
+}
+
+/* ---------------------------------------------------------------------
+   2. CUSTOM LUXURY CURSOR (desktop only)
+   --------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  body.sa-cursor-ready {
+    cursor: none;
+  }
+  body.sa-cursor-ready a,
+  body.sa-cursor-ready button,
+  body.sa-cursor-ready input,
+  body.sa-cursor-ready select,
+  body.sa-cursor-ready textarea,
+  body.sa-cursor-ready label {
+    cursor: none;
+  }
+  #sa-cursor-dot,
+  #sa-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100000;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+  #sa-cursor-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #8a0a52;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.2s;
+  }
+  #sa-cursor-ring{
+    width:34px; height:34px; border-radius:50%;
+    border: 1.6px solid rgba(138,10,82,.75);
+    background: rgba(138,10,82,0.10);
+    backdrop-filter: blur(2px);
+    transition: width .28s var(--sa-ease), height .28s var(--sa-ease),
+                border-color .28s var(--sa-ease), background .28s var(--sa-ease),
+                opacity .2s;
+  body.sa-cursor-hover #sa-cursor-ring {
+    width: 56px;
+    height: 56px;
+    border-color: var(--sa-gold);
+    background: rgba(212, 164, 55, 0.08);
+    box-shadow: 0 0 22px rgba(212, 164, 55, 0.25);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   3. SCROLL REVEAL — richer blur-to-sharp / stagger friendly
+   --------------------------------------------------------------------- */
+.sa-reveal {
+  opacity: 0;
+  transform: translateY(34px) scale(0.985);
+  filter: blur(6px);
+  transition:
+    opacity 1s var(--sa-ease),
+    transform 1s var(--sa-ease),
+    filter 1s var(--sa-ease);
+  will-change: opacity, transform, filter;
+}
+.sa-reveal.sa-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+.sa-reveal[data-sa-delay="1"] {
+  transition-delay: 0.08s;
+}
+.sa-reveal[data-sa-delay="2"] {
+  transition-delay: 0.15s;
+}
+.sa-reveal[data-sa-delay="3"] {
+  transition-delay: 0.25s;
+}
+.sa-reveal[data-sa-delay="4"] {
+  transition-delay: 0.35s;
+}
+.sa-reveal[data-sa-delay="5"] {
+  transition-delay: 0.5s;
+}
+
+/* ---------------------------------------------------------------------
+   4. NAVBAR — glass polish + animated underline
+   --------------------------------------------------------------------- */
+.navbar-sa,
+.navbar-shop {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border-bottom: 1px solid rgba(224, 33, 138, 0.1) !important;
+}
+.nav-links a {
+  position: relative;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.25rem;
+  height: 2px;
+  background: linear-gradient(90deg, #e0218a, var(--sa-gold));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--sa-ease);
+}
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------
+   5. LUXURY BUTTONS — glow / shimmer / ripple
+   --------------------------------------------------------------------- */
+.btn-add,
+.btn-primary,
+.hero-cta-group a.btn,
+[class*="btn-buy"],
+.btn-checkout,
+.btn-place-order {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.45s var(--sa-ease),
+    box-shadow 0.45s var(--sa-ease),
+    filter 0.45s var(--sa-ease) !important;
+}
+.btn-add:hover,
+.btn-primary:hover,
+.hero-cta-group a.btn:hover,
+[class*="btn-buy"]:hover,
+.btn-checkout:hover,
+.btn-place-order:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 14px 32px -10px rgba(224, 33, 138, 0.45),
+    0 0 0 1px rgba(212, 164, 55, 0.25);
+  filter: brightness(1.03);
+}
+.sa-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  animation: sa-ripple-anim 0.6s var(--sa-ease-soft) forwards;
+  pointer-events: none;
+}
+@keyframes sa-ripple-anim {
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   6. PRODUCT / CATEGORY CARDS — gentle 3D lift + gold-edge glow
+   --------------------------------------------------------------------- */
+.product-card-modern,
+.category-card,
+.card {
+  transition:
+    transform 0.55s var(--sa-ease),
+    box-shadow 0.55s var(--sa-ease) !important;
+  transform-style: preserve-3d;
+}
+.product-card-modern:hover,
+.category-card:hover {
+  box-shadow:
+    0 26px 50px -20px rgba(173, 10, 105, 0.3),
+    0 0 0 1px rgba(212, 164, 55, 0.18) !important;
+}
+.product-card-modern .img-wrap img,
+.category-card img {
+  transition:
+    transform 0.8s var(--sa-ease),
+    filter 0.8s var(--sa-ease) !important;
+}
+.product-card-modern:hover .img-wrap img,
+.category-card:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.04) saturate(1.05);
+}
+
+/* ---------------------------------------------------------------------
+   7. HERO — line-by-line text reveal helper + soft floating ambience
+   --------------------------------------------------------------------- */
+.sa-hero-line {
+  display: block;
+  overflow: hidden;
+}
+.sa-hero-line > span {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: sa-line-up 1s var(--sa-ease) forwards;
+}
+@keyframes sa-line-up {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sa-float-soft {
+  animation: sa-float 7s ease-in-out infinite;
+}
+@keyframes sa-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   8. GOLD-EDGE PREMIUM BADGE UTILITY
+   --------------------------------------------------------------------- */
+.sa-luxe-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--sa-gold-soft), var(--sa-gold));
+  color: #5c4415;
+  box-shadow: 0 4px 14px rgba(212, 164, 55, 0.35);
+}
+
+/* ---------------------------------------------------------------------
+   9. WAVE DIVIDER before footer
+   --------------------------------------------------------------------- */
+.sa-wave-divider {
+  display: block;
+  width: 100%;
+  height: 64px;
+  margin-top: -2px;
+}
+.sa-wave-divider path {
+  fill: var(--pink-50, #fff1f8);
+}
+
+/* ---------------------------------------------------------------------
+   10. FLOATING PARTICLES CANVAS (hero only, subtle)
+   --------------------------------------------------------------------- */
+#sa-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+/* ---------------------------------------------------------------------
+   11. Section eyebrow shimmer accent
+   --------------------------------------------------------------------- */
+.section-title {
+  position: relative;
+}
+/* ---------------------------------------------------------------------
+   12. MOBILE SAFETY — lighter, glitch-free motion on small/touch screens
+   --------------------------------------------------------------------- */
+@media (max-width: 768px), (hover: none) and (pointer: coarse){
+  #sa-cursor-dot, #sa-cursor-ring{ display:none !important; }
+  body.sa-cursor-ready{ cursor:auto !important; }
+  body.sa-cursor-ready a, body.sa-cursor-ready button, body.sa-cursor-ready input,
+  body.sa-cursor-ready select, body.sa-cursor-ready textarea, body.sa-cursor-ready label{
+    cursor:auto !important;
+  }
+
+  #sa-particles{ display:none !important; }
+
+  /* Lighter reveal: blur causes jank on low-power GPUs */
+  .sa-reveal{
+    transform: translateY(16px);
+    filter: none;
+    transition: opacity .6s var(--sa-ease-soft), transform .6s var(--sa-ease-soft);
+  }
+  .sa-reveal.sa-visible{ transform: translateY(0); filter:none; }
+
+  .product-card-modern:hover .img-wrap img, .category-card:hover img{
+    transform: none; /* avoid tap-triggered hover-zoom stuck state on mobile */
+  }
+}
