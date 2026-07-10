@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.3.0",
@@ -23,7 +24,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.1",
     "multer": "^2.2.0",
-    "mysql2": "^3.22.5",
-    "nodemailer": "^9.0.1"
+    "nodemailer": "^9.0.1",
+    "pg": "^8.22.0"
   }
 }
