@@ -12,28 +12,30 @@ const getAllProducts = async (req, res) => {
     let params = [];
 
     if (search) {
-      query += " WHERE p.name LIKE ? OR p.keywords LIKE ?";
+      // Postgres LIKE is case-sensitive, ILIKE matches MySQL's default case-insensitive behavior
+      query += " WHERE p.name ILIKE $1 OR p.keywords ILIKE $2";
       params = [`%${search}%`, `%${search}%`];
     }
 
     query += " ORDER BY p.id DESC";
 
-    const [rows] = await db.query(query, params);
+    const result = await db.query(query, params);
+    const rows = result.rows;
 
     // Fetch colors for each product
     for (let product of rows) {
-      const [colors] = await db.query(
-        "SELECT id, color_name, color_code, stock FROM product_colors WHERE product_id = ?",
+      const colorsResult = await db.query(
+        "SELECT id, color_name, color_code, stock FROM product_colors WHERE product_id = $1",
         [product.id],
       );
-      product.colors = colors;
+      product.colors = colorsResult.rows;
 
       // Fetch multiple images for each product
-      const [images] = await db.query(
-        "SELECT image_url FROM product_images WHERE product_id = ? ORDER BY display_order ASC",
+      const imagesResult = await db.query(
+        "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC",
         [product.id],
       );
-      product.images = images.map((img) => img.image_url);
+      product.images = imagesResult.rows.map((img) => img.image_url);
     }
 
     res.json(rows);
@@ -76,12 +78,12 @@ const createProduct = async (req, res) => {
     .replace(/^-|-$/g, "");
   const slug = `${baseSlug}-${Date.now()}`;
 
-  const connection = await db.getConnection();
+  const connection = await db.connect();
   try {
-    await connection.beginTransaction();
+    await connection.query("BEGIN");
 
-    const [result] = await connection.query(
-      "INSERT INTO products (category_id, name, description, price, stock, image_url, slug, keywords, length, width, height, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    const insertResult = await connection.query(
+      "INSERT INTO products (category_id, name, description, price, stock, image_url, slug, keywords, length, width, height, weight) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
       [
         category_id || null,
         name,
@@ -98,13 +100,13 @@ const createProduct = async (req, res) => {
       ],
     );
 
-    const productId = result.insertId;
+    const productId = insertResult.rows[0].id;
 
     // Insert multiple images
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
         await connection.query(
-          "INSERT INTO product_images (product_id, image_url, display_order) VALUES (?, ?, ?)",
+          "INSERT INTO product_images (product_id, image_url, display_order) VALUES ($1, $2, $3)",
           [productId, `/uploads/${files[i].filename}`, i],
         );
       }
@@ -115,13 +117,13 @@ const createProduct = async (req, res) => {
       const colorsData = JSON.parse(colors);
       for (let color of colorsData) {
         await connection.query(
-          "INSERT INTO product_colors (product_id, color_name, color_code, stock) VALUES (?, ?, ?, ?)",
+          "INSERT INTO product_colors (product_id, color_name, color_code, stock) VALUES ($1, $2, $3, $4)",
           [productId, color.name, color.code, color.stock],
         );
       }
     }
 
-    await connection.commit();
+    await connection.query("COMMIT");
 
     res.status(201).json({
       message: "Product added successfully!",
@@ -129,15 +131,15 @@ const createProduct = async (req, res) => {
       slug: slug,
     });
   } catch (error) {
-    await connection.rollback();
+    await connection.query("ROLLBACK");
     console.error("❌ Product insert error:", error.message);
-    // Common errors guide
+    // Common errors guide — Postgres error codes instead of MySQL's
     let friendlyMsg = error.message;
-    if (error.code === "ER_NO_SUCH_TABLE")
+    if (error.code === "42P01")
       friendlyMsg = "A required table is missing. Run schema.sql again.";
-    else if (error.code === "ER_BAD_FIELD_ERROR")
+    else if (error.code === "42703")
       friendlyMsg = `Column missing in DB: ${error.message}. Run the ALTER TABLE commands from schema_fix.sql.`;
-    else if (error.code === "ER_DUP_ENTRY")
+    else if (error.code === "23505")
       friendlyMsg =
         "Duplicate slug — this should be auto-fixed now. Try again.";
     res
@@ -152,12 +154,12 @@ const createProduct = async (req, res) => {
 const getProductBySlug = async (req, res) => {
   const { slug } = req.params;
   try {
-    const [rows] = await db.query("SELECT * FROM products WHERE slug = ?", [
+    const result = await db.query("SELECT * FROM products WHERE slug = $1", [
       slug,
     ]);
-    if (rows.length === 0)
+    if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found" });
-    res.json(rows[0]);
+    res.json(result.rows[0]);
   } catch (error) {
     res
       .status(500)
@@ -180,7 +182,7 @@ const updateProduct = async (req, res) => {
 
   try {
     let query =
-      "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, category_id = ?, keywords = ?, slug = ?";
+      "UPDATE products SET name = $1, description = $2, price = $3, stock = $4, category_id = $5, keywords = $6, slug = $7";
     let params = [
       name,
       description,
@@ -191,16 +193,18 @@ const updateProduct = async (req, res) => {
       slug,
     ];
 
+    let paramIndex = 8;
     if (image_url) {
-      query += ", image_url = ?";
+      query += `, image_url = $${paramIndex}`;
       params.push(image_url);
+      paramIndex++;
     }
 
-    query += " WHERE id = ?";
+    query += ` WHERE id = $${paramIndex}`;
     params.push(id);
 
-    const [result] = await db.query(query, params);
-    if (result.affectedRows === 0) {
+    const result = await db.query(query, params);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Product not found" });
     }
     res.status(200).json({ message: "Product updated successfully!", slug });
@@ -215,8 +219,8 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query("DELETE FROM products WHERE id = ?", [id]);
-    if (result.affectedRows === 0) {
+    const result = await db.query("DELETE FROM products WHERE id = $1", [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Product not found" });
     }
     res.status(200).json({ message: "Product deleted successfully!" });
@@ -226,13 +230,14 @@ const deleteProduct = async (req, res) => {
       .json({ error: "Product delete error", details: error.message });
   }
 };
+
 const getProductById = async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
-    if (rows.length === 0)
+    const result = await db.query("SELECT * FROM products WHERE id = $1", [id]);
+    if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found" });
-    res.json(rows[0]);
+    res.json(result.rows[0]);
   } catch (error) {
     res
       .status(500)

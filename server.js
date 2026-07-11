@@ -8,6 +8,10 @@ require("dotenv").config({ path: path.join(__dirname, "config", ".env") });
 const app = express();
 
 // Configure multer for file uploads
+// ⚠️ NOTE: On Vercel this disk storage will NOT persist — filesystem is
+// read-only except /tmp, and /tmp is wiped between invocations.
+// This works fine for local dev, but for production on Vercel you should
+// swap this for Supabase Storage or Cloudinary. Ask if you want this done.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "public", "uploads"));
@@ -79,7 +83,17 @@ app.post(
 app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+
+// Local development mein normal listen karo.
+// Vercel pe khud module ko serverless function ki tarah invoke karta hai,
+// is liye wahan app.listen() nahi chalna chahiye — process.env.VERCEL
+// Vercel apne runtime mein automatically set karta hai.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

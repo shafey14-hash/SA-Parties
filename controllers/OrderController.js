@@ -41,11 +41,9 @@ const placeOrder = async (req, res) => {
         .json({ error: "Transaction ID is required for online payments." });
     }
     if (!sender_number || sender_number.trim() === "") {
-      return res
-        .status(400)
-        .json({
-          error: "Sender mobile number is required for online payments.",
-        });
+      return res.status(400).json({
+        error: "Sender mobile number is required for online payments.",
+      });
     }
     if (!payment_screenshot || payment_screenshot.trim() === "") {
       return res
@@ -54,32 +52,28 @@ const placeOrder = async (req, res) => {
     }
     const mobileRegex = /^03[0-9]{2}[-]?[0-9]{7}$/;
     if (!mobileRegex.test(sender_number.trim())) {
-      return res
-        .status(400)
-        .json({
-          error: "Invalid mobile number format. Use format: 03XX-XXXXXXX",
-        });
+      return res.status(400).json({
+        error: "Invalid mobile number format. Use format: 03XX-XXXXXXX",
+      });
     }
     const txnRegex = /^[A-Za-z0-9\-_]{4,30}$/;
     if (!txnRegex.test(transaction_id.trim())) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid transaction ID. Must be 4-30 characters (letters, numbers, dashes allowed).",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid transaction ID. Must be 4-30 characters (letters, numbers, dashes allowed).",
+      });
     }
   }
 
-  const connection = await db.getConnection();
+  const connection = await db.connect();
   try {
-    await connection.beginTransaction();
+    await connection.query("BEGIN");
 
-    const [customerResult] = await connection.query(
-      "INSERT INTO customers (name, email, phone, address) VALUES (?, ?, ?, ?)",
+    const customerResult = await connection.query(
+      "INSERT INTO customers (name, email, phone, address) VALUES ($1, $2, $3, $4) RETURNING id",
       [name, email, phone, address],
     );
-    const customerId = customerResult.insertId;
+    const customerId = customerResult.rows[0].id;
 
     // COD → directly Pending; Online → Payment Verification
     const orderStatus =
@@ -95,11 +89,11 @@ const placeOrder = async (req, res) => {
     const _rand = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = "SAP-" + _date + "-" + _rand;
 
-    const [orderResult] = await connection.query(
+    const orderResult = await connection.query(
       `INSERT INTO orders
         (order_number, customer_id, total_amount, status, payment_method,
          payment_status, transaction_id, sender_number, payment_screenshot, user_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
       [
         orderNumber,
         customerId,
@@ -113,18 +107,19 @@ const placeOrder = async (req, res) => {
         user_id || null,
       ],
     );
-    const orderId = orderResult.insertId;
+    const orderId = orderResult.rows[0].id;
 
     for (let item of items) {
       // ── Atomic stock check + decrement (prevents overselling) ──
       // SELECT ... FOR UPDATE locks the row so concurrent orders can't race
-      const [stockRows] = await connection.query(
-        "SELECT stock, name FROM products WHERE id = ? FOR UPDATE",
+      const stockResult = await connection.query(
+        "SELECT stock, name FROM products WHERE id = $1 FOR UPDATE",
         [item.product_id],
       );
+      const stockRows = stockResult.rows;
 
       if (stockRows.length === 0) {
-        await connection.rollback();
+        await connection.query("ROLLBACK");
         return res
           .status(404)
           .json({ error: `Product #${item.product_id} not found.` });
@@ -134,7 +129,7 @@ const placeOrder = async (req, res) => {
       const productName = stockRows[0].name;
 
       if (availableStock <= 0) {
-        await connection.rollback();
+        await connection.query("ROLLBACK");
         return res.status(400).json({
           error: `"${productName}" is out of stock. Please remove it from your cart.`,
           outOfStock: true,
@@ -143,7 +138,7 @@ const placeOrder = async (req, res) => {
       }
 
       if (availableStock < item.quantity) {
-        await connection.rollback();
+        await connection.query("ROLLBACK");
         return res.status(400).json({
           error: `Only ${availableStock} unit(s) of "${productName}" available. Please reduce the quantity.`,
           insufficientStock: true,
@@ -153,7 +148,7 @@ const placeOrder = async (req, res) => {
       }
 
       await connection.query(
-        "INSERT INTO order_items (order_id, product_id, quantity, price, color_id) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO order_items (order_id, product_id, quantity, price, color_id) VALUES ($1, $2, $3, $4, $5)",
         [
           orderId,
           item.product_id,
@@ -165,24 +160,25 @@ const placeOrder = async (req, res) => {
 
       // Decrement stock atomically
       await connection.query(
-        "UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?",
+        "UPDATE products SET stock = stock - $1 WHERE id = $2 AND stock >= $3",
         [item.quantity, item.product_id, item.quantity],
       );
     }
 
-    await connection.commit();
+    await connection.query("COMMIT");
 
     // ── Send email notifications ──
     if (email) {
       // Fetch actual product names/colors for proper email formatting
-      const [itemDetailRows] = await db.query(
+      const itemDetailResult = await db.query(
         `SELECT p.name AS pname, pc.color_name AS cname, oi.quantity, oi.price
          FROM order_items oi
          JOIN products p ON oi.product_id = p.id
          LEFT JOIN product_colors pc ON oi.color_id = pc.id
-         WHERE oi.order_id = ?`,
+         WHERE oi.order_id = $1`,
         [orderId],
       );
+      const itemDetailRows = itemDetailResult.rows;
       const itemsText = itemDetailRows
         .map(
           (r) =>
@@ -216,17 +212,15 @@ const placeOrder = async (req, res) => {
         ? "Order confirmed! Your order is now being processed."
         : "Order submitted! Your payment is being verified. You will receive an email once approved.";
 
-    res
-      .status(201)
-      .json({
-        message: responseMessage,
-        orderId,
-        orderNumber,
-        paymentStatus,
-        orderStatus,
-      });
+    res.status(201).json({
+      message: responseMessage,
+      orderId,
+      orderNumber,
+      paymentStatus,
+      orderStatus,
+    });
   } catch (error) {
-    await connection.rollback();
+    await connection.query("ROLLBACK");
     res
       .status(500)
       .json({ error: "Order process failed.", details: error.message });
@@ -240,21 +234,18 @@ const placeOrder = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 const getAllOrders = async (req, res) => {
   try {
-    const [orders] = await db.query(`
+    const result = await db.query(`
       SELECT
         o.id, o.order_number, o.total_amount, o.status, o.payment_method, o.payment_status,
         o.transaction_id, o.sender_number, o.payment_screenshot, o.verification_notes,
         o.rejection_reason, o.verified_by, o.verified_at,
         o.admin_edited_price, o.admin_notes, o.created_at,
         c.name AS customer_name, c.phone, c.address, c.email AS customer_email,
-        GROUP_CONCAT(
-          CONCAT(
-            agg.pname,
-            IF(agg.cname IS NOT NULL AND agg.cname != '', CONCAT(' (', agg.cname, ')'), ''),
-            ' (x', agg.qty, ')'
-          )
-          ORDER BY agg.pname, agg.cname
-          SEPARATOR '||'
+        STRING_AGG(
+          agg.pname ||
+          CASE WHEN agg.cname IS NOT NULL AND agg.cname != '' THEN ' (' || agg.cname || ')' ELSE '' END ||
+          ' (x' || agg.qty || ')',
+          '||' ORDER BY agg.pname, agg.cname
         ) AS items_list
       FROM orders o
       JOIN customers c ON o.customer_id = c.id
@@ -267,19 +258,21 @@ const getAllOrders = async (req, res) => {
         FROM order_items oi
         JOIN products p ON oi.product_id = p.id
         LEFT JOIN product_colors pc ON oi.color_id = pc.id
-        GROUP BY oi.order_id, oi.product_id, oi.color_id
+        GROUP BY oi.order_id, oi.product_id, oi.color_id, p.name, pc.color_name
       ) agg ON agg.order_id = o.id
-      GROUP BY o.id
+      GROUP BY o.id, o.order_number, o.total_amount, o.status, o.payment_method, o.payment_status,
+        o.transaction_id, o.sender_number, o.payment_screenshot, o.verification_notes,
+        o.rejection_reason, o.verified_by, o.verified_at,
+        o.admin_edited_price, o.admin_notes, o.created_at,
+        c.name, c.phone, c.address, c.email
       ORDER BY o.id DESC
     `);
-    res.status(200).json(orders);
+    res.status(200).json(result.rows);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: "There's an issue in fetching orders.",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "There's an issue in fetching orders.",
+      details: error.message,
+    });
   }
 };
 
@@ -294,35 +287,34 @@ const getUserOrders = async (req, res) => {
   }
 
   try {
-    const [orders] = await db.query(
+    const result = await db.query(
       `
       SELECT
         o.id, o.order_number, o.total_amount, o.status, o.payment_method,
         o.payment_status, o.created_at, o.rejection_reason,
         c.name AS customer_name, c.phone, c.address, c.email AS customer_email,
-        GROUP_CONCAT(
-          CONCAT(
-            p.name,
-            IF(pc.color_name IS NOT NULL AND pc.color_name != '', CONCAT(' (', pc.color_name, ')'), ''),
-            ' x', oi.quantity,
-            ' @ Rs.', FORMAT(oi.price, 0)
-          )
-          ORDER BY p.name
-          SEPARATOR '||'
+        STRING_AGG(
+          p.name ||
+          CASE WHEN pc.color_name IS NOT NULL AND pc.color_name != '' THEN ' (' || pc.color_name || ')' ELSE '' END ||
+          ' x' || oi.quantity ||
+          ' @ Rs.' || TO_CHAR(oi.price, 'FM999,999,999'),
+          '||' ORDER BY p.name
         ) AS items_list
       FROM orders o
       JOIN customers c ON o.customer_id = c.id
       JOIN order_items oi ON oi.order_id = o.id
       JOIN products p ON oi.product_id = p.id
       LEFT JOIN product_colors pc ON oi.color_id = pc.id
-      WHERE o.user_id = ?
-      GROUP BY o.id
+      WHERE o.user_id = $1
+      GROUP BY o.id, o.order_number, o.total_amount, o.status, o.payment_method,
+        o.payment_status, o.created_at, o.rejection_reason,
+        c.name, c.phone, c.address, c.email
       ORDER BY o.created_at DESC
     `,
       [user_id],
     );
 
-    res.status(200).json(orders);
+    res.status(200).json(result.rows);
   } catch (error) {
     res
       .status(500)
@@ -361,30 +353,32 @@ const updateOrderStatus = async (req, res) => {
   status = normalized;
 
   try {
-    const [orders] = await db.query(
+    const ordersResult = await db.query(
       `SELECT o.*, c.email AS customer_email, c.name AS customer_name, c.address
-       FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?`,
+       FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = $1`,
       [id],
     );
+    const orders = ordersResult.rows;
 
     if (orders.length === 0) {
       return res.status(404).json({ error: "Order not found." });
     }
 
     const order = orders[0];
-    await db.query("UPDATE orders SET status = ? WHERE id = ?", [status, id]);
+    await db.query("UPDATE orders SET status = $1 WHERE id = $2", [status, id]);
 
     // Send email on status change
     if (order.customer_email) {
       try {
-        const [itemsRows] = await db.query(
+        const itemsResult = await db.query(
           `SELECT p.name AS pname, pc.color_name AS cname, oi.quantity, oi.price
            FROM order_items oi
            JOIN products p ON oi.product_id = p.id
            LEFT JOIN product_colors pc ON oi.color_id = pc.id
-           WHERE oi.order_id = ?`,
+           WHERE oi.order_id = $1`,
           [id],
         );
+        const itemsRows = itemsResult.rows;
         const itemsText = itemsRows
           .map(
             (r) =>
@@ -427,12 +421,10 @@ const updateOrderStatus = async (req, res) => {
 
     res.status(200).json({ message: `Order status updated to ${status}` });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: "Failed to update order status.",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "Failed to update order status.",
+      details: error.message,
+    });
   }
 };
 
@@ -442,9 +434,9 @@ const updateOrderStatus = async (req, res) => {
 const deleteOrder = async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query("DELETE FROM order_items WHERE order_id = ?", [id]);
-    const [result] = await db.query("DELETE FROM orders WHERE id = ?", [id]);
-    if (result.affectedRows === 0) {
+    await db.query("DELETE FROM order_items WHERE order_id = $1", [id]);
+    const result = await db.query("DELETE FROM orders WHERE id = $1", [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Order not found" });
     }
     res.status(200).json({ message: "Order and items deleted" });
@@ -469,11 +461,12 @@ const verifyPayment = async (req, res) => {
   }
 
   try {
-    const [orders] = await db.query(
+    const ordersResult = await db.query(
       `SELECT o.*, c.email AS customer_email, c.name AS customer_name, c.address
-       FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?`,
+       FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = $1`,
       [id],
     );
+    const orders = ordersResult.rows;
     if (orders.length === 0) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -481,14 +474,15 @@ const verifyPayment = async (req, res) => {
     const order = orders[0];
 
     // Fetch order items for email
-    const [itemsRows] = await db.query(
+    const itemsResult = await db.query(
       `SELECT p.name AS pname, pc.color_name AS cname, oi.quantity, oi.price
        FROM order_items oi
        JOIN products p ON oi.product_id = p.id
        LEFT JOIN product_colors pc ON oi.color_id = pc.id
-       WHERE oi.order_id = ?`,
+       WHERE oi.order_id = $1`,
       [id],
     );
+    const itemsRows = itemsResult.rows;
     const itemsText = itemsRows
       .map(
         (r) =>
@@ -502,10 +496,10 @@ const verifyPayment = async (req, res) => {
         `UPDATE orders
          SET payment_status = 'Paid',
              status = 'Pending',
-             verification_notes = ?,
-             verified_by = ?,
+             verification_notes = $1,
+             verified_by = $2,
              verified_at = CURRENT_TIMESTAMP
-         WHERE id = ?`,
+         WHERE id = $3`,
         [notes || "Payment approved by admin", adminId, id],
       );
 
@@ -535,11 +529,11 @@ const verifyPayment = async (req, res) => {
         `UPDATE orders
          SET payment_status = 'Rejected',
              status = 'Payment Rejected',
-             rejection_reason = ?,
-             verification_notes = ?,
-             verified_by = ?,
+             rejection_reason = $1,
+             verification_notes = $2,
+             verified_by = $3,
              verified_at = CURRENT_TIMESTAMP
-         WHERE id = ?`,
+         WHERE id = $4`,
         [rejectionReason, rejectionReason, adminId, id],
       );
 
@@ -577,16 +571,16 @@ const verifyPayment = async (req, res) => {
 const getOrderPaymentDetails = async (req, res) => {
   const { id } = req.params;
   try {
-    const [orders] = await db.query(
+    const result = await db.query(
       `SELECT o.*, c.name as customer_name, c.phone as customer_phone, c.address as customer_address
        FROM orders o JOIN customers c ON o.customer_id = c.id
-       WHERE o.id = ?`,
+       WHERE o.id = $1`,
       [id],
     );
-    if (orders.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: "Order not found" });
     }
-    res.status(200).json(orders[0]);
+    res.status(200).json(result.rows[0]);
   } catch (error) {
     res
       .status(500)
@@ -605,38 +599,39 @@ const updateOrderPrice = async (req, res) => {
     return res.status(400).json({ error: "Invalid price amount." });
   }
 
-  const connection = await db.getConnection();
+  const connection = await db.connect();
   try {
-    await connection.beginTransaction();
+    await connection.query("BEGIN");
 
     // Get current price for audit log
-    const [orderRows] = await connection.query(
-      "SELECT total_amount FROM orders WHERE id = ?",
+    const orderResult = await connection.query(
+      "SELECT total_amount FROM orders WHERE id = $1",
       [id],
     );
+    const orderRows = orderResult.rows;
     if (orderRows.length === 0) {
-      await connection.rollback();
+      await connection.query("ROLLBACK");
       return res.status(404).json({ error: "Order not found." });
     }
     const oldPrice = orderRows[0].total_amount;
 
     // Update price
     await connection.query(
-      "UPDATE orders SET total_amount = ?, admin_edited_price = 1, admin_notes = ? WHERE id = ?",
+      "UPDATE orders SET total_amount = $1, admin_edited_price = true, admin_notes = $2 WHERE id = $3",
       [total_amount, admin_notes || "", id],
     );
 
     // Insert audit log
     await connection.query(
       `INSERT INTO order_price_logs (order_id, old_price, new_price, changed_by, change_reason)
-       VALUES (?, ?, ?, 'admin', ?)`,
+       VALUES ($1, $2, $3, 'admin', $4)`,
       [id, oldPrice, total_amount, admin_notes || "Price updated by admin"],
     );
 
-    await connection.commit();
+    await connection.query("COMMIT");
     res.status(200).json({ message: "Order price updated successfully!" });
   } catch (error) {
-    await connection.rollback();
+    await connection.query("ROLLBACK");
     res
       .status(500)
       .json({ error: "Failed to update order price", details: error.message });
@@ -644,8 +639,6 @@ const updateOrderPrice = async (req, res) => {
     connection.release();
   }
 };
-
-// exports at bottom of file
 
 // ─────────────────────────────────────────────────────────────
 // Update Product Stock (Admin)
@@ -666,11 +659,11 @@ const updateProductStock = async (req, res) => {
   }
 
   try {
-    const [result] = await db.query(
-      "UPDATE products SET stock = ? WHERE id = ?",
+    const result = await db.query(
+      "UPDATE products SET stock = $1 WHERE id = $2",
       [Math.floor(Number(stock)), id],
     );
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Product not found." });
     }
     const newStock = Math.floor(Number(stock));
@@ -692,14 +685,16 @@ const updateProductStock = async (req, res) => {
 const getProductStock = async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(
-      "SELECT id, name, stock FROM products WHERE id = ?",
+    const result = await db.query(
+      "SELECT id, name, stock FROM products WHERE id = $1",
       [id],
     );
-    if (rows.length === 0)
+    if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found." });
-    const { stock, name } = rows[0];
-    res.status(200).json({ id: rows[0].id, name, stock, inStock: stock > 0 });
+    const { stock, name } = result.rows[0];
+    res
+      .status(200)
+      .json({ id: result.rows[0].id, name, stock, inStock: stock > 0 });
   } catch (err) {
     res
       .status(500)

@@ -8,6 +8,13 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+
+  // Serverless (Vercel) ke liye zaroori: har function instance apna alag pool
+  // banata hai, is liye per-instance connections kam rakhna zaroori hai
+  // taake Supabase pooler ka connection limit exceed na ho.
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
 pool

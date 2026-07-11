@@ -12,30 +12,39 @@ const registerUser = async (req, res) => {
   const { name, email, password, address } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({ error: "Name, email and password is essential." });
+    return res
+      .status(400)
+      .json({ error: "Name, email and password is essential." });
   }
 
   try {
     // Check if email already exists
-    const [existing] = await db.query(
-      "SELECT id, is_verified FROM users WHERE email = ?",
-      [email]
+    const existingResult = await db.query(
+      "SELECT id, is_verified FROM users WHERE email = $1",
+      [email],
     );
+    const existing = existingResult.rows;
 
     if (existing.length > 0) {
       if (existing[0].is_verified) {
-        return res.status(400).json({ error: "This email has already been registered. Please use Login." });
+        return res
+          .status(400)
+          .json({
+            error: "This email has already been registered. Please use Login.",
+          });
       } else {
         // Email exists but not verified — resend code
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         await db.query(
-          "UPDATE users SET verification_code = ?, verification_expires = ? WHERE email = ?",
-          [code, expires, email]
+          "UPDATE users SET verification_code = $1, verification_expires = $2 WHERE email = $3",
+          [code, expires, email],
         );
         await sendVerification(email, code);
-        return res.status(200).json({ message: "Verification code sent again!" });
+        return res
+          .status(200)
+          .json({ message: "Verification code sent again!" });
       }
     }
 
@@ -46,15 +55,18 @@ const registerUser = async (req, res) => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Save new user (unverified)
+    // Save new user (unverified) — is_verified as boolean false (change to 0 if column is INTEGER not BOOLEAN)
     await db.query(
-      "INSERT INTO users (name, email, password, address, verification_code, verification_expires, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)",
-      [name, email, hashedPassword, address || "", code, expires]
+      "INSERT INTO users (name, email, password, address, verification_code, verification_expires, is_verified) VALUES ($1, $2, $3, $4, $5, $6, false)",
+      [name, email, hashedPassword, address || "", code, expires],
     );
 
     await sendVerification(email, code);
-    res.status(201).json({ message: "Signup successful! 6-digit code has been sent to your email." });
-
+    res
+      .status(201)
+      .json({
+        message: "Signup successful! 6-digit code has been sent to your email.",
+      });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({ error: error.message });
@@ -68,23 +80,29 @@ const verifyCode = async (req, res) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
-    return res.status(400).json({ error: "Email and verification code are compulsory." });
+    return res
+      .status(400)
+      .json({ error: "Email and verification code are compulsory." });
   }
 
   try {
-    const [users] = await db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+    const usersResult = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+    const users = usersResult.rows;
 
     if (users.length === 0) {
-      return res.status(404).json({ error: "This email has not been registered yet." });
+      return res
+        .status(404)
+        .json({ error: "This email has not been registered yet." });
     }
 
     const user = users[0];
 
     if (user.is_verified) {
-      return res.status(200).json({ message: "Email already verified. Please use Login." });
+      return res
+        .status(200)
+        .json({ message: "Email already verified. Please use Login." });
     }
 
     if (user.verification_code !== String(code)) {
@@ -92,17 +110,20 @@ const verifyCode = async (req, res) => {
     }
 
     if (new Date() > new Date(user.verification_expires)) {
-      return res.status(400).json({ error: "Code has expired. Please signup again." });
+      return res
+        .status(400)
+        .json({ error: "Code has expired. Please signup again." });
     }
 
     // Mark verified
     await db.query(
-      "UPDATE users SET is_verified = 1, verification_code = NULL, verification_expires = NULL WHERE email = ?",
-      [email]
+      "UPDATE users SET is_verified = true, verification_code = NULL, verification_expires = NULL WHERE email = $1",
+      [email],
     );
 
-    res.status(200).json({ message: "Email verified successfully! You can now login." });
-
+    res
+      .status(200)
+      .json({ message: "Email verified successfully! You can now login." });
   } catch (error) {
     console.error("Verify error:", error);
     res.status(500).json({ error: error.message });
@@ -116,14 +137,16 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are compulsory." });
+    return res
+      .status(400)
+      .json({ error: "Email and password are compulsory." });
   }
 
   try {
-    const [users] = await db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+    const usersResult = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+    const users = usersResult.rows;
 
     if (users.length === 0) {
       return res.status(401).json({ error: "Incorrect email or password." });
@@ -144,7 +167,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     res.status(200).json({
@@ -156,7 +179,6 @@ const loginUser = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: error.message });
