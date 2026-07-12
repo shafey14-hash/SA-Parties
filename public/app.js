@@ -679,7 +679,7 @@ function showVerifySection(email) {
   document.getElementById("guest-section").style.display = "none";
   document.getElementById("verify-section").style.display = "block";
   document.getElementById("verify-code-input").value = "";
-  showAuthSuccess(`Code bheja gaya: ${email} — 10 minutes mein expire hoga.`);
+  showAuthSuccess(`Code has been sent: ${email} — expires in 10 minutes.`);
 
   // Modal title update
   document.getElementById("auth-modal-title").textContent =

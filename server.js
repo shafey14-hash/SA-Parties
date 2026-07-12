@@ -5,25 +5,17 @@ const path = require("path");
 const multer = require("multer");
 require("dotenv").config({ path: path.join(__dirname, "config", ".env") });
 
+const { uploadToStorage } = require("./config/supabaseStorage");
+
 const app = express();
 
-// Configure multer for file uploads
-// ⚠️ NOTE: On Vercel this disk storage will NOT persist — filesystem is
-// read-only except /tmp, and /tmp is wiped between invocations.
-// This works fine for local dev, but for production on Vercel you should
-// swap this for Supabase Storage or Cloudinary. Ask if you want this done.
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "public", "uploads"));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "payment-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+const SCREENSHOT_BUCKET = "payment-screenshots";
 
+// Memory storage — no disk writes, buffer goes straight to Supabase Storage.
+// (Vercel's filesystem is read-only outside /tmp, so local disk storage
+// would silently fail/disappear there.)
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -48,7 +40,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
 // Routes Imports
 const productRoutes = require("./routes/ProductRoutes");
@@ -63,19 +54,35 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
 
-// Payment screenshot upload endpoint
+// Payment screenshot upload endpoint — now uploads to Supabase Storage
 app.post(
   "/api/upload-payment-screenshot",
   upload.single("screenshot"),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
-    res.json({
-      filename: req.file.filename,
-      path: `/uploads/${req.file.filename}`,
-      url: `/uploads/${req.file.filename}`,
-    });
+    try {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const filename = `payment-${uniqueSuffix}${path.extname(req.file.originalname)}`;
+
+      const publicUrl = await uploadToStorage(
+        SCREENSHOT_BUCKET,
+        req.file.buffer,
+        filename,
+        req.file.mimetype,
+      );
+
+      res.json({
+        filename,
+        path: publicUrl,
+        url: publicUrl,
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Screenshot upload failed", details: error.message });
+    }
   },
 );
 

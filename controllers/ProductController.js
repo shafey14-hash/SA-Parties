@@ -1,4 +1,8 @@
 const db = require("../config/db");
+const path = require("path");
+const { uploadToStorage } = require("../config/supabaseStorage");
+
+const PRODUCT_BUCKET = "product-images";
 
 // 1. Get all products (with Search support and Colors)
 const getAllProducts = async (req, res) => {
@@ -61,9 +65,7 @@ const createProduct = async (req, res) => {
     height,
     weight,
   } = req.body;
-  const files = req.files;
-  const image_url =
-    files && files.length > 0 ? `/uploads/${files[0].filename}` : "";
+  const files = req.files; // multer memoryStorage → each file has .buffer
 
   if (!name || !price || !stock) {
     return res
@@ -82,6 +84,7 @@ const createProduct = async (req, res) => {
   try {
     await connection.query("BEGIN");
 
+    // Insert product first (image_url filled in after upload, once we have productId)
     const insertResult = await connection.query(
       "INSERT INTO products (category_id, name, description, price, stock, image_url, slug, keywords, length, width, height, weight) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
       [
@@ -90,7 +93,7 @@ const createProduct = async (req, res) => {
         description,
         price,
         stock,
-        image_url,
+        "",
         slug,
         keywords || "",
         length || null,
@@ -102,14 +105,34 @@ const createProduct = async (req, res) => {
 
     const productId = insertResult.rows[0].id;
 
-    // Insert multiple images
+    // Upload images to Supabase Storage and record them
+    let mainImageUrl = "";
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = path.extname(file.originalname) || ".jpg";
+        const storagePath = `products/${productId}/${Date.now()}-${i}${ext}`;
+
+        const publicUrl = await uploadToStorage(
+          PRODUCT_BUCKET,
+          file.buffer,
+          storagePath,
+          file.mimetype,
+        );
+
+        if (i === 0) mainImageUrl = publicUrl;
+
         await connection.query(
           "INSERT INTO product_images (product_id, image_url, display_order) VALUES ($1, $2, $3)",
-          [productId, `/uploads/${files[i].filename}`, i],
+          [productId, publicUrl, i],
         );
       }
+
+      // Set the main product image_url to the first uploaded image
+      await connection.query(
+        "UPDATE products SET image_url = $1 WHERE id = $2",
+        [mainImageUrl, productId],
+      );
     }
 
     // Insert colors
@@ -171,7 +194,10 @@ const getProductBySlug = async (req, res) => {
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { category_id, name, description, price, stock, keywords } = req.body;
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+  // upload.any() puts every file in req.files (even for a single-file update form)
+  const file =
+    req.file || (req.files && req.files.length > 0 ? req.files[0] : null);
+
   const baseSlug = name
     ? name
         .toLowerCase()
@@ -181,6 +207,18 @@ const updateProduct = async (req, res) => {
   const slug = baseSlug ? `${baseSlug}-${id}` : null; // ID se unique rakho update mein
 
   try {
+    let image_url = null;
+    if (file) {
+      const ext = path.extname(file.originalname) || ".jpg";
+      const storagePath = `products/${id}/${Date.now()}${ext}`;
+      image_url = await uploadToStorage(
+        PRODUCT_BUCKET,
+        file.buffer,
+        storagePath,
+        file.mimetype,
+      );
+    }
+
     let query =
       "UPDATE products SET name = $1, description = $2, price = $3, stock = $4, category_id = $5, keywords = $6, slug = $7";
     let params = [
