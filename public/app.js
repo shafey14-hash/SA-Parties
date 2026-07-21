@@ -1318,52 +1318,70 @@ function renderSidebarCategories(categories) {
   if (!list) return;
   list.innerHTML = "";
 
-  const parents = categories.filter((c) => !c.parent_id);
-  const children = categories.filter((c) => c.parent_id);
+  // Build a parent_id -> children tree so ANY depth of nesting works
+  // (parent -> child -> grandchild -> ...), not just one level.
+  const byId = {};
+  categories.forEach((c) => {
+    byId[String(c.id)] = { ...c, children: [] };
+  });
 
-  parents.forEach((parent) => {
-    const subs = children.filter(
-      (c) => c.parent_id === parent.id || c.parent_id === String(parent.id),
-    );
-    const icons = [
-      "bi-balloon-fill",
-      "bi-stars",
-      "bi-gift-fill",
-      "bi-cake2-fill",
-      "bi-emoji-laughing-fill",
-    ];
-    const icon = icons[Math.floor(Math.random() * icons.length)];
-
-    const btn = document.createElement("button");
-    btn.className = "sidebar-cat-btn";
-    btn.id = `cat-btn-${parent.id}`;
-    btn.innerHTML = `<i class="bi ${icon} me-2" style="color:var(--pink-primary);"></i>${escapeHtml(parent.name)}${subs.length ? `<i class="bi bi-chevron-down ms-auto" style="font-size:0.75rem;color:var(--ink-soft);" id="chev-${parent.id}"></i>` : ""}`;
-    btn.onclick = () => {
-      if (subs.length) {
-        toggleSubcats(parent.id);
-      } else {
-        filterByCategory(parent.id, parent.name);
-      }
-    };
-    list.appendChild(btn);
-
-    if (subs.length) {
-      const subWrap = document.createElement("div");
-      subWrap.id = `subcats-${parent.id}`;
-      subWrap.style.display = "none";
-      subs.forEach((sub) => {
-        const sbtn = document.createElement("button");
-        sbtn.className = "sidebar-subcat-btn";
-        sbtn.id = `cat-btn-${sub.id}`;
-        sbtn.innerHTML = `<i class="bi bi-dot me-1" style="font-size:1.2rem;"></i>${escapeHtml(sub.name)}`;
-        sbtn.onclick = () => {
-          filterByCategory(sub.id, sub.name);
-        };
-        subWrap.appendChild(sbtn);
-      });
-      list.appendChild(subWrap);
+  const roots = [];
+  categories.forEach((c) => {
+    const node = byId[String(c.id)];
+    const pid = c.parent_id !== null && c.parent_id !== undefined ? String(c.parent_id) : null;
+    if (pid && byId[pid]) {
+      byId[pid].children.push(node);
+    } else {
+      roots.push(node);
     }
   });
+
+  const icons = [
+    "bi-balloon-fill",
+    "bi-stars",
+    "bi-gift-fill",
+    "bi-cake2-fill",
+    "bi-emoji-laughing-fill",
+  ];
+
+  function renderLevel(nodes, container, depth) {
+    nodes.forEach((node) => {
+      const hasChildren = node.children.length > 0;
+
+      const btn = document.createElement("button");
+      btn.id = `cat-btn-${node.id}`;
+
+      if (depth === 0) {
+        const icon = icons[Math.floor(Math.random() * icons.length)];
+        btn.className = "sidebar-cat-btn";
+        btn.innerHTML = `<i class="bi ${icon} me-2" style="color:var(--pink-primary);"></i>${escapeHtml(node.name)}${hasChildren ? `<i class="bi bi-chevron-down ms-auto" style="font-size:0.75rem;color:var(--ink-soft);" id="chev-${node.id}"></i>` : ""}`;
+      } else {
+        // Nested levels — indent progressively so depth is visible
+        btn.className = "sidebar-subcat-btn";
+        btn.style.paddingLeft = `${1 + depth * 1}rem`;
+        btn.innerHTML = `<i class="bi bi-dot me-1" style="font-size:1.2rem;"></i>${escapeHtml(node.name)}${hasChildren ? `<i class="bi bi-chevron-down ms-auto" style="font-size:0.7rem;color:var(--ink-soft);" id="chev-${node.id}"></i>` : ""}`;
+      }
+
+      btn.onclick = () => {
+        if (hasChildren) {
+          toggleSubcats(node.id);
+        } else {
+          filterByCategory(node.id, node.name);
+        }
+      };
+      container.appendChild(btn);
+
+      if (hasChildren) {
+        const subWrap = document.createElement("div");
+        subWrap.id = `subcats-${node.id}`;
+        subWrap.style.display = "none";
+        container.appendChild(subWrap);
+        renderLevel(node.children, subWrap, depth + 1);
+      }
+    });
+  }
+
+  renderLevel(roots, list, 0);
 }
 
 function toggleSubcats(parentId) {

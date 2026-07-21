@@ -112,11 +112,20 @@ function switchOrderPane(paneId, element) {
 // ----------------------------------------------------------
 // Main Product Images — slot-based
 // ----------------------------------------------------------
+// Holds URLs of existing (already-saved) images the user removed during
+// this edit session. Sent to the backend on submit so it can drop them
+// from the product's stored images array instead of re-appending them.
+let deletedImageUrls = [];
+
 function addMainImageSlot(existingUrl) {
   const list = document.getElementById("main-images-list");
   if (!list) return;
   const slot = document.createElement("div");
   slot.className = "pf-img-slot" + (existingUrl ? " has-img" : "");
+  // Remember the original URL on the slot itself so removeImgSlot() knows
+  // whether this was a pre-existing image (needs to be marked "deleted")
+  // or just an empty/new upload slot.
+  if (existingUrl) slot.dataset.existingUrl = existingUrl;
   slot.innerHTML = `
     <input type="file" accept="image/*" onchange="handleMainImgChange(this)" />
     <img class="pf-img-preview" src="${existingUrl || ""}" />
@@ -144,7 +153,17 @@ function handleMainImgChange(input) {
 }
 
 function removeImgSlot(btn) {
-  btn.closest(".pf-img-slot, .pf-color-img-slot").remove();
+  const slot = btn.closest(".pf-img-slot, .pf-color-img-slot");
+  if (!slot) return;
+
+  // Only main product-image slots (.pf-img-slot) carry an existingUrl —
+  // if it's a previously-saved image, record it as deleted so the
+  // backend removes it from the product's stored images array.
+  if (slot.classList.contains("pf-img-slot") && slot.dataset.existingUrl) {
+    deletedImageUrls.push(slot.dataset.existingUrl);
+  }
+
+  slot.remove();
 }
 
 // ----------------------------------------------------------
@@ -690,6 +709,9 @@ async function triggerEditState(productId) {
       allProds.find((p) => String(p.id) === String(productId)) || prod;
 
     // Basic fields
+    // Fresh edit session — clear any deletions tracked from a previous edit
+    deletedImageUrls = [];
+
     document.getElementById("edit-product-id").value = productId;
     document.getElementById("prod-name").value = prod.name || "";
     document.getElementById("prod-desc").value = prod.description || "";
@@ -758,6 +780,9 @@ async function triggerEditState(productId) {
 function clearEditState() {
   document.getElementById("admin-product-form").reset();
   document.getElementById("edit-product-id").value = "";
+
+  // Reset tracked image deletions
+  deletedImageUrls = [];
 
   // Reset main images
   const mainList = document.getElementById("main-images-list");
@@ -1405,6 +1430,10 @@ document
       });
     });
 
+    // Images the user removed from existing previews during this edit —
+    // backend needs this to drop them from the stored images array.
+    formData.append("deletedImages", JSON.stringify(deletedImageUrls));
+
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Saving...`;
 
@@ -1421,6 +1450,7 @@ document
 
       if (response.ok) {
         showToast("success", "Success!", "Product successfully saved.");
+        deletedImageUrls = [];
         clearEditState();
         fetchAdminProducts();
       } else {
