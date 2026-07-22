@@ -812,11 +812,16 @@ async function deleteProductItem(id) {
 
   try {
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    const data = await res.json().catch(() => ({}));
     if (res.ok) {
       showToast("success", "Removed", "Item purged from database catalog.");
       fetchAdminProducts();
     } else {
-      showToast("error", "Error", "Could not remove selected item.");
+      showToast(
+        "error",
+        "Error",
+        data.details || data.error || "Could not remove selected item.",
+      );
     }
   } catch (err) {
     showToast("error", "Connection failed", "Cannot execute delete target.");
