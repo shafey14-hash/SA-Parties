@@ -1,9 +1,6 @@
 const db = require("../config/db");
 const path = require("path");
-const {
-  uploadToStorage,
-  deleteFromStorage,
-} = require("../config/supabaseStorage");
+const { uploadToStorage, deleteFromStorage } = require("../config/supabaseStorage");
 
 const PRODUCT_BUCKET = "product-images";
 
@@ -26,12 +23,13 @@ const getAllProducts = async (req, res) => {
       SELECT p.*, c.name AS category_name 
       FROM products p 
       LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.is_deleted = FALSE
     `;
     let params = [];
 
     if (search) {
       // Postgres LIKE is case-sensitive, ILIKE matches MySQL's default case-insensitive behavior
-      query += " WHERE p.name ILIKE $1 OR p.keywords ILIKE $2";
+      query += " AND (p.name ILIKE $1 OR p.keywords ILIKE $2)";
       params = [`%${search}%`, `%${search}%`];
     }
 
@@ -191,9 +189,10 @@ const createProduct = async (req, res) => {
 const getProductBySlug = async (req, res) => {
   const { slug } = req.params;
   try {
-    const result = await db.query("SELECT * FROM products WHERE slug = $1", [
-      slug,
-    ]);
+    const result = await db.query(
+      "SELECT * FROM products WHERE slug = $1 AND is_deleted = FALSE",
+      [slug],
+    );
     if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found" });
     res.json(result.rows[0]);
@@ -207,15 +206,8 @@ const getProductBySlug = async (req, res) => {
 // 4. Update Product by ID
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const {
-    category_id,
-    name,
-    description,
-    price,
-    stock,
-    keywords,
-    deletedImages,
-  } = req.body;
+  const { category_id, name, description, price, stock, keywords, deletedImages } =
+    req.body;
   // upload.any() puts every uploaded file in req.files. Main product image
   // slots are sent under the "images" field name (see admin.js submit handler) —
   // color images use "colorImages_<name>" and are handled separately, so we
@@ -287,8 +279,7 @@ const updateProduct = async (req, res) => {
       "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC LIMIT 1",
       [id],
     );
-    const coverImageUrl =
-      coverResult.rows.length > 0 ? coverResult.rows[0].image_url : "";
+    const coverImageUrl = coverResult.rows.length > 0 ? coverResult.rows[0].image_url : "";
 
     // 4. Update the product's own fields (slug only changes if a new name came in)
     const result = await connection.query(
@@ -345,6 +336,32 @@ const deleteProduct = async (req, res) => {
   try {
     await connection.query("BEGIN");
 
+    // order_items.product_id is ON DELETE RESTRICT on purpose — a product
+    // that's part of someone's order history must never be hard-deleted, or
+    // that order's line items would break. If it's been ordered, archive it
+    // (hide it everywhere) instead of removing the row.
+    const orderRefResult = await connection.query(
+      "SELECT 1 FROM order_items WHERE product_id = $1 LIMIT 1",
+      [id],
+    );
+
+    if (orderRefResult.rows.length > 0) {
+      const archiveResult = await connection.query(
+        "UPDATE products SET is_deleted = TRUE WHERE id = $1",
+        [id],
+      );
+      if (archiveResult.rowCount === 0) {
+        await connection.query("ROLLBACK");
+        return res.status(404).json({ error: "Product not found" });
+      }
+      await connection.query("COMMIT");
+      return res.status(200).json({
+        message:
+          "This product has order history, so it was archived (hidden from the store) instead of permanently deleted.",
+        archived: true,
+      });
+    }
+
     // Grab image URLs first so we can clean up Storage after the DB rows are gone
     const imagesResult = await connection.query(
       "SELECT image_url FROM product_images WHERE product_id = $1",
@@ -354,17 +371,10 @@ const deleteProduct = async (req, res) => {
     // Products has other tables pointing at it (images, colors) — a plain
     // DELETE FROM products was failing on the foreign key constraint. Remove
     // the dependent rows first, then the product itself, all in one transaction.
-    await connection.query("DELETE FROM product_images WHERE product_id = $1", [
-      id,
-    ]);
-    await connection.query("DELETE FROM product_colors WHERE product_id = $1", [
-      id,
-    ]);
+    await connection.query("DELETE FROM product_images WHERE product_id = $1", [id]);
+    await connection.query("DELETE FROM product_colors WHERE product_id = $1", [id]);
 
-    const result = await connection.query(
-      "DELETE FROM products WHERE id = $1",
-      [id],
-    );
+    const result = await connection.query("DELETE FROM products WHERE id = $1", [id]);
 
     if (result.rowCount === 0) {
       await connection.query("ROLLBACK");
@@ -388,7 +398,7 @@ const deleteProduct = async (req, res) => {
     let friendlyMsg = error.message;
     if (error.code === "23503") {
       friendlyMsg =
-        "This product is still referenced elsewhere (e.g. in an existing order) and can't be deleted.";
+        "This product is still referenced elsewhere and can't be deleted.";
     }
     res
       .status(500)

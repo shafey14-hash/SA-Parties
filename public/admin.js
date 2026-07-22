@@ -814,7 +814,16 @@ async function deleteProductItem(id) {
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     const data = await res.json().catch(() => ({}));
     if (res.ok) {
-      showToast("success", "Removed", "Item purged from database catalog.");
+      if (data.archived) {
+        showToast(
+          "success",
+          "Archived",
+          data.message ||
+            "Product has order history, so it was hidden instead of deleted.",
+        );
+      } else {
+        showToast("success", "Removed", "Item purged from database catalog.");
+      }
       fetchAdminProducts();
     } else {
       showToast(
