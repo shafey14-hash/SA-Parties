@@ -217,6 +217,7 @@ const updateProduct = async (req, res) => {
     stock,
     keywords,
     deletedImages,
+    colors,
   } = req.body;
   // upload.any() puts every uploaded file in req.files. Main product image
   // slots are sent under the "images" field name (see admin.js submit handler) —
@@ -282,7 +283,31 @@ const updateProduct = async (req, res) => {
       }
     }
 
-    // 3. Keep products.image_url (the card/cover thumbnail) pointing at
+    // 3. Sync color variants. The form always resends the FULL current set,
+    // so replace-all is the simplest correct approach: wipe this product's
+    // rows and reinsert whatever came in. Without this, editing/adding a
+    // variant never reached the database at all.
+    if (colors !== undefined) {
+      let colorsData = [];
+      try {
+        const parsed = JSON.parse(colors);
+        if (Array.isArray(parsed)) colorsData = parsed;
+      } catch (e) {
+        colorsData = [];
+      }
+      await connection.query(
+        "DELETE FROM product_colors WHERE product_id = $1",
+        [id],
+      );
+      for (const color of colorsData) {
+        await connection.query(
+          "INSERT INTO product_colors (product_id, color_name, color_code, stock) VALUES ($1, $2, $3, $4)",
+          [id, color.name, color.code, color.stock],
+        );
+      }
+    }
+
+    // 4. Keep products.image_url (the card/cover thumbnail) pointing at
     // whatever the first remaining gallery image is, so it never shows a
     // deleted image again.
     const coverResult = await connection.query(
@@ -292,7 +317,7 @@ const updateProduct = async (req, res) => {
     const coverImageUrl =
       coverResult.rows.length > 0 ? coverResult.rows[0].image_url : "";
 
-    // 4. Update the product's own fields (slug only changes if a new name came in)
+    // 5. Update the product's own fields (slug only changes if a new name came in)
     const result = await connection.query(
       `UPDATE products
        SET name = $1, description = $2, price = $3, stock = $4,
@@ -319,7 +344,7 @@ const updateProduct = async (req, res) => {
 
     await connection.query("COMMIT");
 
-    // 5. Best-effort: remove the actual deleted files from Supabase Storage too.
+    // 6. Best-effort: remove the actual deleted files from Supabase Storage too.
     // DB is already consistent at this point even if this part fails.
     for (const url of deletedUrls) {
       const storagePath = extractStoragePath(url, PRODUCT_BUCKET);
