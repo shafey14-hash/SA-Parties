@@ -44,7 +44,7 @@ const getAllProducts = async (req, res) => {
     // Fetch colors for each product
     for (let product of rows) {
       const colorsResult = await db.query(
-        "SELECT id, color_name, color_code, stock FROM product_colors WHERE product_id = $1",
+        "SELECT id, color_name, color_code, stock, in_stock FROM product_colors WHERE product_id = $1",
         [product.id],
       );
       product.colors = colorsResult.rows;
@@ -72,7 +72,7 @@ const createProduct = async (req, res) => {
     name,
     description,
     price,
-    stock,
+    in_stock,
     keywords,
     colors,
     length,
@@ -82,11 +82,15 @@ const createProduct = async (req, res) => {
   } = req.body;
   const files = req.files; // multer memoryStorage → each file has .buffer
 
-  if (!name || !price || !stock) {
-    return res
-      .status(400)
-      .json({ error: "Name, Price, and Stock are required!" });
+  if (!name || !price) {
+    return res.status(400).json({ error: "Name and Price are required!" });
   }
+
+  // Admin now picks "In Stock" / "Not in Stock" instead of typing a quantity.
+  // FormData sends this as the string "true"/"false".
+  const inStockBool = in_stock === "true" || in_stock === true;
+  // Legacy numeric column still exists (NOT NULL) — keep it harmless/consistent.
+  const legacyStock = inStockBool ? 1 : 0;
 
   // Slug generator — unique banao timestamp se (duplicate avoid)
   const baseSlug = name
@@ -101,13 +105,14 @@ const createProduct = async (req, res) => {
 
     // Insert product first (image_url filled in after upload, once we have productId)
     const insertResult = await connection.query(
-      "INSERT INTO products (category_id, name, description, price, stock, image_url, slug, keywords, length, width, height, weight) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
+      "INSERT INTO products (category_id, name, description, price, stock, in_stock, image_url, slug, keywords, length, width, height, weight) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id",
       [
         category_id || null,
         name,
         description,
         price,
-        stock,
+        legacyStock,
+        inStockBool,
         "",
         slug,
         keywords || "",
@@ -154,9 +159,16 @@ const createProduct = async (req, res) => {
     if (colors) {
       const colorsData = JSON.parse(colors);
       for (let color of colorsData) {
+        const colorInStock = color.in_stock !== false; // default true
         await connection.query(
-          "INSERT INTO product_colors (product_id, color_name, color_code, stock) VALUES ($1, $2, $3, $4)",
-          [productId, color.name, color.code, color.stock],
+          "INSERT INTO product_colors (product_id, color_name, color_code, stock, in_stock) VALUES ($1, $2, $3, $4, $5)",
+          [
+            productId,
+            color.name,
+            color.code,
+            colorInStock ? 1 : 0,
+            colorInStock,
+          ],
         );
       }
     }
@@ -214,11 +226,15 @@ const updateProduct = async (req, res) => {
     name,
     description,
     price,
-    stock,
+    in_stock,
     keywords,
     deletedImages,
     colors,
   } = req.body;
+  // Admin now picks "In Stock" / "Not in Stock" instead of typing a quantity.
+  // FormData sends this as the string "true"/"false".
+  const inStockBool = in_stock === "true" || in_stock === true;
+  const legacyStock = inStockBool ? 1 : 0;
   // upload.any() puts every uploaded file in req.files. Main product image
   // slots are sent under the "images" field name (see admin.js submit handler) —
   // color images use "colorImages_<name>" and are handled separately, so we
@@ -300,9 +316,10 @@ const updateProduct = async (req, res) => {
         [id],
       );
       for (const color of colorsData) {
+        const colorInStock = color.in_stock !== false; // default true
         await connection.query(
-          "INSERT INTO product_colors (product_id, color_name, color_code, stock) VALUES ($1, $2, $3, $4)",
-          [id, color.name, color.code, color.stock],
+          "INSERT INTO product_colors (product_id, color_name, color_code, stock, in_stock) VALUES ($1, $2, $3, $4, $5)",
+          [id, color.name, color.code, colorInStock ? 1 : 0, colorInStock],
         );
       }
     }
@@ -320,15 +337,16 @@ const updateProduct = async (req, res) => {
     // 5. Update the product's own fields (slug only changes if a new name came in)
     const result = await connection.query(
       `UPDATE products
-       SET name = $1, description = $2, price = $3, stock = $4,
-           category_id = $5, keywords = $6, slug = COALESCE($7, slug),
-           image_url = $8
-       WHERE id = $9`,
+       SET name = $1, description = $2, price = $3, stock = $4, in_stock = $5,
+           category_id = $6, keywords = $7, slug = COALESCE($8, slug),
+           image_url = $9
+       WHERE id = $10`,
       [
         name,
         description,
         price,
-        stock,
+        legacyStock,
+        inStockBool,
         category_id || null,
         keywords || "",
         slug,

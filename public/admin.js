@@ -220,6 +220,52 @@ function removeImgSlot(btn) {
 // ----------------------------------------------------------
 let colorIndex = 0;
 
+// ── Product-level Stock Status toggle (In Stock / Not in Stock) ──
+function setProductStockToggle(isInStock) {
+  document.getElementById("prod-in-stock").value = isInStock ? "true" : "false";
+  const inBtn = document.getElementById("prod-stock-in-btn");
+  const outBtn = document.getElementById("prod-stock-out-btn");
+  if (!inBtn || !outBtn) return;
+  if (isInStock) {
+    inBtn.className = "btn btn-sm";
+    inBtn.style.cssText =
+      "background:#2e7d32;color:#fff;border:1.5px solid #2e7d32;";
+    outBtn.className = "btn btn-sm btn-outline-secondary";
+    outBtn.style.cssText = "";
+  } else {
+    outBtn.className = "btn btn-sm";
+    outBtn.style.cssText =
+      "background:#c0392b;color:#fff;border:1.5px solid #c0392b;";
+    inBtn.className = "btn btn-sm btn-outline-secondary";
+    inBtn.style.cssText = "";
+  }
+}
+
+// ── Per-color Stock Status toggle (In Stock / Not in Stock) ──
+function setColorStockToggle(ci, isInStock) {
+  const card = document.querySelector(`.pf-color-card[data-color-idx="${ci}"]`);
+  if (!card) return;
+  const hiddenInput = card.querySelector(".color-in-stock");
+  const inBtn = card.querySelector(".color-stock-in-btn");
+  const outBtn = card.querySelector(".color-stock-out-btn");
+  if (hiddenInput) hiddenInput.value = isInStock ? "true" : "false";
+  if (!inBtn || !outBtn) return;
+  if (isInStock) {
+    inBtn.className = "btn btn-sm w-100 color-stock-in-btn";
+    inBtn.style.cssText =
+      "background:#2e7d32;color:#fff;border:1.5px solid #2e7d32;font-size:0.72rem;padding:0.35rem 0.3rem;";
+    outBtn.className =
+      "btn btn-sm w-100 btn-outline-secondary color-stock-out-btn mt-1";
+    outBtn.style.cssText = "font-size:0.72rem;padding:0.35rem 0.3rem;";
+  } else {
+    outBtn.className = "btn btn-sm w-100 color-stock-out-btn mt-1";
+    outBtn.style.cssText =
+      "background:#c0392b;color:#fff;border:1.5px solid #c0392b;font-size:0.72rem;padding:0.35rem 0.3rem;";
+    inBtn.className = "btn btn-sm w-100 color-stock-in-btn";
+    inBtn.style.cssText = "font-size:0.72rem;padding:0.35rem 0.3rem;";
+  }
+}
+
 function addColorRow() {
   const container = document.getElementById("colors-container");
   const ci = colorIndex++;
@@ -234,7 +280,7 @@ function addColorRow() {
       </button>
     </div>
     <div class="row g-2 mb-3">
-      <div class="col-5">
+      <div class="col-6">
         <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Color Name</label>
         <input type="text" class="form-control form-control-sm color-name" placeholder="e.g. Red, Blue, Pink" />
       </div>
@@ -242,9 +288,15 @@ function addColorRow() {
         <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Color</label>
         <input type="color" class="form-control form-control-sm color-code" value="#e0218a" style="height:38px;padding:3px;" />
       </div>
-      <div class="col-4">
-        <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Stock Qty</label>
-        <input type="number" class="form-control form-control-sm color-stock" placeholder="0" min="0" />
+      <div class="col-3">
+        <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Stock</label>
+        <input type="hidden" class="color-in-stock" value="true" />
+        <button type="button" class="btn btn-sm w-100 color-stock-in-btn" style="background:#2e7d32;color:#fff;border:1.5px solid #2e7d32;font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, true)">
+          <i class="bi bi-check-circle-fill"></i> In Stock
+        </button>
+        <button type="button" class="btn btn-sm w-100 btn-outline-secondary color-stock-out-btn mt-1" style="font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, false)">
+          <i class="bi bi-x-circle"></i> Not in Stock
+        </button>
       </div>
     </div>
     <div style="font-size:0.75rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">
@@ -296,9 +348,9 @@ function getColorsData() {
   cards.forEach((card) => {
     const name = card.querySelector(".color-name")?.value.trim() || "";
     const code = card.querySelector(".color-code")?.value || "#000000";
-    const stock = parseInt(card.querySelector(".color-stock")?.value) || 0;
+    const in_stock = card.querySelector(".color-in-stock")?.value !== "false";
     if (name) {
-      colors.push({ name, code, stock });
+      colors.push({ name, code, in_stock });
     }
   });
   return colors;
@@ -490,19 +542,9 @@ async function fetchAdminProducts(searchQuery = "") {
       const imgPath = prod.image_url
         ? prod.image_url
         : generatePlaceholder(prod.name);
-      const stockQty = Number(prod.stock) || 0;
-      const stockLabel =
-        stockQty <= 0
-          ? "Out of Stock"
-          : stockQty <= 5
-            ? `Only ${stockQty} left`
-            : `Stock: ${stockQty}`;
-      const stockColor =
-        stockQty <= 0
-          ? "#b3261e"
-          : stockQty <= 5
-            ? "#946d00"
-            : "var(--ink-soft)";
+      const isInStock = prod.in_stock !== false;
+      const stockLabel = isInStock ? "In Stock" : "Out of Stock";
+      const stockColor = isInStock ? "#2e7d32" : "#b3261e";
 
       const item = document.createElement("div");
       item.className = "inventory-item fade-in";
@@ -765,7 +807,7 @@ async function triggerEditState(productId) {
     document.getElementById("prod-name").value = prod.name || "";
     document.getElementById("prod-desc").value = prod.description || "";
     document.getElementById("prod-price").value = prod.price || "";
-    document.getElementById("prod-stock").value = prod.stock || "";
+    setProductStockToggle(prod.in_stock !== false);
     document.getElementById("prod-keywords").value = prod.keywords || "";
 
     // Dimensions
@@ -801,10 +843,10 @@ async function triggerEditState(productId) {
         if (!lastCard) return;
         const nameInput = lastCard.querySelector(".color-name");
         const codeInput = lastCard.querySelector(".color-code");
-        const stockInput = lastCard.querySelector(".color-stock");
+        const ci = lastCard.dataset.colorIdx;
         if (nameInput) nameInput.value = color.color_name || "";
         if (codeInput) codeInput.value = color.color_code || "#e0218a";
-        if (stockInput) stockInput.value = color.stock ?? 0;
+        setColorStockToggle(ci, color.in_stock !== false);
       });
     }
 
@@ -838,6 +880,9 @@ function clearEditState() {
 
   // Reset tracked image deletions
   deletedImageUrls = [];
+
+  // Reset stock status toggle to default (In Stock)
+  setProductStockToggle(true);
 
   // Reset main images
   const mainList = document.getElementById("main-images-list");
@@ -1463,7 +1508,7 @@ document
     formData.append("name", document.getElementById("prod-name").value);
     formData.append("description", document.getElementById("prod-desc").value);
     formData.append("price", document.getElementById("prod-price").value);
-    formData.append("stock", document.getElementById("prod-stock").value);
+    formData.append("in_stock", document.getElementById("prod-in-stock").value);
     formData.append(
       "category_id",
       document.getElementById("prod-category").value,

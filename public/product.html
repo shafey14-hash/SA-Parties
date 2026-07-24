@@ -1239,11 +1239,9 @@
       });
 
       // ── Quantity ──
+      const MAX_CART_QTY = 10; // reasonable cap — exact stock counts are no longer tracked/shown
       function changeQty(delta) {
-        const maxStock = selectedColor
-          ? selectedColor.stock
-          : currentProduct?.stock || 99;
-        quantity = Math.max(1, Math.min(quantity + delta, maxStock));
+        quantity = Math.max(1, Math.min(quantity + delta, MAX_CART_QTY));
         document.getElementById("qty-display").textContent = quantity;
       }
 
@@ -1264,18 +1262,20 @@
         });
 
         // Label + stock
+        const colorInStock = colorObj.in_stock !== false;
         document.getElementById("selected-color-label").innerHTML =
           `<i class="bi bi-check-circle-fill me-1" style="color:var(--pink-primary);"></i>
          <strong>${escapeHtml(colorObj.color_name)}</strong>
          <span style="color:var(--ink-soft);font-weight:400;"> — </span>
          ${
-           colorObj.stock > 0
-             ? `<span style="color:#388e3c;font-weight:600;">${colorObj.stock} in stock</span>`
+           colorInStock
+             ? `<span style="color:#388e3c;font-weight:600;">In Stock</span>`
              : '<span style="color:#b3261e;font-weight:600;">Out of stock</span>'
          }`;
 
-        document.getElementById("qty-stock-hint").textContent =
-          `max ${colorObj.stock}`;
+        document.getElementById("qty-stock-hint").textContent = colorInStock
+          ? ""
+          : "unavailable";
 
         // Swap gallery to this color's images if available
         if (colorObj.images && colorObj.images.length > 0) {
@@ -1286,7 +1286,7 @@
 
         // Button
         const btn = document.getElementById("add-to-cart-btn");
-        if (colorObj.stock > 0) {
+        if (colorInStock) {
           btn.disabled = false;
           btn.innerHTML = '<i class="bi bi-cart3"></i> Add to Cart';
         } else {
@@ -1405,13 +1405,10 @@
         document.getElementById("qty-display").textContent = "1";
       }
 
-      function getStockInfo(stock) {
-        const qty = Number(stock) || 0;
-        if (qty <= 0)
+      function getStockInfo(inStock) {
+        if (inStock === false)
           return { label: "Out of Stock", cls: "out", available: false };
-        if (qty <= 5)
-          return { label: `Only ${qty} left`, cls: "low", available: true };
-        return { label: `In Stock (${qty})`, cls: "", available: true };
+        return { label: "In Stock", cls: "", available: true };
       }
 
       // ── Fetch product ──
@@ -1447,7 +1444,7 @@
             p.name || "Product";
           document.title = `${p.name} - SA Parties`;
 
-          const stock = getStockInfo(p.stock);
+          const stock = getStockInfo(p.in_stock);
           document.getElementById("p-stock-label").textContent = stock.label;
           if (stock.cls)
             document.getElementById("p-stock-badge").classList.add(stock.cls);
@@ -1462,6 +1459,7 @@
             const swatchContainer = document.getElementById("color-swatches");
             swatchContainer.innerHTML = "";
             p.colors.forEach((color) => {
+              const colorInStock = color.in_stock !== false;
               const wrap = document.createElement("div");
               wrap.style.cssText =
                 "display:flex;flex-direction:column;align-items:center;gap:3px;";
@@ -1469,14 +1467,14 @@
               swatch.type = "button";
               swatch.className = "color-swatch";
               swatch.dataset.colorId = color.id;
-              swatch.title = `${color.color_name} (${color.stock} in stock)`;
+              swatch.title = `${color.color_name} (${colorInStock ? "In Stock" : "Out of Stock"})`;
               swatch.style.cssText = `width:36px;height:36px;border-radius:50%;background:${escapeHtml(color.color_code)};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;transition:all 0.2s;outline:2px solid transparent;outline-offset:3px;`;
-              if (color.stock <= 0) {
+              if (!colorInStock) {
                 swatch.style.opacity = "0.4";
                 swatch.style.cursor = "not-allowed";
               }
               swatch.addEventListener("click", () => {
-                if (color.stock > 0) selectColorVariant(color);
+                if (colorInStock) selectColorVariant(color);
               });
               const label = document.createElement("span");
               label.textContent = color.color_name;
@@ -1504,8 +1502,7 @@
           }
 
           if (!p.colors || p.colors.length === 0) {
-            document.getElementById("qty-stock-hint").textContent =
-              `max ${p.stock}`;
+            document.getElementById("qty-stock-hint").textContent = "";
           }
 
           document.getElementById("product-info").style.display = "block";

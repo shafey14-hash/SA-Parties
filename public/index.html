@@ -4301,38 +4301,51 @@
         const stockCache = new Map();
 
         // ── Fetch fresh stock for a product from backend ──
+        // Accepts either the new { in_stock: boolean } shape or the old
+        // { stock: number } shape, and normalizes to a boolean.
         async function fetchStock(productId) {
           try {
             const res = await fetch(`/api/orders/stock/${productId}`);
             if (!res.ok) return null;
             const data = await res.json();
-            stockCache.set(String(productId), data.stock);
-            return data.stock;
+            const inStock =
+              data.in_stock !== undefined
+                ? data.in_stock !== false
+                : Number(data.stock) > 0;
+            stockCache.set(String(productId), inStock);
+            return inStock;
           } catch (e) {
             return null;
           }
         }
 
-        // ── Determine stock from a product object various shapes ──
+        // ── Determine stock (boolean) from a product object of various shapes ──
         function getStockFromObj(obj) {
           if (!obj) return null;
-          if (obj.stock !== undefined) return Number(obj.stock);
-          if (obj.dataset && obj.dataset.stock !== undefined) return Number(obj.dataset.stock);
+          if (obj.in_stock !== undefined) return obj.in_stock !== false;
+          if (obj.dataset && obj.dataset.inStock !== undefined)
+            return obj.dataset.inStock !== "false";
+          // Legacy numeric fallback, in case some card still carries it
+          if (obj.stock !== undefined) return Number(obj.stock) > 0;
+          if (obj.dataset && obj.dataset.stock !== undefined)
+            return Number(obj.dataset.stock) > 0;
           return null;
         }
 
         // ── Apply Out-of-Stock visuals to a single product card ──
         function applyCardState(card) {
           const productId = card.dataset.productId || card.getAttribute("data-id");
-          let stock = card.dataset.stock !== undefined ? Number(card.dataset.stock) : null;
-
-          // Try to read stock from any element carrying it
-          if (stock === null) {
-            const stockEl = card.querySelector("[data-stock]");
-            if (stockEl) stock = Number(stockEl.dataset.stock);
+          let inStock = null;
+          if (card.dataset.inStock !== undefined) {
+            inStock = card.dataset.inStock !== "false";
+          } else if (card.dataset.stock !== undefined) {
+            inStock = Number(card.dataset.stock) > 0; // legacy fallback
+          } else {
+            const stockEl = card.querySelector("[data-in-stock]");
+            if (stockEl) inStock = stockEl.dataset.inStock !== "false";
           }
 
-          if (stock === null || isNaN(stock)) return; // unknown — don't touch
+          if (inStock === null) return; // unknown — don't touch
 
           const imgWrap = card.querySelector(".img-wrap") || card;
           const addBtn = card.querySelector(".btn-add, [data-action='add-to-cart'], [onclick*='addToCart']");
@@ -4349,7 +4362,7 @@
             }
           });
 
-          if (stock <= 0) {
+          if (!inStock) {
             // Add Out of Stock badge
             const badge = document.createElement("span");
             badge.className = "soe-oos-badge";
@@ -4390,7 +4403,7 @@
           if (!productId) return;
 
           const cachedStock = stockCache.get(String(productId));
-          const applyDetailState = (stock) => {
+          const applyDetailState = (inStock) => {
             const addBtn = modal.querySelector(
               ".btn-add, [data-action='add-to-cart'], [onclick*='addToCart']"
             );
@@ -4405,7 +4418,7 @@
             const oldBanner = modal.querySelector(".soe-detail-oos-banner");
             if (oldBanner) oldBanner.remove();
 
-            if (stock !== null && stock <= 0) {
+            if (inStock === false) {
               // Insert banner above buttons
               const banner = document.createElement("div");
               banner.className = "soe-detail-oos-banner";
@@ -4472,7 +4485,7 @@
               card?.querySelector("[data-product-id]")?.dataset.productId;
             if (productId) {
               const freshStock = await fetchStock(productId);
-              if (freshStock !== null && freshStock <= 0) {
+              if (freshStock === false) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
