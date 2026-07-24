@@ -1,6 +1,9 @@
 const db = require("../config/db");
 const path = require("path");
-const { uploadToStorage, deleteFromStorage } = require("../config/supabaseStorage");
+const {
+  uploadToStorage,
+  deleteFromStorage,
+} = require("../config/supabaseStorage");
 
 const PRODUCT_BUCKET = "product-images";
 
@@ -206,8 +209,15 @@ const getProductBySlug = async (req, res) => {
 // 4. Update Product by ID
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { category_id, name, description, price, stock, keywords, deletedImages } =
-    req.body;
+  const {
+    category_id,
+    name,
+    description,
+    price,
+    stock,
+    keywords,
+    deletedImages,
+  } = req.body;
   // upload.any() puts every uploaded file in req.files. Main product image
   // slots are sent under the "images" field name (see admin.js submit handler) —
   // color images use "colorImages_<name>" and are handled separately, so we
@@ -279,7 +289,8 @@ const updateProduct = async (req, res) => {
       "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC LIMIT 1",
       [id],
     );
-    const coverImageUrl = coverResult.rows.length > 0 ? coverResult.rows[0].image_url : "";
+    const coverImageUrl =
+      coverResult.rows.length > 0 ? coverResult.rows[0].image_url : "";
 
     // 4. Update the product's own fields (slug only changes if a new name came in)
     const result = await connection.query(
@@ -371,10 +382,17 @@ const deleteProduct = async (req, res) => {
     // Products has other tables pointing at it (images, colors) — a plain
     // DELETE FROM products was failing on the foreign key constraint. Remove
     // the dependent rows first, then the product itself, all in one transaction.
-    await connection.query("DELETE FROM product_images WHERE product_id = $1", [id]);
-    await connection.query("DELETE FROM product_colors WHERE product_id = $1", [id]);
+    await connection.query("DELETE FROM product_images WHERE product_id = $1", [
+      id,
+    ]);
+    await connection.query("DELETE FROM product_colors WHERE product_id = $1", [
+      id,
+    ]);
 
-    const result = await connection.query("DELETE FROM products WHERE id = $1", [id]);
+    const result = await connection.query(
+      "DELETE FROM products WHERE id = $1",
+      [id],
+    );
 
     if (result.rowCount === 0) {
       await connection.query("ROLLBACK");

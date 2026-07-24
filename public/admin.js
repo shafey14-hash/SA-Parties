@@ -57,21 +57,63 @@ document.addEventListener("DOMContentLoaded", () => {
 // ----------------------------------------------------------
 // Navigation Control
 // ----------------------------------------------------------
-// ── Main pane switcher (Quick Manage only) ──
-function switchPane(paneId, element) {
+// ── Quick Manage main toggle ──
+function toggleQuickManageMenu(e) {
+  e.preventDefault();
+  const subNav = document.getElementById("quick-manage-sub-nav");
+  const chevron = document.getElementById("quick-manage-chevron");
+  const isOpen = subNav.style.display === "block";
+  subNav.style.display = isOpen ? "none" : "block";
+  chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+
+  // Close Orders sub-nav whenever Quick Manage is toggled open
+  const ordersSubNav = document.getElementById("orders-sub-nav");
+  const ordersChevron = document.getElementById("orders-chevron");
+  if (ordersSubNav) ordersSubNav.style.display = "none";
+  if (ordersChevron) ordersChevron.style.transform = "rotate(0deg)";
+
+  if (!isOpen) {
+    // Auto-open whichever Quick Manage sub-pane was last active, defaulting to Inventory
+    const firstSubLink =
+      document.querySelector("#quick-manage-sub-nav .nav-link-pink.active") ||
+      document.querySelector("#quick-manage-sub-nav .nav-link-pink");
+    if (firstSubLink) {
+      const targetId = firstSubLink.id;
+      const paneMap = {
+        "nav-inventory": "inventory-pane",
+        "nav-add-product": "add-product-pane",
+        "nav-edit-category": "edit-category-pane",
+      };
+      switchQuickManagePane(
+        paneMap[targetId] || "inventory-pane",
+        firstSubLink,
+      );
+    }
+    document
+      .querySelectorAll(".nav-link-pink")
+      .forEach((l) => l.classList.remove("active"));
+    document.getElementById("nav-quick-manage-toggle").classList.add("active");
+    if (firstSubLink) firstSubLink.classList.add("active");
+  }
+}
+
+// ── Sub-pane switcher (inside Quick Manage) ──
+function switchQuickManagePane(paneId, element) {
   document
     .querySelectorAll(".section-pane")
     .forEach((p) => p.classList.remove("active"));
   document
-    .querySelectorAll(".nav-link-pink")
+    .querySelectorAll("#quick-manage-sub-nav .nav-link-pink")
     .forEach((l) => l.classList.remove("active"));
   document.getElementById(paneId).classList.add("active");
   element.classList.add("active");
-  // Close orders sub-nav when Quick Manage clicked
-  const subNav = document.getElementById("orders-sub-nav");
-  const chevron = document.getElementById("orders-chevron");
-  if (subNav) subNav.style.display = "none";
-  if (chevron) chevron.style.transform = "rotate(0deg)";
+  document.getElementById("nav-quick-manage-toggle").classList.add("active");
+
+  // Keep the Quick Manage dropdown open and its chevron pointed up
+  const subNav = document.getElementById("quick-manage-sub-nav");
+  const chevron = document.getElementById("quick-manage-chevron");
+  if (subNav) subNav.style.display = "block";
+  if (chevron) chevron.style.transform = "rotate(180deg)";
 }
 
 // ── Orders main toggle ──
@@ -82,6 +124,13 @@ function toggleOrdersMenu(e) {
   const isOpen = subNav.style.display === "block";
   subNav.style.display = isOpen ? "none" : "block";
   chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+
+  // Close Quick Manage sub-nav whenever Orders is toggled open
+  const qmSubNav = document.getElementById("quick-manage-sub-nav");
+  const qmChevron = document.getElementById("quick-manage-chevron");
+  if (qmSubNav) qmSubNav.style.display = "none";
+  if (qmChevron) qmChevron.style.transform = "rotate(0deg)";
+
   if (!isOpen) {
     // Auto-open Payment Verification sub-pane
     const firstSubLink = document.querySelector(
@@ -768,6 +817,12 @@ async function triggerEditState(productId) {
     document.getElementById("cancel-edit-btn").style.display = "block";
     document.getElementById("form-header-bg").style.background =
       "linear-gradient(135deg, #ffd93d, #ad0a69)";
+
+    // Jump to the Add/Edit Product pane so the admin actually sees the
+    // filled-in form (Inventory and the form now live in separate panes).
+    const addProductLink = document.getElementById("nav-add-product");
+    if (addProductLink)
+      switchQuickManagePane("add-product-pane", addProductLink);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
     showToast("success", "Ready to Edit", `"${prod.name}" details loaded.`);
@@ -1466,7 +1521,9 @@ document
         showToast("success", "Success!", "Product successfully saved.");
         deletedImageUrls = [];
         clearEditState();
-        fetchAdminProducts();
+        await fetchAdminProducts();
+        const invLink = document.getElementById("nav-inventory");
+        if (invLink) switchQuickManagePane("inventory-pane", invLink);
       } else {
         showToast("error", "Error", data.error || "Action failed.");
       }

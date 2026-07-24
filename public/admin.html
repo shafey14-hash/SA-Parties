@@ -1258,15 +1258,58 @@
                 Menu
               </h6>
 
-              <!-- Quick Manage -->
+              <!-- Quick Manage — main toggle -->
               <a
                 href="#"
                 class="nav-link-pink active"
-                onclick="switchPane('quick-manage-pane', this)"
-                id="nav-quick-manage"
+                onclick="toggleQuickManageMenu(event)"
+                id="nav-quick-manage-toggle"
               >
                 <i class="bi bi-lightning-charge-fill"></i> Quick Manage
+                <i
+                  class="bi bi-chevron-down ms-auto"
+                  id="quick-manage-chevron"
+                  style="font-size: 0.75rem; transition: transform 0.2s; transform: rotate(180deg)"
+                ></i>
               </a>
+
+              <!-- Sub-nav inside Quick Manage -->
+              <div
+                id="quick-manage-sub-nav"
+                style="
+                  display: block;
+                  padding-left: 1rem;
+                  border-left: 2px solid var(--pink-soft);
+                  margin: 4px 0 6px;
+                "
+              >
+                <a
+                  href="#"
+                  class="nav-link-pink active"
+                  onclick="switchQuickManagePane('inventory-pane', this)"
+                  id="nav-inventory"
+                >
+                  <i class="bi bi-boxes"></i> Inventory
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchQuickManagePane('add-product-pane', this)"
+                  id="nav-add-product"
+                >
+                  <i class="bi bi-plus-circle-fill"></i> Add New Products &amp;
+                  Variants
+                </a>
+                <a
+                  href="#"
+                  class="nav-link-pink"
+                  onclick="switchQuickManagePane('edit-category-pane', this)"
+                  id="nav-edit-category"
+                >
+                  <i class="bi bi-folder2-open"></i> Edit Category /
+                  Sub-category
+                </a>
+              </div>
 
               <!-- Orders — main toggle -->
               <a
@@ -1431,10 +1474,10 @@
               </div>
             </div>
 
-            <div id="quick-manage-pane" class="section-pane active">
+            <div id="add-product-pane" class="section-pane">
               <div class="row g-4">
                 <!-- Add Product Form -->
-                <div class="col-md-5">
+                <div class="col-lg-8 col-md-10 mx-auto">
                   <h2 class="section-title" id="form-panel-title">
                     Add Product
                   </h2>
@@ -1700,9 +1743,19 @@
                       </form>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
 
+            <div id="edit-category-pane" class="section-pane">
+              <h2 class="section-title">Edit Category / Sub-category</h2>
+              <p class="section-subtitle">
+                Create, rename, or delete categories and sub-categories.
+              </p>
+              <div class="row g-4">
+                <div class="col-md-4">
                   <!-- Create Category Form -->
-                  <div class="panel-card mt-4">
+                  <div class="panel-card">
                     <div class="panel-card-header">
                       <i class="bi bi-folder-plus fs-5"></i>
                       <h4>Create Category</h4>
@@ -1738,9 +1791,11 @@
                       </form>
                     </div>
                   </div>
+                </div>
 
+                <div class="col-md-4">
                   <!-- Delete Category -->
-                  <div class="panel-card mt-4">
+                  <div class="panel-card">
                     <div
                       class="panel-card-header"
                       style="
@@ -1786,7 +1841,7 @@
                 </div>
 
                 <!-- Edit / Rename Category Card -->
-                <div class="col-md-5 mt-3">
+                <div class="col-md-4">
                   <div
                     class="panel-card"
                     style="border: 1.5px solid #a78bfa; border-radius: 16px"
@@ -1853,9 +1908,12 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <!-- Inventory on the right -->
-                <div class="col-md-7">
+            <div id="inventory-pane" class="section-pane active">
+              <div class="row g-4">
+                <div class="col-12">
                   <h2 class="section-title">Current Inventory</h2>
                   <p class="section-subtitle">
                     All live items visible inside catalogs.
