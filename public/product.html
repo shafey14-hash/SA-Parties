@@ -1277,8 +1277,10 @@
           ? ""
           : "unavailable";
 
-        // Swap gallery to this variant's photo if it has one
-        if (colorObj.image_url) {
+        // Swap gallery to this variant's photos (can be multiple)
+        if (colorObj.images && colorObj.images.length > 0) {
+          setGalleryImages(colorObj.images);
+        } else if (colorObj.image_url) {
           setGalleryImages([colorObj.image_url]);
         } else if (currentProduct?.images?.length > 0) {
           setGalleryImages(currentProduct.images);

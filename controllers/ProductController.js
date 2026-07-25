@@ -49,6 +49,15 @@ const getAllProducts = async (req, res) => {
       );
       product.colors = colorsResult.rows;
 
+      // Each variant can have multiple photos
+      for (let color of product.colors) {
+        const colorImagesResult = await db.query(
+          "SELECT image_url FROM product_color_images WHERE color_id = $1 ORDER BY display_order ASC",
+          [color.id],
+        );
+        color.images = colorImagesResult.rows.map((img) => img.image_url);
+      }
+
       // Fetch multiple images for each product
       const imagesResult = await db.query(
         "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC",
@@ -160,35 +169,47 @@ const createProduct = async (req, res) => {
       );
     }
 
-    // Insert variants — each one is just a name + in-stock flag + one photo
+    // Insert variants — each one is a name + in-stock flag + one or more photos
     if (colors) {
       const colorsData = JSON.parse(colors);
       for (let color of colorsData) {
         const colorInStock = color.in_stock !== false; // default true
-        let variantImageUrl = null;
-        const variantFile = files.find(
+        // Every file tagged for this variant (FormData can repeat the same
+        // field name for multiple files — multer collects them all).
+        const variantFiles = files.filter(
           (f) => f.fieldname === `variantImage_${color.client_key}`,
         );
-        if (variantFile) {
-          const ext = path.extname(variantFile.originalname) || ".jpg";
-          const storagePath = `products/${productId}/variants/${Date.now()}-${color.client_key}${ext}`;
-          variantImageUrl = await uploadToStorage(
+
+        const colorInsertResult = await connection.query(
+          "INSERT INTO product_colors (product_id, color_name, image_url, stock, in_stock) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+          [productId, color.name, null, colorInStock ? 1 : 0, colorInStock],
+        );
+        const colorId = colorInsertResult.rows[0].id;
+
+        let coverUrl = null;
+        for (let i = 0; i < variantFiles.length; i++) {
+          const vFile = variantFiles[i];
+          const ext = path.extname(vFile.originalname) || ".jpg";
+          const storagePath = `products/${productId}/variants/${colorId}/${Date.now()}-${i}${ext}`;
+          const publicUrl = await uploadToStorage(
             PRODUCT_BUCKET,
-            variantFile.buffer,
+            vFile.buffer,
             storagePath,
-            variantFile.mimetype,
+            vFile.mimetype,
+          );
+          if (i === 0) coverUrl = publicUrl;
+          await connection.query(
+            "INSERT INTO product_color_images (color_id, image_url, display_order) VALUES ($1, $2, $3)",
+            [colorId, publicUrl, i],
           );
         }
-        await connection.query(
-          "INSERT INTO product_colors (product_id, color_name, image_url, stock, in_stock) VALUES ($1, $2, $3, $4, $5)",
-          [
-            productId,
-            color.name,
-            variantImageUrl,
-            colorInStock ? 1 : 0,
-            colorInStock,
-          ],
-        );
+
+        if (coverUrl) {
+          await connection.query(
+            "UPDATE product_colors SET image_url = $1 WHERE id = $2",
+            [coverUrl, colorId],
+          );
+        }
       }
     }
 
@@ -318,9 +339,11 @@ const updateProduct = async (req, res) => {
       }
     }
 
-    // 3. Sync variants (name + in-stock + one photo each). The form always
-    // resends the FULL current set, so replace-all is the simplest correct
-    // approach: wipe this product's rows and reinsert whatever came in.
+    // 3. Sync variants (name + in-stock + one or more photos each). The
+    // form always resends the FULL current set, so replace-all is the
+    // simplest correct approach: wipe this product's rows and reinsert
+    // whatever came in. (product_color_images cascade-deletes automatically
+    // when its parent product_colors row is deleted.)
     if (colors !== undefined) {
       let colorsData = [];
       try {
@@ -330,16 +353,19 @@ const updateProduct = async (req, res) => {
         colorsData = [];
       }
 
-      // Remember old variant photos so we can clean up any that are no
-      // longer used (removed variant, or its photo got replaced).
+      // Remember every old variant photo so we can clean up Storage for
+      // any that are no longer used (removed variant, or a removed photo).
       const oldVariantImagesResult = await connection.query(
-        "SELECT image_url FROM product_colors WHERE product_id = $1 AND image_url IS NOT NULL",
+        `SELECT pci.image_url FROM product_color_images pci
+         JOIN product_colors pc ON pc.id = pci.color_id
+         WHERE pc.product_id = $1`,
         [id],
       );
       const oldVariantImageUrls = oldVariantImagesResult.rows.map(
         (r) => r.image_url,
       );
 
+      // Cascade-deletes product_color_images too
       await connection.query(
         "DELETE FROM product_colors WHERE product_id = $1",
         [id],
@@ -348,32 +374,67 @@ const updateProduct = async (req, res) => {
       const keptVariantImageUrls = [];
       for (const color of colorsData) {
         const colorInStock = color.in_stock !== false; // default true
-        let variantImageUrl = color.existing_image_url || null;
 
-        const variantFile = files.find(
-          (f) => f.fieldname === `variantImage_${color.client_key}`,
-        );
-        if (variantFile) {
-          const ext = path.extname(variantFile.originalname) || ".jpg";
-          const storagePath = `products/${id}/variants/${Date.now()}-${color.client_key}${ext}`;
-          variantImageUrl = await uploadToStorage(
-            PRODUCT_BUCKET,
-            variantFile.buffer,
-            storagePath,
-            variantFile.mimetype,
-          );
+        // Existing photos the admin kept (didn't remove from the preview)
+        let existingUrls = [];
+        if (Array.isArray(color.existing_image_urls)) {
+          existingUrls = color.existing_image_urls.filter(Boolean);
+        } else if (color.existing_image_url) {
+          existingUrls = [color.existing_image_url]; // back-compat, single-photo era
         }
 
-        if (variantImageUrl) keptVariantImageUrls.push(variantImageUrl);
-
-        await connection.query(
-          "INSERT INTO product_colors (product_id, color_name, image_url, stock, in_stock) VALUES ($1, $2, $3, $4, $5)",
-          [id, color.name, variantImageUrl, colorInStock ? 1 : 0, colorInStock],
+        // Newly uploaded photos for this variant (same field name can repeat)
+        const variantFiles = files.filter(
+          (f) => f.fieldname === `variantImage_${color.client_key}`,
         );
+
+        const colorInsertResult = await connection.query(
+          "INSERT INTO product_colors (product_id, color_name, image_url, stock, in_stock) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+          [id, color.name, null, colorInStock ? 1 : 0, colorInStock],
+        );
+        const colorId = colorInsertResult.rows[0].id;
+
+        let order = 0;
+        const finalUrls = [];
+
+        for (const url of existingUrls) {
+          await connection.query(
+            "INSERT INTO product_color_images (color_id, image_url, display_order) VALUES ($1, $2, $3)",
+            [colorId, url, order],
+          );
+          finalUrls.push(url);
+          order++;
+        }
+
+        for (const vFile of variantFiles) {
+          const ext = path.extname(vFile.originalname) || ".jpg";
+          const storagePath = `products/${id}/variants/${colorId}/${Date.now()}-${order}${ext}`;
+          const publicUrl = await uploadToStorage(
+            PRODUCT_BUCKET,
+            vFile.buffer,
+            storagePath,
+            vFile.mimetype,
+          );
+          await connection.query(
+            "INSERT INTO product_color_images (color_id, image_url, display_order) VALUES ($1, $2, $3)",
+            [colorId, publicUrl, order],
+          );
+          finalUrls.push(publicUrl);
+          order++;
+        }
+
+        keptVariantImageUrls.push(...finalUrls);
+
+        if (finalUrls.length > 0) {
+          await connection.query(
+            "UPDATE product_colors SET image_url = $1 WHERE id = $2",
+            [finalUrls[0], colorId],
+          );
+        }
       }
 
       // Best-effort: remove variant photos that are no longer referenced
-      // by any variant (deleted variant, or replaced with a new photo).
+      // by any variant (deleted variant, removed photo, or replaced photo).
       const orphanedVariantUrls = oldVariantImageUrls.filter(
         (url) => !keptVariantImageUrls.includes(url),
       );
@@ -483,7 +544,9 @@ const deleteProduct = async (req, res) => {
       [id],
     );
     const variantImagesResult = await connection.query(
-      "SELECT image_url FROM product_colors WHERE product_id = $1 AND image_url IS NOT NULL",
+      `SELECT pci.image_url FROM product_color_images pci
+       JOIN product_colors pc ON pc.id = pci.color_id
+       WHERE pc.product_id = $1`,
       [id],
     );
 

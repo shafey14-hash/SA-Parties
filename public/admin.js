@@ -322,21 +322,26 @@ function addColorRow() {
       </div>
     </div>
     <div style="font-size:0.75rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">
-      <i class="bi bi-image me-1" style="color:var(--pink-primary)"></i> Variant Photo
+      <i class="bi bi-images me-1" style="color:var(--pink-primary)"></i> Variant Photos
       <span style="font-weight:400;color:var(--ink-soft);">— shown to customers when they pick this variant</span>
     </div>
     <div class="pf-color-images" id="color-imgs-${ci}"></div>
+    <button type="button" class="pf-add-cimg-btn mt-2" onclick="addVariantImageSlot(${ci})">
+      <i class="bi bi-plus"></i> Add Photo
+    </button>
   `;
   container.appendChild(card);
-  addVariantImageSlot(ci); // exactly one photo slot per variant
+  addVariantImageSlot(ci); // start with one empty slot
 }
 
 function addVariantImageSlot(ci, existingUrl) {
   const imgList = document.getElementById(`color-imgs-${ci}`);
   if (!imgList) return;
-  imgList.innerHTML = ""; // only one slot per variant
   const slot = document.createElement("div");
   slot.className = "pf-color-img-slot" + (existingUrl ? " has-img" : "");
+  // Remember the original URL on the slot itself so removeImgSlot() knows
+  // whether this was a pre-existing image (needs to be marked "removed")
+  // or just an empty/new upload slot.
   if (existingUrl) slot.dataset.existingUrl = existingUrl;
   slot.innerHTML = `
     <input type="file" accept="image/*" onchange="handleColorImgChange(this)" />
@@ -345,6 +350,9 @@ function addVariantImageSlot(ci, existingUrl) {
       <i class="bi bi-plus fs-6"></i>
       <span>Photo</span>
     </div>
+    <button type="button" class="pf-del-img" onclick="removeImgSlot(this)" title="Remove">
+      <i class="bi bi-x"></i>
+    </button>
   `;
   imgList.appendChild(slot);
 }
@@ -368,26 +376,33 @@ function getColorsData() {
     const name = card.querySelector(".color-name")?.value.trim() || "";
     const in_stock = card.querySelector(".color-in-stock")?.value !== "false";
     const client_key = card.dataset.colorIdx;
-    const imgSlot = card.querySelector(".pf-color-img-slot");
-    const existing_image_url = imgSlot?.dataset.existingUrl || null;
+    // Every remaining slot that already had a saved photo (i.e. the admin
+    // didn't remove it) — kept as-is unless replaced with a new file.
+    const existing_image_urls = Array.from(
+      card.querySelectorAll(".pf-color-img-slot"),
+    )
+      .map((slot) => slot.dataset.existingUrl)
+      .filter(Boolean);
     if (name) {
-      colors.push({ name, in_stock, client_key, existing_image_url });
+      colors.push({ name, in_stock, client_key, existing_image_urls });
     }
   });
   return colors;
 }
 
 function getVariantImageFiles() {
-  // Returns array of {client_key, file} — one photo per variant card, only
-  // included when the admin actually picked a new file for that slot.
+  // Returns array of {client_key, file} — one entry per NEW photo picked,
+  // multiple per variant card are allowed.
   const cards = document.querySelectorAll(".pf-color-card");
   const result = [];
   cards.forEach((card) => {
     const ci = card.dataset.colorIdx;
-    const input = card.querySelector(".pf-color-img-slot input[type=file]");
-    if (input && input.files[0]) {
-      result.push({ client_key: ci, file: input.files[0] });
-    }
+    const inputs = card.querySelectorAll(".pf-color-img-slot input[type=file]");
+    inputs.forEach((input) => {
+      if (input.files[0]) {
+        result.push({ client_key: ci, file: input.files[0] });
+      }
+    });
   });
   return result;
 }
@@ -812,7 +827,22 @@ async function triggerEditState(productId) {
         const ci = lastCard.dataset.colorIdx;
         if (nameInput) nameInput.value = color.color_name || "";
         setColorStockToggle(ci, color.in_stock !== false);
-        if (color.image_url) addVariantImageSlot(ci, color.image_url);
+
+        // addColorRow() already added one empty slot — clear it before
+        // populating the variant's actual saved photos.
+        const imgList = document.getElementById(`color-imgs-${ci}`);
+        if (imgList) imgList.innerHTML = "";
+        const images =
+          color.images && color.images.length > 0
+            ? color.images
+            : color.image_url
+              ? [color.image_url]
+              : [];
+        if (images.length > 0) {
+          images.forEach((url) => addVariantImageSlot(ci, url));
+        } else {
+          addVariantImageSlot(ci); // keep one empty slot to upload into
+        }
       });
     }
 
@@ -872,6 +902,93 @@ function clearEditState() {
   document.getElementById("cancel-edit-btn").style.display = "none";
   document.getElementById("form-header-bg").style.background = "";
 }
+
+// ----------------------------------------------------------
+// 4. Update/Add Product Logic
+// ----------------------------------------------------------
+document
+  .getElementById("admin-product-form")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const editId = document.getElementById("edit-product-id").value;
+    const btn = document.getElementById("upload-btn");
+
+    const formData = new FormData();
+    formData.append("name", document.getElementById("prod-name").value);
+    formData.append("description", document.getElementById("prod-desc").value);
+    formData.append("price", document.getElementById("prod-price").value);
+    formData.append("in_stock", document.getElementById("prod-in-stock").value);
+    formData.append(
+      "category_id",
+      document.getElementById("prod-category").value,
+    );
+    formData.append("keywords", document.getElementById("prod-keywords").value);
+
+    // Volumetric weight / shipping dimensions
+    const pL = parseFloat(document.getElementById("prod-length")?.value) || 0;
+    const pW = parseFloat(document.getElementById("prod-width")?.value) || 0;
+    const pH = parseFloat(document.getElementById("prod-height")?.value) || 0;
+    formData.append("length", pL);
+    formData.append("width", pW);
+    formData.append("height", pH);
+    if (pL > 0 && pW > 0 && pH > 0) {
+      formData.append("weight", ((pL * pW * pH) / 5000).toFixed(3));
+    }
+
+    // Main product images from slots
+    const mainSlots = document.querySelectorAll(
+      "#main-images-list .pf-img-slot input[type=file]",
+    );
+    mainSlots.forEach((inp) => {
+      if (inp.files[0]) formData.append("images", inp.files[0]);
+    });
+
+    // Variants data + one photo per variant
+    const colors = getColorsData();
+    formData.append("colors", JSON.stringify(colors));
+    const variantImageFiles = getVariantImageFiles();
+    variantImageFiles.forEach(({ client_key, file }) => {
+      formData.append(`variantImage_${client_key}`, file);
+    });
+
+    // Images the user removed from existing previews during this edit —
+    // backend needs this to drop them from the stored images array.
+    formData.append("deletedImages", JSON.stringify(deletedImageUrls));
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Saving...`;
+
+    const endpoint = editId ? `/api/products/${editId}` : "/api/products";
+    const httpMethod = editId ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(endpoint, {
+        method: httpMethod,
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast("success", "Success!", "Product successfully saved.");
+        deletedImageUrls = [];
+        clearEditState();
+        await fetchAdminProducts();
+        const invLink = document.getElementById("nav-inventory");
+        if (invLink) switchQuickManagePane("inventory-pane", invLink);
+      } else {
+        showToast("error", "Error", data.error || "Action failed.");
+      }
+    } catch (err) {
+      showToast("error", "Network Error", "Transmission pipeline failed.");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = editId
+        ? `<i class="bi bi-save-fill me-2"></i>Save Modifications`
+        : `<i class="bi bi-rocket-takeoff-fill me-2"></i>Upload & Go Live`;
+    }
+  });
 
 async function deleteProductItem(id) {
   if (!confirm("Are you sure you want to delete this product?")) return;
