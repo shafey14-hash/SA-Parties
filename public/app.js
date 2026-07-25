@@ -851,29 +851,6 @@ function renderProducts(products) {
       : placeholderImage(prod.name);
     const stockInfo = getStockInfo(prod.in_stock);
 
-    // Small read-only preview of each variant's photo + name. Actual
-    // variant selection now happens on the product detail page, not here.
-    let variantPreviewHtml = "";
-    if (prod.colors && prod.colors.length > 0) {
-      variantPreviewHtml = `
-        <div class="variant-preview-strip mt-2 mb-2 d-flex gap-2" style="overflow-x:auto;">
-          ${prod.colors
-            .map((color) => {
-              const variantAvailable = color.in_stock !== false;
-              const thumb = color.image_url || placeholderImage(color.name);
-              return `
-            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;${variantAvailable ? "" : "opacity:0.4;"}">
-              <img src="${escapeHtml(thumb)}" alt="${escapeHtml(color.name)}"
-                style="width:32px;height:32px;border-radius:8px;object-fit:cover;border:1.5px solid #eee;" />
-              <span style="font-size:0.6rem;font-weight:600;color:var(--ink-soft);max-width:44px;text-align:center;line-height:1.1;">${escapeHtml(color.name)}</span>
-            </div>
-          `;
-            })
-            .join("")}
-        </div>
-      `;
-    }
-
     const hasColors = prod.colors && prod.colors.length > 0;
     const anyColorInStock = hasColors
       ? prod.colors.some((c) => c.in_stock !== false)
@@ -893,7 +870,6 @@ function renderProducts(products) {
             <span class="price-modern">Rs. ${formatPrice(prod.price)}</span>
             <span class="stock-modern ${overallAvailable ? stockInfo.className : "out"}">${overallAvailable ? stockInfo.label : "Out of Stock"}</span>
           </div>
-          ${variantPreviewHtml}
           <div class="btn-actions">
             <button type="button" class="btn-add w-100"
               data-add-cart
