@@ -274,58 +274,53 @@ function addColorRow() {
   card.dataset.colorIdx = ci;
   card.innerHTML = `
     <div class="pf-color-header">
-      <span class="pf-color-title"><i class="bi bi-circle-fill me-1" style="font-size:0.65rem;"></i> Color Variant</span>
+      <span class="pf-color-title"><i class="bi bi-tag-fill me-1" style="font-size:0.65rem;"></i> Variant</span>
       <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1" style="font-size:0.75rem;" onclick="this.closest('.pf-color-card').remove()">
         <i class="bi bi-trash"></i> Remove
       </button>
     </div>
     <div class="row g-2 mb-3">
-      <div class="col-6">
-        <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Color Name</label>
-        <input type="text" class="form-control form-control-sm color-name" placeholder="e.g. Red, Blue, Pink" />
+      <div class="col-7">
+        <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Variant Name</label>
+        <input type="text" class="form-control form-control-sm color-name" placeholder="e.g. Large, Style A, Set of 2" />
       </div>
-      <div class="col-3">
-        <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Color</label>
-        <input type="color" class="form-control form-control-sm color-code" value="#e0218a" style="height:38px;padding:3px;" />
-      </div>
-      <div class="col-3">
+      <div class="col-5">
         <label class="form-label mb-1" style="font-size:0.75rem;font-weight:700;">Stock</label>
         <input type="hidden" class="color-in-stock" value="true" />
-        <button type="button" class="btn btn-sm w-100 color-stock-in-btn" style="background:#2e7d32;color:#fff;border:1.5px solid #2e7d32;font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, true)">
-          <i class="bi bi-check-circle-fill"></i> In Stock
-        </button>
-        <button type="button" class="btn btn-sm w-100 btn-outline-secondary color-stock-out-btn mt-1" style="font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, false)">
-          <i class="bi bi-x-circle"></i> Not in Stock
-        </button>
+        <div class="d-flex gap-1">
+          <button type="button" class="btn btn-sm flex-fill color-stock-in-btn" style="background:#2e7d32;color:#fff;border:1.5px solid #2e7d32;font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, true)">
+            <i class="bi bi-check-circle-fill"></i> In Stock
+          </button>
+          <button type="button" class="btn btn-sm flex-fill btn-outline-secondary color-stock-out-btn" style="font-size:0.72rem;padding:0.35rem 0.3rem;" onclick="setColorStockToggle(${ci}, false)">
+            <i class="bi bi-x-circle"></i> Not in Stock
+          </button>
+        </div>
       </div>
     </div>
     <div style="font-size:0.75rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">
-      <i class="bi bi-images me-1" style="color:var(--pink-primary)"></i> Images for this color
+      <i class="bi bi-image me-1" style="color:var(--pink-primary)"></i> Variant Photo
+      <span style="font-weight:400;color:var(--ink-soft);">— shown to customers when they pick this variant</span>
     </div>
     <div class="pf-color-images" id="color-imgs-${ci}"></div>
-    <button type="button" class="pf-add-cimg-btn mt-2" onclick="addColorImageSlot(${ci})">
-      <i class="bi bi-plus"></i> Add Image
-    </button>
   `;
   container.appendChild(card);
-  addColorImageSlot(ci); // auto-add first slot
+  addVariantImageSlot(ci); // exactly one photo slot per variant
 }
 
-function addColorImageSlot(ci, existingUrl) {
+function addVariantImageSlot(ci, existingUrl) {
   const imgList = document.getElementById(`color-imgs-${ci}`);
   if (!imgList) return;
+  imgList.innerHTML = ""; // only one slot per variant
   const slot = document.createElement("div");
   slot.className = "pf-color-img-slot" + (existingUrl ? " has-img" : "");
+  if (existingUrl) slot.dataset.existingUrl = existingUrl;
   slot.innerHTML = `
     <input type="file" accept="image/*" onchange="handleColorImgChange(this)" />
     <img class="pf-img-preview" src="${existingUrl || ""}" />
     <div class="pf-img-placeholder">
       <i class="bi bi-plus fs-6"></i>
-      <span>Image</span>
+      <span>Photo</span>
     </div>
-    <button type="button" class="pf-del-img" onclick="removeImgSlot(this)" title="Remove">
-      <i class="bi bi-x"></i>
-    </button>
   `;
   imgList.appendChild(slot);
 }
@@ -347,32 +342,28 @@ function getColorsData() {
   const colors = [];
   cards.forEach((card) => {
     const name = card.querySelector(".color-name")?.value.trim() || "";
-    const code = card.querySelector(".color-code")?.value || "#000000";
     const in_stock = card.querySelector(".color-in-stock")?.value !== "false";
+    const client_key = card.dataset.colorIdx;
+    const imgSlot = card.querySelector(".pf-color-img-slot");
+    const existing_image_url = imgSlot?.dataset.existingUrl || null;
     if (name) {
-      colors.push({ name, code, in_stock });
+      colors.push({ name, in_stock, client_key, existing_image_url });
     }
   });
   return colors;
 }
 
-function getColorImagesData() {
-  // Returns array of {colorIndex, files[]} for each color card
+function getVariantImageFiles() {
+  // Returns array of {client_key, file} — one photo per variant card, only
+  // included when the admin actually picked a new file for that slot.
   const cards = document.querySelectorAll(".pf-color-card");
   const result = [];
-  cards.forEach((card, i) => {
+  cards.forEach((card) => {
     const ci = card.dataset.colorIdx;
-    const imgList = document.getElementById(`color-imgs-${ci}`);
-    if (!imgList) return;
-    const slots = imgList.querySelectorAll(
-      ".pf-color-img-slot input[type=file]",
-    );
-    const files = [];
-    slots.forEach((inp) => {
-      if (inp.files[0]) files.push(inp.files[0]);
-    });
-    const name = card.querySelector(".color-name")?.value.trim() || "";
-    if (name) result.push({ colorName: name, files });
+    const input = card.querySelector(".pf-color-img-slot input[type=file]");
+    if (input && input.files[0]) {
+      result.push({ client_key: ci, file: input.files[0] });
+    }
   });
   return result;
 }
@@ -842,11 +833,10 @@ async function triggerEditState(productId) {
         const lastCard = colorContainer.lastElementChild;
         if (!lastCard) return;
         const nameInput = lastCard.querySelector(".color-name");
-        const codeInput = lastCard.querySelector(".color-code");
         const ci = lastCard.dataset.colorIdx;
         if (nameInput) nameInput.value = color.color_name || "";
-        if (codeInput) codeInput.value = color.color_code || "#e0218a";
         setColorStockToggle(ci, color.in_stock !== false);
+        if (color.image_url) addVariantImageSlot(ci, color.image_url);
       });
     }
 
@@ -1534,14 +1524,12 @@ document
       if (inp.files[0]) formData.append("images", inp.files[0]);
     });
 
-    // Colors data + per-color images
+    // Variants data + one photo per variant
     const colors = getColorsData();
     formData.append("colors", JSON.stringify(colors));
-    const colorImagesData = getColorImagesData();
-    colorImagesData.forEach(({ colorName, files }) => {
-      files.forEach((file) => {
-        formData.append(`colorImages_${colorName}`, file);
-      });
+    const variantImageFiles = getVariantImageFiles();
+    variantImageFiles.forEach(({ client_key, file }) => {
+      formData.append(`variantImage_${client_key}`, file);
     });
 
     // Images the user removed from existing previews during this edit —

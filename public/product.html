@@ -868,7 +868,7 @@
                 "
               >
                 <i
-                  class="bi bi-palette me-1"
+                  class="bi bi-grid-3x3-gap-fill me-1"
                   style="color: var(--pink-primary)"
                 ></i>
                 Select Variant
@@ -1277,9 +1277,9 @@
           ? ""
           : "unavailable";
 
-        // Swap gallery to this color's images if available
-        if (colorObj.images && colorObj.images.length > 0) {
-          setGalleryImages(colorObj.images);
+        // Swap gallery to this variant's photo if it has one
+        if (colorObj.image_url) {
+          setGalleryImages([colorObj.image_url]);
         } else if (currentProduct?.images?.length > 0) {
           setGalleryImages(currentProduct.images);
         }
@@ -1391,7 +1391,7 @@
             quantity,
             color_id: selectedColor?.id || null,
             color_name: selectedColor?.color_name || null,
-            color_code: selectedColor?.color_code || null,
+            variant_image_url: selectedColor?.image_url || null,
           });
           showToast(
             "success",
@@ -1451,7 +1451,7 @@
           document.getElementById("product-badge").style.display =
             "inline-flex";
 
-          // ── Color variants ──
+          // ── Variants (photo + name) ──
           const btn = document.getElementById("add-to-cart-btn");
           if (p.colors && p.colors.length > 0) {
             document.getElementById("color-variants-section").style.display =
@@ -1468,7 +1468,12 @@
               swatch.className = "color-swatch";
               swatch.dataset.colorId = color.id;
               swatch.title = `${color.color_name} (${colorInStock ? "In Stock" : "Out of Stock"})`;
-              swatch.style.cssText = `width:36px;height:36px;border-radius:50%;background:${escapeHtml(color.color_code)};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;transition:all 0.2s;outline:2px solid transparent;outline-offset:3px;`;
+              const thumb =
+                color.image_url ||
+                (typeof placeholderImage === "function"
+                  ? placeholderImage(color.color_name)
+                  : "");
+              swatch.style.cssText = `width:56px;height:56px;border-radius:12px;background:#f6f6f6 url('${escapeHtml(thumb)}') center/cover no-repeat;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;transition:all 0.2s;outline:2px solid transparent;outline-offset:2px;`;
               if (!colorInStock) {
                 swatch.style.opacity = "0.4";
                 swatch.style.cursor = "not-allowed";
@@ -1479,14 +1484,14 @@
               const label = document.createElement("span");
               label.textContent = color.color_name;
               label.style.cssText =
-                "font-size:0.65rem;font-weight:600;color:var(--ink-soft);max-width:44px;text-align:center;line-height:1.2;";
+                "font-size:0.68rem;font-weight:600;color:var(--ink-soft);max-width:60px;text-align:center;line-height:1.2;";
               wrap.appendChild(swatch);
               wrap.appendChild(label);
               swatchContainer.appendChild(wrap);
             });
             btn.disabled = true;
             btn.innerHTML =
-              '<i class="bi bi-palette me-1"></i> Select a Color First';
+              '<i class="bi bi-grid-3x3-gap-fill me-1"></i> Select a Variant First';
             btn.onclick = addToCart;
           } else {
             document.getElementById("color-variants-section").style.display =

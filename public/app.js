@@ -531,19 +531,14 @@ document.addEventListener("DOMContentLoaded", () => {
   productsContainer?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-add-cart]");
     if (!btn || btn.disabled) return;
+    e.stopPropagation(); // don't also trigger the card's own click-to-open
 
     const hasColors = btn.dataset.hasColors === "yes";
-    const selectedColor = btn.dataset.selectedColor || "";
-    const selectedColorId = btn.dataset.selectedColorId || "";
 
-    // If product has colors but none is selected — show popup
-    if (hasColors && !selectedColor) {
-      showChooseColorPopup(
-        btn.dataset.productId,
-        btn.dataset.productName,
-        Number(btn.dataset.productPrice) || 0,
-        btn,
-      );
+    // Variants can only be chosen on the product page now — send the
+    // shopper there instead of popping up an inline picker.
+    if (hasColors) {
+      window.location.href = `product.html?id=${btn.dataset.productId}`;
       return;
     }
 
@@ -551,8 +546,8 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.dataset.productId,
       btn.dataset.productName,
       Number(btn.dataset.productPrice) || 0,
-      selectedColor,
-      selectedColorId,
+      "",
+      "",
     );
   });
 
@@ -803,13 +798,10 @@ function placeholderImage(name) {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
-function getStockInfo(stock) {
-  const qty = Number(stock) || 0;
-  if (qty <= 0)
+function getStockInfo(inStock) {
+  if (inStock === false)
     return { label: "Out of Stock", className: "out", available: false };
-  if (qty <= 5)
-    return { label: `Only ${qty} left`, className: "low", available: true };
-  return { label: `Stock: ${qty}`, className: "", available: true };
+  return { label: "In Stock", className: "", available: true };
 }
 
 function showToast(type, title, message) {
@@ -857,41 +849,40 @@ function renderProducts(products) {
     const imgSrc = prod.image_url
       ? prod.image_url
       : placeholderImage(prod.name);
-    const stockInfo = getStockInfo(prod.stock);
+    const stockInfo = getStockInfo(prod.in_stock);
 
-    // Generate color options HTML
-    let colorOptionsHtml = "";
+    // Small read-only preview of each variant's photo + name. Actual
+    // variant selection now happens on the product detail page, not here.
+    let variantPreviewHtml = "";
     if (prod.colors && prod.colors.length > 0) {
-      colorOptionsHtml = `
-        <div class="color-selector mt-2 mb-2">
-          <span style="font-size:0.75rem;font-weight:600;color:var(--ink-soft);">Color:</span>
-          <div class="d-flex gap-1 mt-1">
-            ${prod.colors
-              .map(
-                (color, idx) => `
-              <button type="button" 
-                class="color-option-btn ${idx === 0 ? "active" : ""}" 
-                data-color-id="${color.id}"
-                data-color-name="${escapeHtml(color.name)}"
-                data-color-code="${escapeHtml(color.code)}"
-                data-color-stock="${color.stock}"
-                data-product-id="${prod.id}"
-                data-product-name="${escapeHtml(prod.name)}"
-                data-product-price="${Number(prod.price) || 0}"
-                style="width:28px;height:28px;border-radius:50%;border:2px solid ${idx === 0 ? "var(--pink-500)" : "#ddd"};background:${escapeHtml(color.code)};cursor:pointer;transition:all 0.2s;"
-                title="${escapeHtml(color.name)} (${color.stock} in stock)"
-                onclick="selectColor(this)">
-              </button>
-            `,
-              )
-              .join("")}
-          </div>
+      variantPreviewHtml = `
+        <div class="variant-preview-strip mt-2 mb-2 d-flex gap-2" style="overflow-x:auto;">
+          ${prod.colors
+            .map((color) => {
+              const variantAvailable = color.in_stock !== false;
+              const thumb = color.image_url || placeholderImage(color.name);
+              return `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;${variantAvailable ? "" : "opacity:0.4;"}">
+              <img src="${escapeHtml(thumb)}" alt="${escapeHtml(color.name)}"
+                style="width:32px;height:32px;border-radius:8px;object-fit:cover;border:1.5px solid #eee;" />
+              <span style="font-size:0.6rem;font-weight:600;color:var(--ink-soft);max-width:44px;text-align:center;line-height:1.1;">${escapeHtml(color.name)}</span>
+            </div>
+          `;
+            })
+            .join("")}
         </div>
       `;
     }
 
+    const hasColors = prod.colors && prod.colors.length > 0;
+    const anyColorInStock = hasColors
+      ? prod.colors.some((c) => c.in_stock !== false)
+      : true;
+    const overallAvailable = stockInfo.available && anyColorInStock;
+
     const col = document.createElement("div");
     col.className = "product-card-modern h-100";
+    col.style.cursor = "pointer";
     col.innerHTML = `
         <div class="img-wrap">
           <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(prod.name)}">
@@ -900,165 +891,32 @@ function renderProducts(products) {
           <div class="product-name">${escapeHtml(prod.name)}</div>
           <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
             <span class="price-modern">Rs. ${formatPrice(prod.price)}</span>
-            <span class="stock-modern ${stockInfo.className}">${stockInfo.label}</span>
+            <span class="stock-modern ${overallAvailable ? stockInfo.className : "out"}">${overallAvailable ? stockInfo.label : "Out of Stock"}</span>
           </div>
-          ${colorOptionsHtml}
+          ${variantPreviewHtml}
           <div class="btn-actions">
-            <button type="button" class="btn-add"
+            <button type="button" class="btn-add w-100"
               data-add-cart
               data-product-id="${escapeHtml(String(prod.id))}"
               data-product-name="${escapeHtml(prod.name)}"
               data-product-price="${Number(prod.price) || 0}"
-              data-has-colors="${prod.colors && prod.colors.length > 0 ? "yes" : "no"}"
+              data-has-colors="${hasColors ? "yes" : "no"}"
               data-selected-color=""
               data-selected-color-id=""
-              ${stockInfo.available ? "" : "disabled"}>
-              <i class="bi bi-cart3 me-1"></i> ${stockInfo.available ? "Add to Cart" : "Out of Stock"}
+              ${overallAvailable ? "" : "disabled"}>
+              <i class="bi bi-cart3 me-1"></i> ${!overallAvailable ? "Out of Stock" : hasColors ? "Select Options" : "Add to Cart"}
             </button>
-            <a href="product.html?id=${prod.id}" class="btn-view" title="View Details">
-              <i class="bi bi-eye"></i>
-            </a>
           </div>
         </div>
     `;
+    // Whole card opens the product page — except clicks on the Add to
+    // Cart button itself, which either adds directly (no variants) or
+    // sends the shopper to the product page to choose one.
+    col.addEventListener("click", (e) => {
+      if (e.target.closest("[data-add-cart]")) return;
+      window.location.href = `product.html?id=${prod.id}`;
+    });
     productsContainer.appendChild(col);
-  });
-}
-
-function selectColor(btn) {
-  // Remove active class from all color buttons in the same container
-  const container = btn.closest(".color-selector");
-  container.querySelectorAll(".color-option-btn").forEach((b) => {
-    b.style.borderColor = "#ddd";
-    b.classList.remove("active");
-  });
-
-  // Add active class to selected button
-  btn.style.borderColor = "var(--pink-500)";
-  btn.classList.add("active");
-
-  // Update the add to cart button with selected color info
-  const card = btn.closest(".product-card-modern");
-  const addToCartBtn = card.querySelector(".btn-add");
-  addToCartBtn.dataset.selectedColor = btn.dataset.colorName;
-  addToCartBtn.dataset.selectedColorId = btn.dataset.colorId;
-}
-
-// ── Color Picker Popup (shown when product has colors but none selected) ──
-function showChooseColorPopup(productId, productName, productPrice, addBtn) {
-  document.getElementById("choose-color-modal")?.remove();
-
-  // Find colors from the product card in DOM
-  const card = addBtn.closest(".product-card-modern");
-  const colorBtns = card ? card.querySelectorAll(".color-option-btn") : [];
-
-  if (colorBtns.length === 0) {
-    // Fallback: just add without color
-    addToCart(productId, productName, productPrice, "", "");
-    return;
-  }
-
-  let selectedColorName = "";
-  let selectedColorId = "";
-
-  const colorsHtml = Array.from(colorBtns)
-    .map(
-      (cb, idx) => `
-    <button type="button"
-      class="color-pick-btn"
-      data-color-id="${cb.dataset.colorId}"
-      data-color-name="${escapeHtml(cb.dataset.colorName)}"
-      data-color-code="${escapeHtml(cb.dataset.colorCode)}"
-      style="
-        display:inline-flex;align-items:center;gap:8px;
-        background:#fff;border:2px solid #e8d5f0;border-radius:50px;
-        padding:6px 14px 6px 8px;cursor:pointer;font-size:0.85rem;
-        font-weight:600;color:#2a1b2e;transition:all 0.18s;
-      "
-      onclick="(function(btn){
-        document.querySelectorAll('.color-pick-btn').forEach(b=>{
-          b.style.borderColor='#e8d5f0';
-          b.style.background='#fff';
-          b.style.color='#2a1b2e';
-        });
-        btn.style.borderColor='#e0218a';
-        btn.style.background='#fff1f8';
-        btn.style.color='#e0218a';
-        document.getElementById('color-popup-confirm').dataset.colorName=btn.dataset.colorName;
-        document.getElementById('color-popup-confirm').dataset.colorId=btn.dataset.colorId;
-        document.getElementById('color-popup-confirm').disabled=false;
-        document.getElementById('color-popup-confirm').style.opacity='1';
-      })(this)"
-    >
-      <span style="width:18px;height:18px;border-radius:50%;background:${escapeHtml(cb.dataset.colorCode)};border:1.5px solid rgba(0,0,0,0.12);flex-shrink:0;"></span>
-      ${escapeHtml(cb.dataset.colorName)}
-      ${cb.dataset.colorStock ? `<span style="font-size:0.7rem;color:#8c7a92;font-weight:500;">(${cb.dataset.colorStock} left)</span>` : ""}
-    </button>
-  `,
-    )
-    .join("");
-
-  const modal = document.createElement("div");
-  modal.id = "choose-color-modal";
-  modal.style.cssText = `position:fixed;inset:0;background:rgba(42,27,46,0.5);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;`;
-
-  modal.innerHTML = `
-    <div style="background:#fff;border-radius:22px;max-width:380px;width:100%;box-shadow:0 20px 50px -8px rgba(173,10,105,0.25);overflow:hidden;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);">
-
-      <!-- Header -->
-      <div style="background:linear-gradient(135deg,#e0218a,#ad0a69);padding:20px 22px 16px;position:relative;">
-        <div style="font-size:1.8rem;margin-bottom:4px;">🎨</div>
-        <h4 style="margin:0;color:#fff;font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:800;">Choose a Color</h4>
-        <p style="margin:4px 0 0;color:rgba(255,255,255,0.82);font-size:0.82rem;">${escapeHtml(productName)}</p>
-        <button onclick="document.getElementById('choose-color-modal').remove()"
-          style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
-      </div>
-
-      <!-- Color options -->
-      <div style="padding:18px 20px 8px;">
-        <p style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#8c7a92;margin-bottom:12px;">Select a variant to continue:</p>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-          ${colorsHtml}
-        </div>
-        <p style="font-size:0.75rem;color:#c0a0c8;font-weight:500;margin-bottom:0;">
-          <i class="bi bi-info-circle me-1"></i>You must select a color before adding to cart.
-        </p>
-      </div>
-
-      <!-- Footer -->
-      <div style="padding:12px 20px 20px;display:flex;flex-direction:column;gap:8px;">
-        <button id="color-popup-confirm"
-          data-color-name=""
-          data-color-id=""
-          disabled
-          style="opacity:0.45;width:100%;background:linear-gradient(135deg,#e0218a,#ad0a69);border:none;color:#fff;font-weight:700;font-size:0.92rem;border-radius:12px;padding:0.75rem;cursor:pointer;font-family:'Poppins',sans-serif;transition:opacity 0.2s;"
-          onclick="(function(btn){
-            const cName = btn.dataset.colorName;
-            const cId = btn.dataset.colorId;
-            if (!cName) return;
-            document.getElementById('choose-color-modal').remove();
-            addToCart('${escapeHtml(String(productId))}', '${escapeHtml(productName).replace(/'/g, "\'")}', ${Number(productPrice) || 0}, cName, cId);
-            // Also update the card's add-to-cart button for future clicks
-            const cardBtn = document.querySelector('[data-add-cart][data-product-id=\'${escapeHtml(String(productId))}\']');
-            if (cardBtn) {
-              cardBtn.dataset.selectedColor = cName;
-              cardBtn.dataset.selectedColorId = cId;
-            }
-          })(this)">
-          <i class="bi bi-cart3-fill me-2"></i>Add to Cart
-        </button>
-        <button onclick="window.location.href='product.html?id=${escapeHtml(String(productId))}'"
-          style="width:100%;background:#f9f4fb;border:1.5px solid #e8d5f0;color:#e0218a;font-weight:700;font-size:0.85rem;border-radius:12px;padding:0.65rem;cursor:pointer;font-family:'Poppins',sans-serif;">
-          <i class="bi bi-eye me-1"></i>View Full Product
-        </button>
-      </div>
-    </div>
-    <style>@keyframes popIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}</style>
-  `;
-
-  document.body.appendChild(modal);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.remove();
   });
 }
 
@@ -1328,7 +1186,10 @@ function renderSidebarCategories(categories) {
   const roots = [];
   categories.forEach((c) => {
     const node = byId[String(c.id)];
-    const pid = c.parent_id !== null && c.parent_id !== undefined ? String(c.parent_id) : null;
+    const pid =
+      c.parent_id !== null && c.parent_id !== undefined
+        ? String(c.parent_id)
+        : null;
     if (pid && byId[pid]) {
       byId[pid].children.push(node);
     } else {
