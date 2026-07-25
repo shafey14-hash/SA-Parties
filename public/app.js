@@ -1116,22 +1116,7 @@ function clearNavbarSearch() {
 }
 
 // ============================================================
-// Sidebar
-// ============================================================
-function openSidebar() {
-  document.getElementById("sidebar-drawer").style.left = "0";
-  document.getElementById("sidebar-overlay").style.display = "block";
-  document.body.style.overflow = "hidden";
-}
-
-function closeSidebar() {
-  document.getElementById("sidebar-drawer").style.left = "-300px";
-  document.getElementById("sidebar-overlay").style.display = "none";
-  document.body.style.overflow = "";
-}
-
-// ============================================================
-// Categories
+// Categories — horizontal nav with dropdowns (replaces the old sidebar)
 // ============================================================
 let allProducts = [];
 let activeCategory = null;
@@ -1141,24 +1126,22 @@ async function fetchShopCategories() {
     const res = await fetch("/api/categories");
     if (!res.ok) return;
     const cats = await res.json();
-    renderSidebarCategories(cats);
+    renderCategoryNav(cats);
   } catch (err) {
     console.error("Categories fetch failed:", err);
   }
 }
 
-function renderSidebarCategories(categories) {
-  const list = document.getElementById("sidebar-categories-list");
-  if (!list) return;
-  list.innerHTML = "";
+function renderCategoryNav(categories) {
+  const wrap = document.getElementById("sa-category-nav-items");
+  if (!wrap) return;
+  wrap.innerHTML = "";
 
-  // Build a parent_id -> children tree so ANY depth of nesting works
-  // (parent -> child -> grandchild -> ...), not just one level.
+  // Build a parent_id -> children tree so any depth of nesting works
   const byId = {};
   categories.forEach((c) => {
     byId[String(c.id)] = { ...c, children: [] };
   });
-
   const roots = [];
   categories.forEach((c) => {
     const node = byId[String(c.id)];
@@ -1173,75 +1156,119 @@ function renderSidebarCategories(categories) {
     }
   });
 
-  const icons = [
-    "bi-balloon-fill",
-    "bi-stars",
-    "bi-gift-fill",
-    "bi-cake2-fill",
-    "bi-emoji-laughing-fill",
-  ];
+  roots.forEach((cat) => {
+    const hasChildren = cat.children.length > 0;
+    const item = document.createElement("div");
+    item.className = "sa-cat-item";
+    item.id = `sa-cat-item-${cat.id}`;
 
-  function renderLevel(nodes, container, depth) {
-    nodes.forEach((node) => {
-      const hasChildren = node.children.length > 0;
-
-      const btn = document.createElement("button");
-      btn.id = `cat-btn-${node.id}`;
-
-      if (depth === 0) {
-        const icon = icons[Math.floor(Math.random() * icons.length)];
-        btn.className = "sidebar-cat-btn";
-        btn.innerHTML = `<i class="bi ${icon} me-2" style="color:var(--pink-primary);"></i>${escapeHtml(node.name)}${hasChildren ? `<i class="bi bi-chevron-down ms-auto" style="font-size:0.75rem;color:var(--ink-soft);" id="chev-${node.id}"></i>` : ""}`;
-      } else {
-        // Nested levels — indent progressively so depth is visible
-        btn.className = "sidebar-subcat-btn";
-        btn.style.paddingLeft = `${1 + depth * 1}rem`;
-        btn.innerHTML = `<i class="bi bi-dot me-1" style="font-size:1.2rem;"></i>${escapeHtml(node.name)}${hasChildren ? `<i class="bi bi-chevron-down ms-auto" style="font-size:0.7rem;color:var(--ink-soft);" id="chev-${node.id}"></i>` : ""}`;
-      }
-
-      btn.onclick = () => {
-        if (hasChildren) {
-          toggleSubcats(node.id);
-        } else {
-          filterByCategory(node.id, node.name);
-        }
-      };
-      container.appendChild(btn);
-
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "sa-cat-btn";
+    btn.id = `cat-btn-${cat.id}`;
+    btn.innerHTML = `${escapeHtml(cat.name)}${hasChildren ? '<i class="bi bi-chevron-down"></i>' : ""}`;
+    btn.onclick = () => {
       if (hasChildren) {
-        const subWrap = document.createElement("div");
-        subWrap.id = `subcats-${node.id}`;
-        subWrap.style.display = "none";
-        container.appendChild(subWrap);
-        renderLevel(node.children, subWrap, depth + 1);
+        toggleCategoryDropdown(cat.id);
+      } else {
+        filterByCategory(cat.id, cat.name);
       }
-    });
-  }
+    };
+    item.appendChild(btn);
 
-  renderLevel(roots, list, 0);
+    if (hasChildren) {
+      const dropdown = document.createElement("div");
+      dropdown.className = "sa-cat-dropdown";
+      const grid = document.createElement("div");
+      grid.className = "sa-cat-dropdown-grid";
+      cat.children.forEach((sub) => {
+        grid.appendChild(buildSubcategoryCell(sub));
+      });
+      dropdown.appendChild(grid);
+      item.appendChild(dropdown);
+    }
+
+    wrap.appendChild(item);
+  });
+
+  // Click outside closes any open dropdown
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll(".sa-cat-item.open").forEach((openItem) => {
+      if (!openItem.contains(e.target)) openItem.classList.remove("open");
+    });
+  });
 }
 
-function toggleSubcats(parentId) {
-  const wrap = document.getElementById(`subcats-${parentId}`);
-  const chev = document.getElementById(`chev-${parentId}`);
-  if (!wrap) return;
-  const open = wrap.style.display !== "none";
-  wrap.style.display = open ? "none" : "block";
-  if (chev) {
-    chev.className = `bi ${open ? "bi-chevron-down" : "bi-chevron-up"} ms-auto`;
-    chev.style.fontSize = "0.75rem";
-    chev.style.color = "var(--ink-soft)";
+function buildSubcategoryCell(sub) {
+  const hasChildren = sub.children && sub.children.length > 0;
+  const cell = document.createElement("div");
+  cell.className = "sa-cat-dropdown-cell";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "sa-subcat-btn";
+  btn.id = `cat-btn-${sub.id}`;
+  btn.innerHTML = `<span>${escapeHtml(sub.name)}</span>${hasChildren ? '<i class="bi bi-chevron-down"></i>' : ""}`;
+
+  if (hasChildren) {
+    const nestedList = document.createElement("div");
+    nestedList.className = "sa-subsub-list";
+    sub.children.forEach((leaf) => {
+      const leafBtn = document.createElement("button");
+      leafBtn.type = "button";
+      leafBtn.className = "sa-subsub-btn";
+      leafBtn.id = `cat-btn-${leaf.id}`;
+      leafBtn.textContent = leaf.name;
+      leafBtn.onclick = (e) => {
+        e.stopPropagation();
+        filterByCategory(leaf.id, leaf.name);
+      };
+      nestedList.appendChild(leafBtn);
+    });
+
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const isOpen = nestedList.classList.toggle("open");
+      btn.classList.toggle("subopen", isOpen);
+      cell.classList.toggle("expanded", isOpen);
+    };
+    cell.appendChild(btn);
+    cell.appendChild(nestedList);
+  } else {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      filterByCategory(sub.id, sub.name);
+    };
+    cell.appendChild(btn);
   }
+
+  return cell;
+}
+
+function toggleCategoryDropdown(catId) {
+  const item = document.getElementById(`sa-cat-item-${catId}`);
+  if (!item) return;
+  const isOpen = item.classList.contains("open");
+  document
+    .querySelectorAll(".sa-cat-item.open")
+    .forEach((el) => el.classList.remove("open"));
+  if (!isOpen) item.classList.add("open");
+}
+
+function saCatGoHome() {
+  filterByCategory(null);
 }
 
 function filterByCategory(categoryId, categoryName) {
   activeCategory = categoryId;
-  closeSidebar();
   document
-    .querySelectorAll(".sidebar-cat-btn, .sidebar-subcat-btn")
+    .querySelectorAll(".sa-cat-item.open")
+    .forEach((el) => el.classList.remove("open"));
+  document
+    .querySelectorAll(".sa-cat-btn, .sa-subcat-btn, .sa-subsub-btn")
     .forEach((b) => b.classList.remove("active"));
   const target = document.getElementById(
-    categoryId ? `cat-btn-${categoryId}` : "cat-btn-all",
+    categoryId ? `cat-btn-${categoryId}` : "sa-cat-home",
   );
   if (target) target.classList.add("active");
 

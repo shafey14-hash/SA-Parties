@@ -302,12 +302,12 @@
       .hero-sa {
         position: relative;
         overflow: hidden;
-        padding: 4.4rem 0 3.6rem;
+        padding: 1.9rem 0 1.7rem;
         background: var(--gradient-hero);
         background-size: 220% 220%;
         animation: heroGradientShift 16s ease-in-out infinite;
         border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-        margin-bottom: 1.9rem;
+        margin-bottom: 1.2rem;
         isolation: isolate;
       }
       @keyframes heroGradientShift {
@@ -455,7 +455,7 @@
         border: 1px solid rgba(255, 255, 255, 0.22);
         box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
         overflow: hidden;
-        min-height: 360px;
+        min-height: 230px;
         perspective: 900px;
         animation: cardGlow 5s ease-in-out infinite;
       }
@@ -566,41 +566,64 @@
 
       /* balloons */
       .balloon {
-        top: 8%;
+        top: 6%;
         left: 6%;
-        width: 88px;
+        width: 66px;
         animation-name: floaty;
       }
       .balloon.b2 {
-        top: 14%;
-        right: 8%;
+        top: 10%;
+        right: 6%;
         left: auto;
-        width: 66px;
+        width: 52px;
         animation-duration: 8s;
         animation-delay: -3s;
       }
       .balloon.b3 {
-        bottom: 30%;
-        left: 4%;
-        width: 50px;
+        bottom: 26%;
+        left: 3%;
+        width: 40px;
         animation-duration: 11s;
         animation-delay: -6s;
         opacity: 0.85;
       }
       .balloon.b4 {
-        top: 4%;
-        left: 46%;
-        width: 40px;
+        top: 3%;
+        left: 44%;
+        width: 32px;
         animation-duration: 7.5s;
         animation-delay: -1.5s;
         opacity: 0.85;
       }
       .balloon.b5 {
-        bottom: 8%;
-        right: 22%;
-        width: 58px;
+        bottom: 6%;
+        right: 18%;
+        width: 44px;
         animation-duration: 10s;
         animation-delay: -4.5s;
+      }
+      .balloon.b6 {
+        top: 34%;
+        right: 30%;
+        width: 30px;
+        animation-duration: 9.5s;
+        animation-delay: -2s;
+        opacity: 0.8;
+      }
+      .balloon.b7 {
+        bottom: 40%;
+        right: 2%;
+        width: 36px;
+        animation-duration: 12s;
+        animation-delay: -7s;
+      }
+      .balloon.b8 {
+        top: 46%;
+        left: 20%;
+        width: 26px;
+        animation-duration: 8.5s;
+        animation-delay: -5.2s;
+        opacity: 0.75;
       }
 
       /* gift boxes */
@@ -831,8 +854,8 @@
         font-weight: 1000;
         color: #fff;
         letter-spacing: -0.03em;
-        font-size: clamp(2.1rem, 4.8vw, 3.3rem);
-        line-height: 1.08;
+        font-size: clamp(1.6rem, 3.4vw, 2.35rem);
+        line-height: 1.1;
       }
       .hero-title .highlight {
         color: var(--yellow);
@@ -868,8 +891,8 @@
       .hero-subtitle {
         color: rgba(255, 255, 255, 0.88);
         max-width: 560px;
-        line-height: 1.65;
-        font-size: 1.06rem;
+        line-height: 1.5;
+        font-size: 0.92rem;
       }
 
       .hero-cta-group {
@@ -877,7 +900,7 @@
         flex-wrap: wrap;
         gap: 0.75rem;
         align-items: center;
-        margin-top: 1.6rem;
+        margin-top: 1rem;
       }
 
       .btn-hero-primary {
@@ -887,7 +910,7 @@
         font-weight: 1000;
         border: none;
         border-radius: 999px;
-        padding: 0.92rem 1.8rem;
+        padding: 0.7rem 1.5rem;
         display: inline-flex;
         align-items: center;
         gap: 0.55rem;
@@ -1455,56 +1478,6 @@
         z-index: 3000;
       }
 
-      /* Category sidebar drawer */
-      .sidebar-cat-btn {
-        width: 100%;
-        text-align: left;
-        background: transparent;
-        border: none;
-        border-radius: 12px;
-        padding: 0.65rem 0.85rem;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--ink-light);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.25rem;
-      }
-      .sidebar-cat-btn:hover {
-        background: var(--pink-50);
-        color: var(--pink-500);
-      }
-      .sidebar-cat-btn.active {
-        background: var(--pink-50);
-        color: var(--pink-500);
-        border-left: 3px solid var(--pink-500);
-      }
-      .sidebar-subcat-btn {
-        width: 100%;
-        text-align: left;
-        background: transparent;
-        border: none;
-        border-radius: 10px;
-        padding: 0.45rem 0.75rem 0.45rem 2rem;
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: var(--ink-soft);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-      }
-      .sidebar-subcat-btn:hover {
-        background: var(--pink-50);
-        color: var(--pink-500);
-      }
-      .sidebar-subcat-btn.active {
-        background: var(--pink-50);
-        color: var(--pink-500);
-      }
-
       /* ── Online Shop / Product Grid ── */
       #shop-products-container {
         --cols: 4;
@@ -1625,10 +1598,10 @@
           width: 40px;
         }
         .hero-sa {
-          padding: 3.1rem 0 2.8rem;
+          padding: 1.4rem 0 1.3rem;
         }
         .hero-illustration {
-          min-height: 290px;
+          min-height: 190px;
         }
         /* Mobile: keep only the essential decorative objects, ease off the motion */
         .balloon.b4,
@@ -1961,11 +1934,6 @@
         }
       }
 
-      /* ── Sidebar category drawer: stay within very narrow viewports ── */
-      @media (max-width: 340px) {
-        #sidebar-drawer { width: 85vw !important; }
-      }
-
       /* ── Toast: never overflow tiny screens ── */
       @media (max-width: 360px) {
         .toast-stack { left: 0.75rem; right: 0.75rem; }
@@ -1999,7 +1967,7 @@
 
       /* ── Hero: extra breathing room + no overflow on very small screens ── */
       @media (max-width: 380px) {
-        .hero-title { font-size: 1.9rem; }
+        .hero-title { font-size: 1.5rem; }
         .hero-cta-group { flex-direction: column; align-items: stretch; }
         .hero-cta-group a { justify-content: center; }
       }
@@ -2011,11 +1979,234 @@
         #shop .section-title { font-size: 1.5rem; }
       }
 
+      /* ── Horizontal category nav (replaces the old sidebar) ── */
+      .sa-category-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #fff;
+        border-bottom: 1px solid rgba(224, 33, 138, 0.1);
+        padding: 0.55rem 1rem;
+        overflow-x: auto;
+        overflow-y: visible;
+        scrollbar-width: none;
+        position: relative;
+        z-index: 30;
+      }
+      .sa-category-nav::-webkit-scrollbar { display: none; }
+      .sa-cat-btn {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: transparent;
+        border: none;
+        color: var(--ink, #3a2a3e);
+        font-weight: 700;
+        font-size: 0.84rem;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s;
+      }
+      .sa-cat-btn:hover,
+      .sa-cat-btn.active {
+        background: rgba(224, 33, 138, 0.09);
+        color: var(--pink-500);
+      }
+      .sa-cat-btn .bi-chevron-down {
+        font-size: 0.65rem;
+        margin-left: 0.1rem;
+        transition: transform 0.18s;
+      }
+      .sa-cat-item.open > .sa-cat-btn .bi-chevron-down {
+        transform: rotate(180deg);
+      }
+
+      .sa-cat-item {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      /* Dropdown panel: clean, square-ish, 2-column grid */
+      .sa-cat-dropdown {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 20px 46px rgba(93, 21, 66, 0.16);
+        border: 1px solid rgba(224, 33, 138, 0.08);
+        padding: 0.7rem;
+        width: 300px;
+        z-index: 40;
+      }
+      .sa-cat-item.open > .sa-cat-dropdown {
+        display: block;
+      }
+      .sa-cat-dropdown-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+      }
+      .sa-cat-dropdown-cell {
+        grid-column: span 1;
+      }
+      .sa-cat-dropdown-cell.expanded {
+        grid-column: span 2;
+      }
+      .sa-subcat-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+        background: #fdf3f9;
+        border: 1px solid transparent;
+        color: var(--ink, #3a2a3e);
+        font-weight: 600;
+        font-size: 0.78rem;
+        padding: 0.55rem 0.6rem;
+        border-radius: 10px;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.16s, border-color 0.16s;
+      }
+      .sa-subcat-btn:hover {
+        background: #fbe4f0;
+        border-color: rgba(224, 33, 138, 0.25);
+      }
+      .sa-subcat-btn i.bi-chevron-down {
+        font-size: 0.62rem;
+        color: var(--ink-soft);
+        flex-shrink: 0;
+        transition: transform 0.16s;
+      }
+      .sa-subcat-btn.subopen i.bi-chevron-down {
+        transform: rotate(180deg);
+      }
+      .sa-subsub-list {
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.35rem;
+        margin-top: 0.4rem;
+      }
+      .sa-subsub-list.open {
+        display: grid;
+      }
+      .sa-subsub-btn {
+        width: 100%;
+        background: #fff;
+        border: 1px solid rgba(224, 33, 138, 0.14);
+        color: var(--ink, #3a2a3e);
+        font-weight: 600;
+        font-size: 0.72rem;
+        padding: 0.42rem 0.5rem;
+        border-radius: 8px;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.16s;
+      }
+      .sa-subsub-btn:hover {
+        background: #fdf3f9;
+      }
+      @media (max-width: 575.98px) {
+        .sa-category-nav { padding: 0.5rem 0.6rem; }
+        .sa-cat-dropdown { width: 88vw; left: 0; transform: none; }
+      }
+
       /* ── Prevent any accidental horizontal scroll ── */
       html, body { max-width: 100%; overflow-x: hidden; }
+
+      /* ── Top utility bar: quick contact buttons, no heading ── */
+      .sa-topbar {
+        background: #2a1b2e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.75rem;
+        flex-wrap: wrap;
+      }
+      .sa-topbar a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.32rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #f3e6ee;
+        text-decoration: none;
+        font-size: 0.76rem;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .sa-topbar a:hover {
+        background: rgba(255, 255, 255, 0.14);
+        transform: translateY(-1px);
+        color: #fff;
+      }
+      .sa-topbar a i {
+        font-size: 0.9rem;
+      }
+      .sa-topbar a.whatsapp i { color: #25d366; }
+      .sa-topbar a.email i { color: #ffd93d; }
+      .sa-topbar a.instagram i { color: #e1306c; }
+      .sa-topbar a.facebook i { color: #4fc3f7; }
+      @media (max-width: 576px) {
+        .sa-topbar { gap: 0.3rem; padding: 0.4rem 0.5rem; }
+        .sa-topbar a { font-size: 0.68rem; padding: 0.28rem 0.55rem; }
+        .sa-topbar a span.sa-topbar-label { display: none; }
+      }
     </style>
   </head>
   <body>
+    <!-- Top utility bar — quick contact, no heading -->
+    <div class="sa-topbar">
+      <a
+        class="whatsapp"
+        href="https://wa.me/923001234567"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat on WhatsApp"
+      >
+        <i class="bi bi-whatsapp"></i>
+        <span class="sa-topbar-label">+92 300 1234567</span>
+      </a>
+      <a
+        class="email"
+        href="mailto:support@sa-parties.com"
+        aria-label="Email us"
+      >
+        <i class="bi bi-envelope-fill"></i>
+        <span class="sa-topbar-label">support@sa-parties.com</span>
+      </a>
+      <a
+        class="instagram"
+        href="https://www.instagram.com/sapartiesofficial/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Instagram"
+      >
+        <i class="bi bi-instagram"></i>
+        <span class="sa-topbar-label">@sapartiesofficial</span>
+      </a>
+      <a
+        class="facebook"
+        href="https://www.facebook.com/p/SA-Parties-100067230754004/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Facebook"
+      >
+        <i class="bi bi-facebook"></i>
+        <span class="sa-topbar-label">SA Parties</span>
+      </a>
+    </div>
+
     <!-- HERO -->
     <header class="navbar-sa" id="top-nav">
       <div
@@ -2040,26 +2231,6 @@
           </div>
         </a>
 
-        <button
-          type="button"
-          class="hamburger-btn d-lg-none"
-          id="mobile-nav-toggle"
-          aria-label="Toggle navigation menu"
-          aria-expanded="false"
-          aria-controls="main-nav-links"
-          onclick="toggleMobileNav()"
-        >
-          <i class="bi bi-list"></i>
-        </button>
-
-        <nav class="nav-links d-flex gap-2" id="main-nav-links">
-          <a href="#top" class="active" onclick="closeMobileNav()">Home</a>
-          <a href="#shop" onclick="closeMobileNav()">Shop</a>
-          <a href="#" onclick="closeMobileNav(); openSidebar(); return false;">Categories</a>
-          <a href="#best-sellers" onclick="closeMobileNav()">Best Sellers</a>
-          <a href="#contact" onclick="closeMobileNav()">Contact Us</a>
-        </nav>
-
         <!-- Navbar Search Bar -->
         <div class="navbar-search-wrap">
           <i class="bi bi-search navbar-search-icon"></i>
@@ -2075,15 +2246,6 @@
             <i class="bi bi-x"></i>
           </button>
         </div>
-          <button
-            type="button"
-            class="btn-auth-nav d-lg-none"
-            onclick="openSidebar()"
-            aria-label="Browse categories"
-            style="padding: 0.45rem 0.65rem"
-          >
-            <i class="bi bi-grid-3x3-gap-fill"></i>
-          </button>
           <div
             class="cart-icon-btn"
             id="cart-icon"
@@ -2107,42 +2269,13 @@
       </div>
     </header>
 
-    <!-- Mobile hamburger nav toggle (UI-only, no business logic) -->
-    <script>
-      function toggleMobileNav() {
-        const nav = document.getElementById("main-nav-links");
-        const btn = document.getElementById("mobile-nav-toggle");
-        if (!nav || !btn) return;
-        const isOpen = nav.classList.toggle("mobile-open");
-        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-        btn.innerHTML = isOpen
-          ? '<i class="bi bi-x-lg"></i>'
-          : '<i class="bi bi-list"></i>';
-      }
-      function closeMobileNav() {
-        const nav = document.getElementById("main-nav-links");
-        const btn = document.getElementById("mobile-nav-toggle");
-        if (!nav || !btn) return;
-        nav.classList.remove("mobile-open");
-        btn.setAttribute("aria-expanded", "false");
-        btn.innerHTML = '<i class="bi bi-list"></i>';
-      }
-      document.addEventListener("click", function (e) {
-        const nav = document.getElementById("main-nav-links");
-        const btn = document.getElementById("mobile-nav-toggle");
-        if (!nav || !btn) return;
-        if (
-          nav.classList.contains("mobile-open") &&
-          !nav.contains(e.target) &&
-          !btn.contains(e.target)
-        ) {
-          closeMobileNav();
-        }
-      });
-      window.addEventListener("resize", function () {
-        if (window.innerWidth >= 992) closeMobileNav();
-      });
-    </script>
+    <!-- Horizontal category navigation (replaces the old sidebar) -->
+    <nav class="sa-category-nav" id="sa-category-nav" aria-label="Product categories">
+      <button type="button" class="sa-cat-btn active" id="sa-cat-home" onclick="saCatGoHome()">
+        <i class="bi bi-house-door-fill"></i> Home
+      </button>
+      <div id="sa-category-nav-items" class="d-flex"></div>
+    </nav>
 
     <section class="hero-sa" id="top">
       <div class="hero-ambient" aria-hidden="true">
@@ -2165,14 +2298,13 @@
                 class="bi bi-balloon-heart-fill"
                 style="color: var(--yellow)"
               ></i>
-              Party supplies that feel premium
+              Premium party supplies
             </div>
             <h1 class="hero-title">
               Celebrate brighter with <span class="highlight">SA Parties</span>
             </h1>
             <p class="hero-subtitle mb-0">
-              Birthday decorations, balloons, gifts & essentials—picked to help
-              you create unforgettable moments.
+              Balloons, decor & gifts for your next celebration.
             </p>
 
             <div class="hero-cta-group">
@@ -2186,9 +2318,6 @@
                 "
               >
                 <i class="bi bi-bag-check-fill"></i> Shop Now
-              </a>
-              <a class="btn-hero-secondary" href="#" onclick="openSidebar(); return false;">
-                <i class="bi bi-grid-3x3-gap-fill"></i> Browse Categories
               </a>
             </div>
           </div>
@@ -2234,6 +2363,21 @@
                 <img
                   class="float-elem balloon b5"
                   src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23F5B8DD'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23F5B8DD'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b6"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23FF8A3D'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23FF8A3D'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b7"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%23E0218A'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%23E0218A'/%3E%3C/svg%3E"
+                  alt="Balloon"
+                />
+                <img
+                  class="float-elem balloon b8"
+                  src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cpath%20d='M50%2050c-14%200-25-10-25-23S36%200%2050%200s25%209%2025%2027-11%2023-25%2023z'%20fill='%234FC3F7'/%3E%3Ccircle%20cx='50'%20cy='30'%20r='10'%20fill='%23fff'/%3E%3Cpath%20d='M50%2050l-4%2010%204%206%204-6z'%20fill='%234FC3F7'/%3E%3C/svg%3E"
                   alt="Balloon"
                 />
 
@@ -3350,86 +3494,6 @@
       </section>
 
       <!-- CHECKOUT -->
-
-      <!-- Contact -->
-      <section class="reveal mt-5" id="contact">
-        <div class="section-title">Contact Us</div>
-        <div class="section-subtitle mb-3">
-          We’re here to help with your celebration
-        </div>
-        <div class="row g-3">
-          <div class="col-md-6 col-lg-3">
-            <div
-              class="p-4 bg-white rounded-4 border shadow-sm h-100"
-              style="border-color: rgba(224, 33, 138, 0.1)"
-            >
-              <div class="fw-bold mb-2">
-                <i
-                  class="bi bi-envelope-fill"
-                  style="color: var(--pink-500)"
-                ></i>
-                Email
-              </div>
-              <div class="text-muted fw-bold">support@sa-parties.com</div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div
-              class="p-4 bg-white rounded-4 border shadow-sm h-100"
-              style="border-color: rgba(224, 33, 138, 0.1)"
-            >
-              <div class="fw-bold mb-2">
-                <i
-                  class="bi bi-telephone-fill"
-                  style="color: var(--pink-500)"
-                ></i>
-                Phone / WhatsApp
-              </div>
-              <div class="text-muted fw-bold">+92 300 1234567</div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div
-              class="p-4 bg-white rounded-4 border shadow-sm h-100"
-              style="border-color: rgba(224, 33, 138, 0.1)"
-            >
-              <div class="fw-bold mb-2">
-                <i class="bi bi-facebook" style="color: #1877f2"></i>
-                Facebook
-              </div>
-              <a
-                href="https://www.facebook.com/p/SA-Parties-100067230754004/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="social-btn facebook"
-                id="contact-facebook"
-              >
-                <i class="bi bi-facebook"></i> Visit Page
-              </a>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-3">
-            <div
-              class="p-4 bg-white rounded-4 border shadow-sm h-100"
-              style="border-color: rgba(224, 33, 138, 0.1)"
-            >
-              <div class="fw-bold mb-2">
-                <i class="bi bi-instagram" style="color: #e1306c"></i>
-                Instagram
-              </div>
-              <a
-                href="https://www.instagram.com/sapartiesofficial/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="social-btn instagram"
-                id="contact-instagram"
-              >
-                <i class="bi bi-instagram"></i> Follow Us
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
 
     <!-- Footer (preserve footer class like your snippet) -->
@@ -3473,122 +3537,6 @@
         >
           <i class="bi bi-bag-check-fill me-1"></i> Go to Checkout
         </a>
-      </div>
-    </div>
-
-    <!-- Category sidebar drawer -->
-    <div
-      id="sidebar-overlay"
-      onclick="closeSidebar()"
-      style="
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(42, 27, 46, 0.45);
-        z-index: 1040;
-        backdrop-filter: blur(3px);
-      "
-    ></div>
-
-    <div
-      id="sidebar-drawer"
-      style="
-        position: fixed;
-        top: 0;
-        left: -300px;
-        width: 280px;
-        height: 100%;
-        background: #fff;
-        z-index: 1050;
-        box-shadow: 8px 0 32px rgba(173, 10, 105, 0.18);
-        transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-      "
-    >
-      <div
-        style="
-          background: var(--gradient-primary);
-          padding: 1.3rem 1.25rem 1.1rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        "
-      >
-        <div style="display: flex; align-items: center; gap: 0.6rem">
-          <div
-            style="
-              width: 36px;
-              height: 36px;
-              background: rgba(255, 255, 255, 0.2);
-              border-radius: 10px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            "
-          >
-            <i class="bi bi-grid-fill" style="color: #fff; font-size: 1.1rem"></i>
-          </div>
-          <div
-            style="
-              color: #fff;
-              font-family: var(--font-display);
-              font-weight: 800;
-              font-size: 1rem;
-            "
-          >
-            SA <span style="color: var(--yellow)">Parties</span>
-          </div>
-        </div>
-        <button
-          onclick="closeSidebar()"
-          style="
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          "
-          aria-label="Close categories menu"
-        >
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-
-      <div style="padding: 1rem 1rem 0.5rem">
-        <div
-          style="
-            font-size: 0.68rem;
-            font-weight: 800;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--ink-soft);
-            margin-bottom: 0.75rem;
-            padding: 0 0.25rem;
-          "
-        >
-          <i class="bi bi-tag-fill me-1" style="color: var(--pink-500)"></i>
-          Categories
-        </div>
-        <button
-          onclick="filterByCategory(null)"
-          class="sidebar-cat-btn active"
-          id="cat-btn-all"
-        >
-          <i
-            class="bi bi-grid-3x3-gap-fill me-2"
-            style="color: var(--pink-500)"
-          ></i>
-          All Products
-        </button>
-        <div id="sidebar-categories-list"></div>
       </div>
     </div>
 
