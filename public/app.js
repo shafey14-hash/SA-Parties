@@ -1252,8 +1252,48 @@ function toggleCategoryDropdown(catId) {
   document
     .querySelectorAll(".sa-cat-item.open")
     .forEach((el) => el.classList.remove("open"));
-  if (!isOpen) item.classList.add("open");
+  if (!isOpen) {
+    item.classList.add("open");
+    positionCategoryDropdown(item);
+  }
 }
+
+// Dropdown is position:fixed (see index.html CSS comment for why), so its
+// left/top have to be computed from the trigger button's actual screen
+// position instead of being centered automatically by the browser.
+function positionCategoryDropdown(item) {
+  const btn = item.querySelector(".sa-cat-btn");
+  const dropdown = item.querySelector(".sa-cat-dropdown");
+  if (!btn || !dropdown) return;
+
+  const rect = btn.getBoundingClientRect();
+  const margin = 10;
+  const dropdownWidth = dropdown.offsetWidth || 300;
+
+  let left = rect.left + rect.width / 2 - dropdownWidth / 2;
+  if (left < margin) left = margin;
+  if (left + dropdownWidth > window.innerWidth - margin) {
+    left = window.innerWidth - dropdownWidth - margin;
+  }
+
+  dropdown.style.left = `${left}px`;
+  dropdown.style.top = `${rect.bottom + 10}px`;
+}
+
+// Since the dropdown no longer scrolls along with the nav (it's fixed to
+// the viewport, not the scroll container), close it if the user scrolls
+// the horizontal category strip or resizes the window, so it can't end up
+// floating over the wrong button.
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.getElementById("sa-category-nav");
+  const closeAllDropdowns = () => {
+    document
+      .querySelectorAll(".sa-cat-item.open")
+      .forEach((el) => el.classList.remove("open"));
+  };
+  if (nav) nav.addEventListener("scroll", closeAllDropdowns);
+  window.addEventListener("resize", closeAllDropdowns);
+});
 
 function saCatGoHome() {
   filterByCategory(null);

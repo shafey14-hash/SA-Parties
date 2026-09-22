@@ -2029,20 +2029,24 @@
         flex-shrink: 0;
       }
 
-      /* Dropdown panel: clean, square-ish, 2-column grid */
+      /* Dropdown panel: clean, square-ish, 2-column grid
+         NOTE: position:fixed (not absolute) on purpose — .sa-category-nav
+         has overflow-x:auto for horizontal scroll on mobile. Per the CSS
+         spec, once one axis is non-visible the other axis is forced to
+         "auto" too, so an absolutely-positioned dropdown gets clipped
+         inside that scroll container. Fixed positioning uses the viewport
+         as its containing block instead, so it escapes the clip. Exact
+         left/top are set from JS (positionCategoryDropdown). */
       .sa-cat-dropdown {
         display: none;
-        position: absolute;
-        top: calc(100% + 10px);
-        left: 50%;
-        transform: translateX(-50%);
+        position: fixed;
         background: #fff;
         border-radius: 14px;
         box-shadow: 0 20px 46px rgba(93, 21, 66, 0.16);
         border: 1px solid rgba(224, 33, 138, 0.08);
         padding: 0.7rem;
         width: 300px;
-        z-index: 40;
+        z-index: 1000;
       }
       .sa-cat-item.open > .sa-cat-dropdown {
         display: block;
@@ -2115,7 +2119,7 @@
       }
       @media (max-width: 575.98px) {
         .sa-category-nav { padding: 0.5rem 0.6rem; }
-        .sa-cat-dropdown { width: 88vw; left: 0; transform: none; }
+        .sa-cat-dropdown { width: 88vw; }
       }
 
       /* ── Prevent any accidental horizontal scroll ── */
