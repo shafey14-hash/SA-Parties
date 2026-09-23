@@ -1179,6 +1179,7 @@ function renderCategoryNav(categories) {
     if (hasChildren) {
       const dropdown = document.createElement("div");
       dropdown.className = "sa-cat-dropdown";
+      dropdown.id = `sa-cat-dropdown-${cat.id}`;
       const grid = document.createElement("div");
       grid.className = "sa-cat-dropdown-grid";
       cat.children.forEach((sub) => {
@@ -1191,10 +1192,16 @@ function renderCategoryNav(categories) {
     wrap.appendChild(item);
   });
 
-  // Click outside closes any open dropdown
+  // Click outside closes any open dropdown. The dropdown is reparented to
+  // <body> while open (see openCategoryDropdown), so it's no longer a
+  // descendant of .sa-cat-item — we have to check both separately.
   document.addEventListener("click", (e) => {
-    document.querySelectorAll(".sa-cat-item.open").forEach((openItem) => {
-      if (!openItem.contains(e.target)) openItem.classList.remove("open");
+    document.querySelectorAll(".sa-cat-dropdown.open").forEach((dropdown) => {
+      const catId = dropdown.id.replace("sa-cat-dropdown-", "");
+      const item = document.getElementById(`sa-cat-item-${catId}`);
+      const clickedInside =
+        (item && item.contains(e.target)) || dropdown.contains(e.target);
+      if (!clickedInside) closeCategoryDropdown(item, dropdown);
     });
   });
 }
@@ -1247,23 +1254,53 @@ function buildSubcategoryCell(sub) {
 
 function toggleCategoryDropdown(catId) {
   const item = document.getElementById(`sa-cat-item-${catId}`);
-  if (!item) return;
-  const isOpen = item.classList.contains("open");
-  document
-    .querySelectorAll(".sa-cat-item.open")
-    .forEach((el) => el.classList.remove("open"));
-  if (!isOpen) {
-    item.classList.add("open");
-    positionCategoryDropdown(item);
+  const dropdown = document.getElementById(`sa-cat-dropdown-${catId}`);
+  if (!item || !dropdown) return;
+  const isOpen = dropdown.classList.contains("open");
+  closeAllCategoryDropdowns();
+  if (!isOpen) openCategoryDropdown(item, dropdown);
+}
+
+// Moves the dropdown to be a direct child of <body> while it's open. This
+// is what actually fixes both mobile bugs:
+//  - iOS Safari clips position:fixed elements to the nearest scrollable
+//    ancestor (.sa-category-nav has overflow-x:auto) even though they
+//    shouldn't be — moving it out of that ancestor removes the clip.
+//  - .sa-category-nav is its own stacking context (z-index:30), so a
+//    nested dropdown's z-index only wins *inside* that context; as a
+//    direct child of <body> it competes at the top level instead, so it
+//    can't end up rendered under the hero section.
+function openCategoryDropdown(item, dropdown) {
+  document.body.appendChild(dropdown);
+  item.classList.add("open"); // rotates the chevron, stays inside item
+  dropdown.classList.add("open");
+  positionCategoryDropdown(item, dropdown);
+}
+
+// Moves a dropdown back to its original spot (end of its .sa-cat-item) and
+// hides it. Always go through this instead of just removing "open", or
+// the node stays orphaned at the end of <body>.
+function closeCategoryDropdown(item, dropdown) {
+  dropdown.classList.remove("open");
+  if (item) {
+    item.classList.remove("open");
+    item.appendChild(dropdown);
   }
 }
 
-// Dropdown is position:fixed (see index.html CSS comment for why), so its
-// left/top have to be computed from the trigger button's actual screen
-// position instead of being centered automatically by the browser.
-function positionCategoryDropdown(item) {
+function closeAllCategoryDropdowns() {
+  document.querySelectorAll(".sa-cat-dropdown.open").forEach((dropdown) => {
+    const catId = dropdown.id.replace("sa-cat-dropdown-", "");
+    const item = document.getElementById(`sa-cat-item-${catId}`);
+    closeCategoryDropdown(item, dropdown);
+  });
+}
+
+// left/top are computed from the trigger button's actual screen position
+// since a body-level fixed element isn't centered automatically the way
+// an absolutely-positioned child of a relative parent would be.
+function positionCategoryDropdown(item, dropdown) {
   const btn = item.querySelector(".sa-cat-btn");
-  const dropdown = item.querySelector(".sa-cat-dropdown");
   if (!btn || !dropdown) return;
 
   const rect = btn.getBoundingClientRect();
@@ -1286,13 +1323,8 @@ function positionCategoryDropdown(item) {
 // floating over the wrong button.
 document.addEventListener("DOMContentLoaded", () => {
   const nav = document.getElementById("sa-category-nav");
-  const closeAllDropdowns = () => {
-    document
-      .querySelectorAll(".sa-cat-item.open")
-      .forEach((el) => el.classList.remove("open"));
-  };
-  if (nav) nav.addEventListener("scroll", closeAllDropdowns);
-  window.addEventListener("resize", closeAllDropdowns);
+  if (nav) nav.addEventListener("scroll", closeAllCategoryDropdowns);
+  window.addEventListener("resize", closeAllCategoryDropdowns);
 });
 
 function saCatGoHome() {
@@ -1301,9 +1333,7 @@ function saCatGoHome() {
 
 function filterByCategory(categoryId, categoryName) {
   activeCategory = categoryId;
-  document
-    .querySelectorAll(".sa-cat-item.open")
-    .forEach((el) => el.classList.remove("open"));
+  closeAllCategoryDropdowns();
   document
     .querySelectorAll(".sa-cat-btn, .sa-subcat-btn, .sa-subsub-btn")
     .forEach((b) => b.classList.remove("active"));
