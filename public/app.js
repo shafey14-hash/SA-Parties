@@ -1186,7 +1186,7 @@ function renderCategoryNav(categories) {
       dropdown.id = `sa-cat-dropdown-${cat.id}`;
       const grid = document.createElement("div");
       grid.className = "sa-cat-dropdown-grid";
-      cat.children.forEach((sub) => {
+      toColumnWiseOrder(cat.children).forEach((sub) => {
         grid.appendChild(buildSubcategoryCell(sub));
       });
       dropdown.appendChild(grid);
@@ -1208,6 +1208,29 @@ function renderCategoryNav(categories) {
       if (!clickedInside) closeCategoryDropdown(item, dropdown);
     });
   });
+}
+
+// The grid below fills row-wise (item1->col1, item2->col2, item3->col1...)
+// via plain CSS grid so the existing "expand to full width" behavior for
+// nested sub-subcategories keeps working unchanged (grid-column: span 2).
+// To make that still LOOK column-wise (first half reading down column 1,
+// second half down column 2 — like a newspaper), we reorder the array
+// first: [col1 item0, col2 item0, col1 item1, col2 item1, ...]. Works for
+// any list length, so it also naturally supports "5 visible, scroll for
+// the rest" once paired with the grid's max-height + overflow-y:auto.
+function toColumnWiseOrder(items, columns = 2) {
+  const perCol = Math.ceil(items.length / columns);
+  const cols = [];
+  for (let c = 0; c < columns; c++) {
+    cols.push(items.slice(c * perCol, (c + 1) * perCol));
+  }
+  const ordered = [];
+  for (let r = 0; r < perCol; r++) {
+    for (let c = 0; c < columns; c++) {
+      if (cols[c][r]) ordered.push(cols[c][r]);
+    }
+  }
+  return ordered;
 }
 
 function buildSubcategoryCell(sub) {
