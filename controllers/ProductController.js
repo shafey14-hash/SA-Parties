@@ -19,53 +19,121 @@ function extractStoragePath(publicUrl, bucket) {
 }
 
 // 1. Get all products (with Search support and Colors)
+//
+// Was doing 1 query for the product list, then a LOOP over every product
+// running 2-3 more queries each (colors, each color's images, product
+// images) — for 100 products that's 200-300+ round trips to the DB, which
+// is the main reason this endpoint was taking 5-6 seconds. Now it's a flat
+// 3-4 queries total no matter how many products come back: one query for
+// the products, then ONE query for every product's colors (WHERE product_id
+// = ANY(...)) and ONE for every product's images, grouped back onto each
+// product in JS afterwards.
 const getAllProducts = async (req, res) => {
-  const { search } = req.query;
+  const { search, page, limit, minimal } = req.query;
+  const isMinimal = minimal === "true";
   try {
+    // "minimal=true" is opt-in — pass it from a listing page that only
+    // needs card-level fields (id, name, price, image, stock). Leaving it
+    // off keeps today's full-row response, so anything already calling
+    // this endpoint (e.g. the admin panel) is unaffected.
+    const selectCols = isMinimal
+      ? "p.id, p.name, p.price, p.slug, p.stock, p.in_stock, p.image_url, p.category_id"
+      : "p.*, c.name AS category_name";
+
     let query = `
-      SELECT p.*, c.name AS category_name 
-      FROM products p 
+      SELECT ${selectCols}
+      FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       WHERE p.is_deleted = FALSE
     `;
-    let params = [];
+    const params = [];
 
     if (search) {
-      // Postgres LIKE is case-sensitive, ILIKE matches MySQL's default case-insensitive behavior
-      query += " AND (p.name ILIKE $1 OR p.keywords ILIKE $2)";
-      params = [`%${search}%`, `%${search}%`];
+      query += ` AND (p.name ILIKE $${params.length + 1} OR p.keywords ILIKE $${params.length + 2})`;
+      params.push(`%${search}%`, `%${search}%`);
     }
 
     query += " ORDER BY p.id DESC";
 
+    // Pagination is also opt-in — only kicks in when the caller sends
+    // ?page= or ?limit=. Without them this returns the full array exactly
+    // like before, so existing callers (app.js currently expects a plain
+    // array, not {data, page, ...}) keep working unchanged.
+    const usePagination = Boolean(page || limit);
+    if (usePagination) {
+      const limitNum = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+      const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+      const offset = (pageNum - 1) * limitNum;
+      query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+      params.push(limitNum, offset);
+    }
+
     const result = await db.query(query, params);
     const rows = result.rows;
 
-    // Fetch colors for each product
-    for (let product of rows) {
-      const colorsResult = await db.query(
-        "SELECT id, color_name, image_url, in_stock FROM product_colors WHERE product_id = $1",
-        [product.id],
+    if (rows.length === 0) {
+      return res.json(
+        usePagination
+          ? { data: [], page: Number(page) || 1, limit: Number(limit) || 20, total: 0 }
+          : [],
       );
-      product.colors = colorsResult.rows;
-
-      // Each variant can have multiple photos
-      for (let color of product.colors) {
-        const colorImagesResult = await db.query(
-          "SELECT image_url FROM product_color_images WHERE color_id = $1 ORDER BY display_order ASC",
-          [color.id],
-        );
-        color.images = colorImagesResult.rows.map((img) => img.image_url);
-      }
-
-      // Fetch multiple images for each product
-      const imagesResult = await db.query(
-        "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC",
-        [product.id],
-      );
-      product.images = imagesResult.rows.map((img) => img.image_url);
     }
 
+    const productIds = rows.map((p) => p.id);
+
+    const [colorsResult, imagesResult] = await Promise.all([
+      db.query(
+        isMinimal
+          ? "SELECT id, product_id, color_name, in_stock FROM product_colors WHERE product_id = ANY($1::int[])"
+          : "SELECT id, product_id, color_name, image_url, in_stock FROM product_colors WHERE product_id = ANY($1::int[])",
+        [productIds],
+      ),
+      db.query(
+        "SELECT product_id, image_url FROM product_images WHERE product_id = ANY($1::int[]) ORDER BY display_order ASC",
+        [productIds],
+      ),
+    ]);
+
+    // Non-minimal responses also carry each variant's own photo gallery —
+    // batch that too instead of looping per color.
+    const colorImagesByColorId = new Map();
+    if (!isMinimal && colorsResult.rows.length > 0) {
+      const colorIds = colorsResult.rows.map((c) => c.id);
+      const colorImagesResult = await db.query(
+        "SELECT color_id, image_url FROM product_color_images WHERE color_id = ANY($1::int[]) ORDER BY display_order ASC",
+        [colorIds],
+      );
+      for (const row of colorImagesResult.rows) {
+        if (!colorImagesByColorId.has(row.color_id)) colorImagesByColorId.set(row.color_id, []);
+        colorImagesByColorId.get(row.color_id).push(row.image_url);
+      }
+    }
+
+    const colorsByProduct = new Map();
+    for (const c of colorsResult.rows) {
+      if (!colorsByProduct.has(c.product_id)) colorsByProduct.set(c.product_id, []);
+      const colorOut = { id: c.id, color_name: c.color_name, in_stock: c.in_stock };
+      if (!isMinimal) {
+        colorOut.image_url = c.image_url;
+        colorOut.images = colorImagesByColorId.get(c.id) || [];
+      }
+      colorsByProduct.get(c.product_id).push(colorOut);
+    }
+
+    const imagesByProduct = new Map();
+    for (const img of imagesResult.rows) {
+      if (!imagesByProduct.has(img.product_id)) imagesByProduct.set(img.product_id, []);
+      imagesByProduct.get(img.product_id).push(img.image_url);
+    }
+
+    for (const product of rows) {
+      product.colors = colorsByProduct.get(product.id) || [];
+      product.images = imagesByProduct.get(product.id) || [];
+    }
+
+    if (usePagination) {
+      return res.json({ data: rows, page: Number(page) || 1, limit: Number(limit) || 20 });
+    }
     res.json(rows);
   } catch (error) {
     res
@@ -250,7 +318,9 @@ const getProductBySlug = async (req, res) => {
     );
     if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found" });
-    res.json(result.rows[0]);
+    const product = result.rows[0];
+    await attachColorsAndImages(product);
+    res.json(product);
   } catch (error) {
     res
       .status(500)
@@ -597,13 +667,52 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// Shared by getProductById / getProductBySlug: fetches a single product's
+// colors and images with 2-3 queries total (never a loop) and attaches
+// them directly onto the product object.
+async function attachColorsAndImages(product) {
+  const [colorsResult, imagesResult] = await Promise.all([
+    db.query(
+      "SELECT id, color_name, image_url, in_stock FROM product_colors WHERE product_id = $1",
+      [product.id],
+    ),
+    db.query(
+      "SELECT image_url FROM product_images WHERE product_id = $1 ORDER BY display_order ASC",
+      [product.id],
+    ),
+  ]);
+
+  if (colorsResult.rows.length > 0) {
+    const colorIds = colorsResult.rows.map((c) => c.id);
+    const colorImagesResult = await db.query(
+      "SELECT color_id, image_url FROM product_color_images WHERE color_id = ANY($1::int[]) ORDER BY display_order ASC",
+      [colorIds],
+    );
+    const byColor = new Map();
+    for (const row of colorImagesResult.rows) {
+      if (!byColor.has(row.color_id)) byColor.set(row.color_id, []);
+      byColor.get(row.color_id).push(row.image_url);
+    }
+    product.colors = colorsResult.rows.map((c) => ({
+      ...c,
+      images: byColor.get(c.id) || [],
+    }));
+  } else {
+    product.colors = [];
+  }
+
+  product.images = imagesResult.rows.map((r) => r.image_url);
+}
+
 const getProductById = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query("SELECT * FROM products WHERE id = $1", [id]);
     if (result.rows.length === 0)
       return res.status(404).json({ error: "Product not found" });
-    res.json(result.rows[0]);
+    const product = result.rows[0];
+    await attachColorsAndImages(product);
+    res.json(product);
   } catch (error) {
     res
       .status(500)

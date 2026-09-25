@@ -1416,19 +1416,17 @@
       // ── Fetch product ──
       async function fetchProductDetails(id) {
         try {
-          const [prodRes, allRes] = await Promise.all([
-            fetch(`/api/products/product/${id}`),
-            fetch(`/api/products`),
-          ]);
+          // Previously this also fetched /api/products (the ENTIRE catalog)
+          // just to pull this one product's colors/images out of it — that
+          // meant every single product-page visit paid the full N+1 cost of
+          // loading every product on the site. getProductById now returns
+          // colors and images directly, so that second call isn't needed.
+          const prodRes = await fetch(`/api/products/product/${id}`);
           const p = await prodRes.json();
-          const all = await allRes.json();
-          const full = all.find((pr) => String(pr.id) === String(id)) || p;
 
-          p.colors = full.colors || [];
-          p.images = full.images || (p.image_url ? [p.image_url] : []);
+          p.colors = p.colors || [];
+          p.images = p.images || (p.image_url ? [p.image_url] : []);
 
-          // Fetch color-specific images if any
-          // (stored as colorImages in admin — for now use product images per color)
           currentProduct = p;
 
           document.getElementById("img-skeleton").style.display = "none";

@@ -826,7 +826,11 @@ function showToast(type, title, message) {
 
 async function fetchShopProducts() {
   try {
-    const response = await fetch("/api/products");
+    // renderProducts() below only ever reads id/name/price/image_url/
+    // in_stock/category_id and colors[].in_stock — minimal=true skips
+    // description, dimensions, keywords, and per-color photo galleries
+    // server-side instead of fetching and discarding them.
+    const response = await fetch("/api/products?minimal=true");
     if (!response.ok) throw new Error("Bad response");
     const products = await response.json();
     if (!Array.isArray(products) || products.length === 0) {
@@ -1072,7 +1076,7 @@ async function searchProducts() {
   const query = input.value.trim();
   try {
     const res = await fetch(
-      `/api/products?search=${encodeURIComponent(query)}`,
+      `/api/products?minimal=true&search=${encodeURIComponent(query)}`,
     );
     const products = await res.json();
     renderProducts(products);
@@ -1092,7 +1096,7 @@ function handleNavbarSearch(query) {
   navbarSearchTimer = setTimeout(async () => {
     try {
       const res = await fetch(
-        `/api/products?search=${encodeURIComponent(query.trim())}`,
+        `/api/products?minimal=true&search=${encodeURIComponent(query.trim())}`,
       );
       const products = await res.json();
       renderProducts(products);
