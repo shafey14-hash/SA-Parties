@@ -1157,6 +1157,109 @@
         border-color: var(--pink-primary);
         background: #fff;
       }
+
+      /* ── Expandable Category Tree Dropdown ──
+         Replaces the flat "— — —" prefixed <select> for category pickers.
+         The real <select> stays in the DOM (hidden) as the source of
+         truth for existing JS that reads/sets .value — this only adds a
+         custom visual layer on top of it. */
+      .cat-tree-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        background: #fff;
+      }
+      .cat-tree-trigger .cat-tree-trigger-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cat-tree-trigger .bi-chevron-down {
+        transition: transform 0.15s ease;
+        color: var(--pink-primary);
+        flex-shrink: 0;
+        margin-left: 0.5rem;
+      }
+      .cat-tree-trigger.open .bi-chevron-down {
+        transform: rotate(180deg);
+      }
+      .cat-tree-panel {
+        display: none;
+        /* position:fixed (not absolute) on purpose: this panel can live
+           inside a .panel-card, which has overflow:hidden. An absolutely
+           positioned panel would get silently clipped by that ancestor.
+           Fixed positioning uses the viewport as its containing block
+           instead, so it escapes the clip — exact left/top/width are set
+           from JS (positionCategoryTreePanel) to match the trigger. */
+        position: fixed;
+        z-index: 1050;
+        background: #fff;
+        border: 1.5px solid var(--pink-soft);
+        border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+        max-height: 320px;
+        overflow-y: auto;
+        padding: 0.4rem;
+      }
+      .cat-tree-panel.open {
+        display: block;
+      }
+      .cat-tree-row {
+        display: flex;
+        align-items: center;
+        border-radius: 8px;
+      }
+      .cat-tree-row:hover {
+        background: var(--pink-light);
+      }
+      .cat-tree-row-name {
+        flex: 1;
+        padding: 0.5rem 0.4rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .cat-tree-row-name.selected {
+        color: var(--pink-primary);
+        font-weight: 600;
+      }
+      .cat-tree-row-name .bi-check-lg {
+        color: var(--pink-primary);
+      }
+      .cat-tree-toggle {
+        background: none;
+        border: none;
+        padding: 0.5rem 0.6rem;
+        cursor: pointer;
+        color: #8a8a8a;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .cat-tree-toggle .bi-chevron-right {
+        transition: transform 0.15s ease;
+      }
+      .cat-tree-toggle.expanded .bi-chevron-right {
+        transform: rotate(90deg);
+      }
+      .cat-tree-toggle-spacer {
+        width: 2.1rem;
+        flex-shrink: 0;
+      }
+      .cat-tree-children {
+        display: none;
+        padding-left: 1.1rem;
+        border-left: 1.5px dashed var(--pink-soft);
+        margin-left: 0.9rem;
+      }
+      .cat-tree-children.expanded {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -1269,7 +1372,11 @@
                 <i
                   class="bi bi-chevron-down ms-auto"
                   id="quick-manage-chevron"
-                  style="font-size: 0.75rem; transition: transform 0.2s; transform: rotate(180deg)"
+                  style="
+                    font-size: 0.75rem;
+                    transition: transform 0.2s;
+                    transform: rotate(180deg);
+                  "
                 ></i>
               </a>
 
@@ -1556,7 +1663,11 @@
                             >
                               <i class="bi bi-boxes me-1"></i>Stock Status
                             </label>
-                            <input type="hidden" id="prod-in-stock" value="true" />
+                            <input
+                              type="hidden"
+                              id="prod-in-stock"
+                              value="true"
+                            />
                             <div class="btn-group w-100" role="group">
                               <button
                                 type="button"
@@ -1727,7 +1838,8 @@
                               font-size: 0.78rem;
                               opacity: 0.7;
                             "
-                            >(optional — add if this product comes in sizes/styles/etc.)</span
+                            >(optional — add if this product comes in
+                            sizes/styles/etc.)</span
                           >
                         </div>
 

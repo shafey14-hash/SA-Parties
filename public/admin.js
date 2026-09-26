@@ -583,6 +583,308 @@ function buildCategoryTree(categories, parentId = null, depth = 0) {
   return result;
 }
 
+// Same category data, but kept properly nested (parent -> children) instead
+// of flattened with "— " depth prefixes — this is what the expandable
+// dropdown UI below actually renders.
+function buildNestedCategoryTree(categories, parentId = null) {
+  return categories
+    .filter((cat) => cat.parent_id === parentId)
+    .map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      children: buildNestedCategoryTree(categories, cat.id),
+    }));
+}
+
+// ============================================================
+// Expandable Category Tree Dropdown
+// ------------------------------------------------------------
+// The native <select> populated above (flat list with "— " depth
+// prefixes) becomes unreadable once there are many categories/
+// subcategories. This layer keeps that same <select> in the DOM, hidden,
+// as the single source of truth (so every existing .value read/write in
+// this file keeps working untouched) and adds a custom trigger + panel on
+// top of it: top-level categories are shown with an arrow, click the
+// arrow to expand/collapse its subcategories, click the name to select.
+// ============================================================
+
+// selectId -> { nestedTree, placeholderText }, so a value set elsewhere
+// (e.g. triggerEditState) can be re-synced into the trigger's label.
+const categoryTreeDropdownState = {};
+let categoryTreeGlobalListenersAttached = false;
+
+function attachCategoryTreeDropdown(selectId, nestedTree, placeholderText) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  categoryTreeDropdownState[selectId] = { nestedTree, placeholderText };
+
+  let trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+  let panel = document.getElementById(`${selectId}-cat-tree-panel`);
+
+  if (!trigger) {
+    select.style.display = "none";
+
+    trigger = document.createElement("div");
+    trigger.id = `${selectId}-cat-tree-trigger`;
+    trigger.className = "form-select cat-tree-trigger";
+    trigger.tabIndex = 0;
+    trigger.innerHTML = `<span class="cat-tree-trigger-text"></span><i class="bi bi-chevron-down"></i>`;
+
+    panel = document.createElement("div");
+    panel.id = `${selectId}-cat-tree-panel`;
+    panel.className = "cat-tree-panel";
+
+    select.insertAdjacentElement("afterend", trigger);
+    trigger.insertAdjacentElement("afterend", panel);
+
+    // Point the floating label at the trigger instead of the now-hidden
+    // select, so clicking the label still focuses/opens the picker.
+    const label = select.parentElement
+      ? select.parentElement.querySelector(`label[for="${selectId}"]`)
+      : null;
+    if (label) label.setAttribute("for", trigger.id);
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleCategoryTreePanel(selectId);
+    });
+    trigger.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleCategoryTreePanel(selectId);
+      }
+    });
+
+    panel.addEventListener("click", (e) => {
+      const toggleBtn = e.target.closest('[data-action="toggle"]');
+      if (toggleBtn) {
+        e.stopPropagation();
+        const row = toggleBtn.closest(".cat-tree-row");
+        const childrenWrap = row.nextElementSibling;
+        const expanding = !toggleBtn.classList.contains("expanded");
+        toggleBtn.classList.toggle("expanded", expanding);
+        if (
+          childrenWrap &&
+          childrenWrap.classList.contains("cat-tree-children")
+        ) {
+          childrenWrap.classList.toggle("expanded", expanding);
+        }
+        return;
+      }
+      const nameEl = e.target.closest('[data-action="select"]');
+      if (nameEl) {
+        e.stopPropagation();
+        select.value = nameEl.dataset.catId;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        markSelectedInPanel(panel, nameEl.dataset.catId);
+        updateCategoryTreeTriggerText(selectId);
+        closeAllCategoryTreePanels();
+      }
+    });
+  }
+
+  // Rebuild the list every time (categories can change), but keep the
+  // same trigger/panel elements and listeners.
+  buildCategoryTreePanelContent(panel, nestedTree, placeholderText);
+  markSelectedInPanel(panel, select.value);
+  updateCategoryTreeTriggerText(selectId);
+  ensureCategoryTreeGlobalListeners();
+}
+
+function buildCategoryTreePanelContent(panel, nestedTree, placeholderText) {
+  panel.innerHTML = "";
+
+  const noneRow = document.createElement("div");
+  noneRow.className = "cat-tree-row";
+  const spacer = document.createElement("span");
+  spacer.className = "cat-tree-toggle-spacer";
+  noneRow.appendChild(spacer);
+  const noneName = document.createElement("div");
+  noneName.className = "cat-tree-row-name";
+  noneName.dataset.action = "select";
+  noneName.dataset.catId = "";
+  noneName.innerHTML = `<i class="bi bi-check-lg" style="visibility:hidden"></i><span>${escapeHtml(placeholderText)}</span>`;
+  noneRow.appendChild(noneName);
+  panel.appendChild(noneRow);
+
+  nestedTree.forEach((node) => {
+    panel.appendChild(renderCategoryTreeNode(node));
+  });
+}
+
+function renderCategoryTreeNode(node) {
+  const wrapper = document.createElement("div");
+
+  const row = document.createElement("div");
+  row.className = "cat-tree-row";
+
+  const hasChildren = node.children && node.children.length > 0;
+
+  if (hasChildren) {
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "cat-tree-toggle";
+    toggleBtn.dataset.action = "toggle";
+    toggleBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    row.appendChild(toggleBtn);
+  } else {
+    const spacer = document.createElement("span");
+    spacer.className = "cat-tree-toggle-spacer";
+    row.appendChild(spacer);
+  }
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "cat-tree-row-name";
+  nameEl.dataset.action = "select";
+  nameEl.dataset.catId = node.id;
+  nameEl.innerHTML = `<i class="bi bi-check-lg" style="visibility:hidden"></i><span>${escapeHtml(node.name)}</span>`;
+  row.appendChild(nameEl);
+
+  wrapper.appendChild(row);
+
+  if (hasChildren) {
+    const childrenWrap = document.createElement("div");
+    childrenWrap.className = "cat-tree-children";
+    node.children.forEach((child) => {
+      childrenWrap.appendChild(renderCategoryTreeNode(child));
+    });
+    wrapper.appendChild(childrenWrap);
+  }
+
+  return wrapper;
+}
+
+function markSelectedInPanel(panel, catId) {
+  panel.querySelectorAll('[data-action="select"]').forEach((el) => {
+    const isSelected = String(el.dataset.catId) === String(catId || "");
+    el.classList.toggle("selected", isSelected);
+    const check = el.querySelector(".bi-check-lg");
+    if (check) check.style.visibility = isSelected ? "visible" : "hidden";
+  });
+}
+
+function getCategoryTreeBreadcrumb(nestedTree, catId) {
+  if (!catId) return null;
+  function search(nodes, path) {
+    for (const node of nodes) {
+      const newPath = [...path, node.name];
+      if (String(node.id) === String(catId)) return newPath;
+      if (node.children && node.children.length) {
+        const found = search(node.children, newPath);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+  const path = search(nestedTree, []);
+  return path ? path.join(" › ") : null;
+}
+
+function updateCategoryTreeTriggerText(selectId) {
+  const state = categoryTreeDropdownState[selectId];
+  const trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+  const select = document.getElementById(selectId);
+  if (!state || !trigger || !select) return;
+  const label =
+    getCategoryTreeBreadcrumb(state.nestedTree, select.value) ||
+    state.placeholderText;
+  const textEl = trigger.querySelector(".cat-tree-trigger-text");
+  if (textEl) textEl.textContent = label;
+}
+
+// Call this after setting a category <select>'s .value from elsewhere in
+// this file (programmatic assignment doesn't fire a native event), so the
+// custom trigger's label and checkmark stay in sync.
+function syncCategoryTreeTrigger(selectId) {
+  const select = document.getElementById(selectId);
+  const panel = document.getElementById(`${selectId}-cat-tree-panel`);
+  if (panel) markSelectedInPanel(panel, select ? select.value : "");
+  updateCategoryTreeTriggerText(selectId);
+}
+
+function toggleCategoryTreePanel(selectId) {
+  const trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+  const panel = document.getElementById(`${selectId}-cat-tree-panel`);
+  if (!trigger || !panel) return;
+  const isOpen = panel.classList.contains("open");
+  closeAllCategoryTreePanels();
+  if (!isOpen) openCategoryTreePanel(selectId, trigger, panel);
+}
+
+// The panel is reparented to <body> while open — its home lives inside a
+// .panel-card, which has overflow:hidden, so an absolutely/fixed panel
+// left nested there would still be clipped in some browsers unless it's a
+// direct child of <body>. Same fix pattern as the storefront category nav.
+function openCategoryTreePanel(selectId, trigger, panel) {
+  document.body.appendChild(panel);
+  panel.dataset.homeSelectId = selectId;
+  trigger.classList.add("open");
+  panel.classList.add("open");
+  positionCategoryTreePanel(trigger, panel);
+}
+
+function closeAllCategoryTreePanels() {
+  document.querySelectorAll(".cat-tree-panel.open").forEach((panel) => {
+    const selectId = panel.dataset.homeSelectId;
+    panel.classList.remove("open");
+    const trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+    if (trigger) {
+      trigger.classList.remove("open");
+      trigger.insertAdjacentElement("afterend", panel);
+    }
+  });
+}
+
+function positionCategoryTreePanel(trigger, panel) {
+  const rect = trigger.getBoundingClientRect();
+  const margin = 10;
+  panel.style.width = `${rect.width}px`;
+  let left = rect.left;
+  if (left + rect.width > window.innerWidth - margin) {
+    left = window.innerWidth - rect.width - margin;
+  }
+  if (left < margin) left = margin;
+  panel.style.left = `${left}px`;
+  panel.style.top = `${rect.bottom + 6}px`;
+}
+
+function ensureCategoryTreeGlobalListeners() {
+  if (categoryTreeGlobalListenersAttached) return;
+  categoryTreeGlobalListenersAttached = true;
+
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll(".cat-tree-panel.open").forEach((panel) => {
+      const selectId = panel.dataset.homeSelectId;
+      const trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+      const clickedInside =
+        (trigger && trigger.contains(e.target)) || panel.contains(e.target);
+      if (!clickedInside) closeAllCategoryTreePanels();
+    });
+  });
+
+  let ticking = false;
+  const reposition = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".cat-tree-panel.open").forEach((panel) => {
+        const selectId = panel.dataset.homeSelectId;
+        const trigger = document.getElementById(`${selectId}-cat-tree-trigger`);
+        if (trigger) positionCategoryTreePanel(trigger, panel);
+      });
+      ticking = false;
+    });
+  };
+  // capture:true so this also fires for scrolling inside any inner
+  // scrollable container (e.g. a tab pane), not just the window itself.
+  window.addEventListener("scroll", reposition, {
+    passive: true,
+    capture: true,
+  });
+  window.addEventListener("resize", closeAllCategoryTreePanels);
+}
+
 async function loadCategories() {
   try {
     const res = await fetch("/api/categories");
@@ -590,6 +892,7 @@ async function loadCategories() {
 
     // Build recursive tree structure starting with top-level categories (parent_id = null)
     const tree = buildCategoryTree(categories, null, 0);
+    const nestedTree = buildNestedCategoryTree(categories, null);
 
     // 1. Populate Product Category dropdown
     const prodSelect = document.getElementById("prod-category");
@@ -599,6 +902,11 @@ async function loadCategories() {
         const prefix = "— ".repeat(cat.depth);
         prodSelect.innerHTML += `<option value="${cat.id}">${prefix}${escapeHtml(cat.name)}</option>`;
       });
+      attachCategoryTreeDropdown(
+        "prod-category",
+        nestedTree,
+        "Select Category",
+      );
     }
 
     // 2. Populate Parent Category dropdown
@@ -610,6 +918,11 @@ async function loadCategories() {
         const prefix = "— ".repeat(cat.depth);
         catParentSelect.innerHTML += `<option value="${cat.id}">${prefix}${escapeHtml(cat.name)}</option>`;
       });
+      attachCategoryTreeDropdown(
+        "cat-parent",
+        nestedTree,
+        "None (Top-Level Category)",
+      );
     }
 
     // 3. Populate Delete Category dropdown
@@ -621,6 +934,11 @@ async function loadCategories() {
         const prefix = "— ".repeat(cat.depth);
         deleteCatSelect.innerHTML += `<option value="${cat.id}">${prefix}${escapeHtml(cat.name)}</option>`;
       });
+      attachCategoryTreeDropdown(
+        "delete-cat-select",
+        nestedTree,
+        "-- Select Category --",
+      );
     }
 
     // 4. Populate Edit/Rename Category dropdown
@@ -632,6 +950,11 @@ async function loadCategories() {
         const prefix = "— ".repeat(cat.depth);
         editCatSelect.innerHTML += `<option value="${cat.id}">${prefix}${escapeHtml(cat.name)}</option>`;
       });
+      attachCategoryTreeDropdown(
+        "edit-cat-select",
+        nestedTree,
+        "-- Select Category --",
+      );
     }
   } catch (err) {
     console.error("Failed to load categories:", err);
@@ -805,6 +1128,7 @@ async function triggerEditState(productId) {
     // Category
     const catSel = document.getElementById("prod-category");
     if (catSel && prod.category_id) catSel.value = prod.category_id;
+    syncCategoryTreeTrigger("prod-category");
 
     // Existing images — show as previews in slots
     const mainList = document.getElementById("main-images-list");
@@ -873,6 +1197,7 @@ async function triggerEditState(productId) {
 function clearEditState() {
   document.getElementById("admin-product-form").reset();
   document.getElementById("edit-product-id").value = "";
+  syncCategoryTreeTrigger("prod-category");
 
   // Reset tracked image deletions
   deletedImageUrls = [];
